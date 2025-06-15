@@ -1,0 +1,13 @@
+# Logs
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+*.cache
+
+# Sistema
+.htaccess_backup
+error_log

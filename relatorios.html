@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - TimePulse AI</title>
+    <meta name="description" content="Relatórios e análises de vendas do seu restaurante">
+    
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .reports-header {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .reports-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+        }
+        
+        .reports-table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .reports-table th,
+        .reports-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+        }
+        
+        .reports-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .reports-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .metric-card.revenue { border-left-color: #28a745; }
+        .metric-card.orders { border-left-color: #007bff; }
+        .metric-card.average { border-left-color: #ffc107; }
+        .metric-card.growth { border-left-color: #17a2b8; }
+        
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .metric-number.positive { color: #28a745; }
+        .metric-number.negative { color: #dc3545; }
+        
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .metric-change.positive { color: #28a745; }
+        .metric-change.negative { color: #dc3545; }
+        
+        .top-products {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .product-item:last-child { border-bottom: none; }
+        
+        .product-rank {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 1rem;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .product-info { flex: 1; }
+        .product-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .product-stats { color: #6c757d; font-size: 0.9rem; }
+        .product-revenue { font-weight: bold; color: #28a745; }
+        
+        .empty-state { text-align: center; padding: 3rem; color: #6c757d; }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .reports-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .reports-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link active">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Relatórios de Vendas
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="reportsManager.exportReport('full')">
+                            <i class="fas fa-file-alt"></i>
+                            Relatório Completo
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <div class="reports-header">
+                    <h2>
+                        <i class="fas fa-analytics"></i>
+                        Análise de Desempenho
+                    </h2>
+                    <p>Acompanhe as métricas de suas vendas com relatórios detalhados.</p>
+                </div>
+                
+                <div class="filters-section">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label class="form-label">Período Pré-definido</label>
+                            <select id="periodFilter" class="form-control">
+                                <option value="today">Hoje</option>
+                                <option value="yesterday">Ontem</option>
+                                <option value="week">Esta Semana</option>
+                                <option value="month" selected>Este Mês</option>
+                                <option value="quarter">Este Trimestre</option>
+                                <option value="year">Este Ano</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="customDateGroup" style="display: none;">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                        
+                        <div class="form-group" id="customDateGroup2" style="display: none;">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" id="endDate" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                             <button class="btn btn-primary w-100" onclick="reportsManager.applyFilters()">
+                                <i class="fas fa-search"></i>
+                                Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reports-stats">
+                    <div class="metric-card revenue">
+                        <div class="metric-number" id="totalRevenue">R$ 0,00</div>
+                        <div class="metric-label">Receita Total</div>
+                        <div class="metric-change" id="revenueChange">+0%</div>
+                    </div>
+                    
+                    <div class="metric-card orders">
+                        <div class="metric-number" id="totalOrders">0</div>
+                        <div class="metric-label">Total de Pedidos</div>
+                        <div class="metric-change" id="ordersChange">+0%</div>
+                    </div>
+                    
+                    <div class="metric-card average">
+                        <div class="metric-number" id="averageTicket">R$ 0,00</div>
+                        <div class="metric-label">Ticket Médio</div>
+                        <div class="metric-change" id="ticketChange">+0%</div>
+                    </div>
+                    
+                    <div class="metric-card growth">
+                        <div class="metric-number" id="growthRate">0%</div>
+                        <div class="metric-label">Crescimento</div>
+                        <div class="metric-change" id="growthChange">vs período anterior</div>
+                    </div>
+                </div>
+                
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            Vendas por Período
+                        </h3>
+                        <div class="chart-container" id="salesChart">
+                            <div class="text-center">
+                                <i class="fas fa-chart-line fa-3x"></i>
+                                <p>Gráfico de vendas será exibido aqui.</p>
+                                <small>Carregando dados...</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Vendas por Categoria
+                        </h3>
+                        <div class="chart-container" id="categoryChart">
+                             <div class="text-center">
+                                <i class="fas fa-chart-pie fa-3x"></i>
+                                <p>Gráfico de categorias será exibido aqui.</p>
+                                <small>Carregando dados...</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="top-products">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-trophy"></i>
+                            Produtos Mais Vendidos no Período
+                        </h3>
+                    </div>
+                    
+                    <div id="topProductsList">
+                        <div class="empty-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Carregando produtos...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reports-table-section">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-table"></i>
+                            Relatório Detalhado de Vendas
+                        </h3>
+                        <button class="btn btn-secondary" onclick="reportsManager.exportReport('table')">
+                            <i class="fas fa-download"></i>
+                            Exportar Tabela
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Itens</th>
+                                    <th>Valor Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR DE RELATÓRIOS =====
+        class ReportsManager {
+            constructor() {
+                this.orders = [];
+                this.previousOrders = [];
+                this.metrics = {};
+                this.currentPeriod = {};
+                this.previousPeriod = {};
+            }
+            
+            async init() {
+                try {
+                    console.log('📈 Inicializando gerenciador de relatórios...');
+                    this.setupEventListeners();
+                    this.setPeriod('month'); // Define o período padrão como "Este Mês"
+                    await this.loadReportsData();
+                    console.log('✅ Relatórios inicializados com sucesso.');
+                } catch (error) {
+                    console.error('❌ Erro na inicialização dos relatórios:', error);
+                    this.showNotification('Erro ao carregar os dados.', 'error');
+                }
+            }
+            
+            setupEventListeners() {
+                document.getElementById('periodFilter').addEventListener('change', (e) => {
+                    const period = e.target.value;
+                    const customGroup = document.getElementById('customDateGroup');
+                    const customGroup2 = document.getElementById('customDateGroup2');
+                    
+                    if (period === 'custom') {
+                        customGroup.style.display = 'block';
+                        customGroup2.style.display = 'block';
+                    } else {
+                        customGroup.style.display = 'none';
+                        customGroup2.style.display = 'none';
+                        this.setPeriod(period);
+                        this.loadReportsData();
+                    }
+                });
+            }
+            
+            setPeriod(periodKey) {
+                const today = new Date();
+                today.setHours(23, 59, 59, 999);
+                
+                let start, end, prevStart, prevEnd;
+                const day = today.getDay();
+                
+                switch (periodKey) {
+                    case 'today':
+                        start = new Date(today);
+                        start.setHours(0, 0, 0, 0);
+                        end = today;
+                        prevStart = new Date(start.getTime() - 24 * 60 * 60 * 1000);
+                        prevEnd = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+                        break;
+                    case 'yesterday':
+                        start = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+                        start.setHours(0, 0, 0, 0);
+                        end = new Date(start);
+                        end.setHours(23, 59, 59, 999);
+                        prevStart = new Date(start.getTime() - 24 * 60 * 60 * 1000);
+                        prevEnd = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+                        break;
+                    case 'week':
+                        start = new Date(today.setDate(today.getDate() - day + (day === 0 ? -6 : 1)));
+                        start.setHours(0, 0, 0, 0);
+                        end = new Date();
+                        prevStart = new Date(new Date(start).setDate(start.getDate() - 7));
+                        prevEnd = new Date(new Date(end).setDate(end.getDate() - 7));
+                        break;
+                    case 'month':
+                        start = new Date(today.getFullYear(), today.getMonth(), 1);
+                        end = today;
+                        prevStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                        prevEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+                        break;
+                    case 'quarter':
+                        const quarter = Math.floor(today.getMonth() / 3);
+                        start = new Date(today.getFullYear(), quarter * 3, 1);
+                        end = today;
+                        prevStart = new Date(today.getFullYear(), (quarter - 1) * 3, 1);
+                        prevEnd = new Date(today.getFullYear(), quarter * 3, 0);
+                        break;
+                    case 'year':
+                        start = new Date(today.getFullYear(), 0, 1);
+                        end = today;
+                        prevStart = new Date(today.getFullYear() - 1, 0, 1);
+                        prevEnd = new Date(today.getFullYear() - 1, 11, 31);
+                        break;
+                }
+                
+                this.currentPeriod = { start, end };
+                this.previousPeriod = { start: prevStart, end: prevEnd };
+            }
+            
+            async applyFilters() {
+                const period = document.getElementById('periodFilter').value;
+                if (period === 'custom') {
+                    const startDate = new Date(document.getElementById('startDate').value);
+                    const endDate = new Date(document.getElementById('endDate').value);
+                    
+                    if (startDate && endDate && startDate <= endDate) {
+                        const diff = endDate.getTime() - startDate.getTime();
+                        this.currentPeriod = { start: startDate, end: endDate };
+                        this.previousPeriod = { 
+                            start: new Date(startDate.getTime() - diff - 86400000), 
+                            end: new Date(startDate.getTime() - 86400000) 
+                        };
+                        await this.loadReportsData();
+                    } else {
+                        this.showNotification('Datas inválidas.', 'error');
+                    }
+                }
+            }
+            
+            async loadReportsData() {
+                const restaurantId = window.TimePulseAI.currentRestaurant()?.id;
+                if (!restaurantId) return;
+
+                try {
+                    // Carregar dados dos períodos atual e anterior em paralelo
+                    const [currentRes, previousRes] = await Promise.all([
+                        window.TimePulseAI.supabase()
+                            .from('orders')
+                            .select('*, order_items(*, menu_products(*, menu_categories(name)))')
+                            .eq('restaurant_id', restaurantId)
+                            .eq('status', 'delivered')
+                            .gte('created_at', this.currentPeriod.start.toISOString())
+                            .lte('created_at', this.currentPeriod.end.toISOString()),
+                        window.TimePulseAI.supabase()
+                            .from('orders')
+                            .select('total_amount, status')
+                            .eq('restaurant_id', restaurantId)
+                            .eq('status', 'delivered')
+                            .gte('created_at', this.previousPeriod.start.toISOString())
+                            .lte('created_at', this.previousPeriod.end.toISOString())
+                    ]);
+
+                    if (currentRes.error) throw currentRes.error;
+                    if (previousRes.error) throw previousRes.error;
+
+                    this.orders = currentRes.data || [];
+                    this.previousOrders = previousRes.data || [];
+                    
+                    this.calculateMetrics();
+                    this.updateUI();
+
+                } catch(error) {
+                    console.error("Erro ao carregar dados dos relatórios:", error);
+                    this.showNotification("Falha ao carregar dados.", 'error');
+                }
+            }
+
+            calculateMetrics() {
+                const currentRevenue = this.orders.reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
+                const currentOrdersCount = this.orders.length;
+                const currentAvgTicket = currentOrdersCount > 0 ? currentRevenue / currentOrdersCount : 0;
+
+                const prevRevenue = this.previousOrders.reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
+                const prevOrdersCount = this.previousOrders.length;
+                
+                const calculateChange = (current, previous) => {
+                    if (previous === 0) return current > 0 ? 100 : 0;
+                    return ((current - previous) / previous) * 100;
+                };
+
+                this.metrics = {
+                    totalRevenue: currentRevenue,
+                    totalOrders: currentOrdersCount,
+                    averageTicket: currentAvgTicket,
+                    revenueChange: calculateChange(currentRevenue, prevRevenue),
+                    ordersChange: calculateChange(currentOrdersCount, prevOrdersCount),
+                };
+                
+                this.metrics.growthRate = this.metrics.revenueChange; // Crescimento baseado na receita
+            }
+
+            updateUI() {
+                this.updateMetricCards();
+                this.updateTopProducts();
+                this.updateDetailedTable();
+                // Placeholder para gráficos
+                this.renderPlaceholder('salesChart', 'Vendas por Período');
+                this.renderPlaceholder('categoryChart', 'Vendas por Categoria');
+            }
+            
+            updateMetricCards() {
+                document.getElementById('totalRevenue').textContent = `R$ ${this.metrics.totalRevenue.toFixed(2)}`;
+                document.getElementById('totalOrders').textContent = this.metrics.totalOrders;
+                document.getElementById('averageTicket').textContent = `R$ ${this.metrics.averageTicket.toFixed(2)}`;
+                document.getElementById('growthRate').textContent = `${this.metrics.growthRate.toFixed(1)}%`;
+                
+                this.updateChangeIndicator('revenueChange', this.metrics.revenueChange);
+                this.updateChangeIndicator('ordersChange', this.metrics.ordersChange);
+                const prevAvgTicket = this.previousOrders.length > 0 ? this.previousOrders.reduce((s, o) => s + parseFloat(o.total_amount), 0) / this.previousOrders.length : 0;
+                this.updateChangeIndicator('ticketChange', this.calculateChange(this.metrics.averageTicket, prevAvgTicket));
+                
+                const growthEl = document.getElementById('growthRate');
+                growthEl.className = `metric-number ${this.metrics.growthRate >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            updateChangeIndicator(elementId, value) {
+                const el = document.getElementById(elementId);
+                el.textContent = `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+                el.className = `metric-change ${value >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            calculateChange(current, previous) {
+                if (previous === 0) return current > 0 ? 100 : 0;
+                return ((current - previous) / previous) * 100;
+            }
+
+            updateTopProducts() {
+                const productStats = new Map();
+                this.orders.forEach(order => {
+                    order.order_items.forEach(item => {
+                        if (!item.menu_products) return;
+                        const key = item.menu_products.id;
+                        if (!productStats.has(key)) {
+                            productStats.set(key, { name: item.menu_products.name, quantity: 0, revenue: 0 });
+                        }
+                        const stats = productStats.get(key);
+                        stats.quantity += item.quantity;
+                        stats.revenue += item.quantity * parseFloat(item.price);
+                    });
+                });
+
+                const topProducts = Array.from(productStats.values()).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+                const container = document.getElementById('topProductsList');
+
+                if (topProducts.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>Nenhum produto vendido no período.</p></div>`;
+                    return;
+                }
+                
+                container.innerHTML = topProducts.map((p, i) => `
+                    <div class="product-item">
+                        <div class="product-rank">${i + 1}º</div>
+                        <div class="product-info">
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-stats">${p.quantity} vendidos</div>
+                        </div>
+                        <div class="product-revenue">R$ ${p.revenue.toFixed(2)}</div>
+                    </div>
+                `).join('');
+            }
+
+            updateDetailedTable() {
+                const tbody = document.getElementById('reportsTableBody');
+                if (this.orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-receipt"></i><p>Nenhum pedido encontrado.</p></div></td></tr>`;
+                    return;
+                }
+                
+                tbody.innerHTML = this.orders.map(order => `
+                    <tr>
+                        <td>${new Date(order.created_at).toLocaleDateString('pt-BR')}</td>
+                        <td>#${order.order_number}</td>
+                        <td>${order.customer_name}</td>
+                        <td>${order.order_items.length}</td>
+                        <td>R$ ${parseFloat(order.total_amount).toFixed(2)}</td>
+                        <td><span class="badge bg-success">Entregue</span></td>
+                    </tr>
+                `).join('');
+            }
+            
+            renderPlaceholder(elementId, title) {
+                const container = document.getElementById(elementId);
+                container.innerHTML = `
+                    <div class="text-center">
+                        <i class="fas fa-chart-bar fa-3x text-muted"></i>
+                        <p class="mt-2">O gráfico de <strong>${title}</strong> aparecerá aqui.</p>
+                        <small>Integração com Chart.js em desenvolvimento.</small>
+                    </div>
+                `;
+            }
+
+            exportReport(type) {
+                let dataToExport = [];
+                let filename = `relatorio_timepulse_${new Date().toISOString().split('T')[0]}.csv`;
+
+                if (type === 'table' || type === 'full') {
+                    dataToExport = this.orders.map(o => ({
+                        data: new Date(o.created_at).toLocaleDateString('pt-BR'),
+                        pedido: o.order_number,
+                        cliente: `"${o.customer_name.replace(/"/g, '""')}"`,
+                        itens: o.order_items.length,
+                        valor: o.total_amount.toFixed(2),
+                        status: o.status,
+                    }));
+                }
+                
+                if (dataToExport.length === 0) {
+                    this.showNotification('Nenhum dado para exportar.', 'warning');
+                    return;
+                }
+
+                const csvHeader = Object.keys(dataToExport[0]).join(',');
+                const csvRows = dataToExport.map(row => Object.values(row).join(',')).join('\n');
+                const csvContent = `${csvHeader}\n${csvRows}`;
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            showNotification(message, type = 'info') {
+                // Implementação de notificação visual
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+        }
+        
+        let reportsManager;
+        document.addEventListener('DOMContentLoaded', async () => {
+            await new Promise(resolve => {
+                const check = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.currentRestaurant()) {
+                        resolve();
+                    } else {
+                        setTimeout(check, 100);
+                    }
+                };
+                check();
+            });
+            reportsManager = new ReportsManager();
+            await reportsManager.init();
+        });
+        
+    </script>
+</body>
+</html>

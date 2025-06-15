@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - TimePulse AI</title>
+    <meta name="description" content="Gerencie sua base de clientes e histórico de pedidos">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .clients-header {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .clients-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .clients-table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .clients-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .clients-table th,
+        .clients-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .clients-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .clients-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .client-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .client-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .client-details {
+            flex: 1;
+        }
+        
+        .client-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .client-phone {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .client-stats {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .client-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .badge.vip {
+            background: #ffd700;
+            color: #000;
+        }
+        
+        .badge.regular {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge.new {
+            background: #007bff;
+            color: white;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #495057;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination .current-page {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .order-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .order-number {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .order-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .order-total {
+            font-weight: bold;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .clients-table {
+                font-size: 0.9rem;
+            }
+            
+            .clients-table th,
+            .clients-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .client-actions {
+                flex-direction: column;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link active">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-users"></i>
+                            Gestão de Clientes
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="exportClients()">
+                            <i class="fas fa-download"></i>
+                            Exportar
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Header dos Clientes -->
+                <div class="clients-header">
+                    <h2>
+                        <i class="fas fa-address-book"></i>
+                        Base de Clientes
+                    </h2>
+                    <p>Gerencie seus clientes e acompanhe o histórico de pedidos</p>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="clients-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalClients">0</div>
+                        <div class="stat-label">Total de Clientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="newClients">0</div>
+                        <div class="stat-label">Novos (30 dias)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="vipClients">0</div>
+                        <div class="stat-label">Clientes VIP</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgOrders">0</div>
+                        <div class="stat-label">Pedidos/Cliente</div>
+                    </div>
+                </div>
+                
+                <!-- Filtros -->
+                <div class="filters-section">
+                    <h3>
+                        <i class="fas fa-filter"></i>
+                        Filtros
+                    </h3>
+                    
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label class="form-label">Buscar cliente</label>
+                            <input type="text" id="searchClient" class="form-control" placeholder="Nome ou telefone">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tipo de cliente</label>
+                            <select id="clientType" class="form-control">
+                                <option value="">Todos</option>
+                                <option value="vip">VIP (10+ pedidos)</option>
+                                <option value="regular">Regular (3-9 pedidos)</option>
+                                <option value="new">Novo (1-2 pedidos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Período</label>
+                            <select id="periodFilter" class="form-control">
+                                <option value="">Todos os tempos</option>
+                                <option value="7">Últimos 7 dias</option>
+                                <option value="30">Últimos 30 dias</option>
+                                <option value="90">Últimos 90 dias</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary" onclick="applyFilters()">
+                                <i class="fas fa-search"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabela de Clientes -->
+                <div class="clients-table-section">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-list"></i>
+                            Lista de Clientes
+                            <span id="clientsCount" class="badge">0</span>
+                        </h3>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="clients-table">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Pedidos</th>
+                                    <th>Total Gasto</th>
+                                    <th>Último Pedido</th>
+                                    <th>Tipo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTableBody">
+                                <!-- Clientes serão carregados aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginação -->
+                    <div class="pagination" id="pagination">
+                        <!-- Paginação será gerada aqui -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal de Detalhes do Cliente -->
+    <div class="modal" id="clientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="clientModalTitle">Detalhes do Cliente</h3>
+                <button class="modal-close" onclick="closeClientModal()">&times;</button>
+            </div>
+            
+            <div id="clientDetails">
+                <!-- Detalhes serão carregados aqui -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR DE CLIENTES =====
+        class ClientsManager {
+            constructor() {
+                this.clients = [];
+                this.filteredClients = [];
+                this.currentPage = 1;
+                this.itemsPerPage = 10;
+                this.totalPages = 0;
+            }
+            
+            async init() {
+                try {
+                    console.log('👥 Inicializando gestão de clientes...');
+                    
+                    await this.loadClients();
+                    this.setupEventListeners();
+                    
+                    console.log('✅ Gestão de clientes inicializada');
+                    
+                } catch (error) {
+                    console.error('❌ Erro na inicialização:', error);
+                }
+            }
+            
+            async loadClients() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    // Carregar clientes com estatísticas
+                    const { data: clientsData, error } = await window.TimePulseAI.supabase()
+                        .from('clients_with_stats')
+                        .select('*')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .order('total_orders', { ascending: false });
+                    
+                    if (error) {
+                        console.warn('Vista não encontrada, carregando dados básicos');
+                        await this.loadBasicClients();
+                        return;
+                    }
+                    
+                    this.clients = clientsData || [];
+                    this.processClients();
+                    this.updateStats();
+                    this.renderClients();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar clientes:', error);
+                    await this.loadBasicClients();
+                }
+            }
+            
+            async loadBasicClients() {
+                try {
+                    // Fallback: carregar dados básicos de pedidos
+                    const { data: orders, error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select('customer_name, customer_phone, total_amount, created_at')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .not('customer_name', 'is', null);
+                    
+                    if (error) throw error;
+                    
+                    // Processar dados manualmente
+                    const clientsMap = new Map();
+                    
+                    orders.forEach(order => {
+                        const key = `${order.customer_name}_${order.customer_phone}`;
+                        
+                        if (!clientsMap.has(key)) {
+                            clientsMap.set(key, {
+                                name: order.customer_name,
+                                phone: order.customer_phone,
+                                total_orders: 0,
+                                total_amount: 0,
+                                first_order: order.created_at,
+                                last_order: order.created_at
+                            });
+                        }
+                        
+                        const client = clientsMap.get(key);
+                        client.total_orders += 1;
+                        client.total_amount += parseFloat(order.total_amount);
+                        
+                        if (new Date(order.created_at) > new Date(client.last_order)) {
+                            client.last_order = order.created_at;
+                        }
+                        
+                        if (new Date(order.created_at) < new Date(client.first_order)) {
+                            client.first_order = order.created_at;
+                        }
+                    });
+                    
+                    this.clients = Array.from(clientsMap.values());
+                    this.processClients();
+                    this.updateStats();
+                    this.renderClients();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar dados básicos:', error);
+                }
+            }
+            
+            processClients() {
+                this.clients.forEach(client => {
+                    // Determinar tipo do cliente
+                    if (client.total_orders >= 10) {
+                        client.type = 'vip';
+                        client.type_label = 'VIP';
+                    } else if (client.total_orders >= 3) {
+                        client.type = 'regular';
+                        client.type_label = 'Regular';
+                    } else {
+                        client.type = 'new';
+                        client.type_label = 'Novo';
+                    }
+                    
+                    // Verificar se é cliente novo (primeiros 30 dias)
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    client.is_new = new Date(client.first_order) > thirtyDaysAgo;
+                });
+                
+                this.filteredClients = [...this.clients];
+            }
+            
+            updateStats() {
+                const totalClients = this.clients.length;
+                const newClients = this.clients.filter(c => c.is_new).length;
+                const vipClients = this.clients.filter(c => c.type === 'vip').length;
+                const avgOrders = totalClients > 0 
+                    ? Math.round(this.clients.reduce((sum, c) => sum + c.total_orders, 0) / totalClients)
+                    : 0;
+                
+                document.getElementById('totalClients').textContent = totalClients;
+                document.getElementById('newClients').textContent = newClients;
+                document.getElementById('vipClients').textContent = vipClients;
+                document.getElementById('avgOrders').textContent = avgOrders;
+            }
+            
+            renderClients() {
+                const tbody = document.getElementById('clientsTableBody');
+                const start = (this.currentPage - 1) * this.itemsPerPage;
+                const end = start + this.itemsPerPage;
+                const pageClients = this.filteredClients.slice(start, end);
+                
+                if (pageClients.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <p>Nenhum cliente encontrado</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = pageClients.map(client => `
+                    <tr>
+                        <td>
+                            <div class="client-info">
+                                <div class="client-avatar">
+                                    ${this.getInitials(client.name)}
+                                </div>
+                                <div class="client-details">
+                                    <div class="client-name">${client.name}</div>
+                                    <div class="client-phone">${client.phone || 'Sem telefone'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-stats">
+                                <div class="stat-value">${client.total_orders}</div>
+                                <div class="stat-label">pedidos</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-stats">
+                                <div class="stat-value">R$ ${parseFloat(client.total_amount || 0).toFixed(2)}</div>
+                                <div class="stat-label">total</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-stats">
+                                <div class="stat-value">${this.formatDate(client.last_order)}</div>
+                                <div class="stat-label">${this.getTimeAgo(client.last_order)}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge ${client.type}">${client.type_label}</span>
+                        </td>
+                        <td>
+                            <div class="client-actions">
+                                <button class="btn btn-info btn-sm" onclick="clientsManager.viewClient('${client.name}', '${client.phone || ''}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick="clientsManager.createOrderForClient('${client.name}', '${client.phone || ''}')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                this.updatePagination();
+                document.getElementById('clientsCount').textContent = this.filteredClients.length;
+            }
+            
+            updatePagination() {
+                this.totalPages = Math.ceil(this.filteredClients.length / this.itemsPerPage);
+                const pagination = document.getElementById('pagination');
+                
+                if (this.totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+                
+                let paginationHtml = `
+                    <button onclick="clientsManager.goToPage(${this.currentPage - 1})" 
+                            ${this.currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                `;
+                
+                for (let i = 1; i <= this.totalPages; i++) {
+                    if (i === this.currentPage) {
+                        paginationHtml += `<button class="current-page">${i}</button>`;
+                    } else if (i === 1 || i === this.totalPages || Math.abs(i - this.currentPage) <= 2) {
+                        paginationHtml += `<button onclick="clientsManager.goToPage(${i})">${i}</button>`;
+                    } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
+                        paginationHtml += `<span>...</span>`;
+                    }
+                }
+                
+                paginationHtml += `
+                    <button onclick="clientsManager.goToPage(${this.currentPage + 1})" 
+                            ${this.currentPage === this.totalPages ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                `;
+                
+                pagination.innerHTML = paginationHtml;
+            }
+            
+            goToPage(page) {
+                if (page >= 1 && page <= this.totalPages) {
+                    this.currentPage = page;
+                    this.renderClients();
+                }
+            }
+            
+            applyFilters() {
+                const search = document.getElementById('searchClient').value.toLowerCase();
+                const type = document.getElementById('clientType').value;
+                const period = document.getElementById('periodFilter').value;
+                
+                this.filteredClients = this.clients.filter(client => {
+                    // Filtro de busca
+                    if (search) {
+                        const matchName = client.name.toLowerCase().includes(search);
+                        const matchPhone = client.phone && client.phone.includes(search);
+                        if (!matchName && !matchPhone) return false;
+                    }
+                    
+                    // Filtro de tipo
+                    if (type && client.type !== type) return false;
+                    
+                    // Filtro de período
+                    if (period) {
+                        const periodDays = parseInt(period);
+                        const cutoffDate = new Date();
+                        cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+                        
+                        if (new Date(client.last_order) < cutoffDate) return false;
+                    }
+                    
+                    return true;
+                });
+                
+                this.currentPage = 1;
+                this.renderClients();
+            }
+            
+            async viewClient(name, phone) {
+                try {
+                    // Carregar histórico de pedidos do cliente
+                    const { data: orders, error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select('id, order_number, total_amount, status, created_at')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .eq('customer_name', name)
+                        .eq('customer_phone', phone || '')
+                        .order('created_at', { ascending: false })
+                        .limit(20);
+                    
+                    if (error) throw error;
+                    
+                    const client = this.clients.find(c => c.name === name && (c.phone || '') === phone);
+                    
+                    document.getElementById('clientModalTitle').textContent = `Cliente: ${name}`;
+                    document.getElementById('clientDetails').innerHTML = `
+                        <div class="client-summary">
+                            <div class="client-avatar-large">
+                                ${this.getInitials(name)}
+                            </div>
+                            <h4>${name}</h4>
+                            <p>${phone || 'Sem telefone'}</p>
+                            
+                            <div class="client-stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value">${client?.total_orders || 0}</div>
+                                    <div class="stat-label">Total de Pedidos</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">R$ ${parseFloat(client?.total_amount || 0).toFixed(2)}</div>
+                                    <div class="stat-label">Total Gasto</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${client?.type_label || 'Novo'}</div>
+                                    <div class="stat-label">Tipo de Cliente</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h5>Histórico de Pedidos</h5>
+                        <div class="order-history">
+                            ${orders.length === 0 ? 
+                                '<p class="text-center text-muted">Nenhum pedido encontrado</p>' :
+                                orders.map(order => `
+                                    <div class="order-item">
+                                        <div>
+                                            <div class="order-number">#${order.order_number}</div>
+                                            <div class="order-date">${this.formatDate(order.created_at)}</div>
+                                        </div>
+                                        <div>
+                                            <div class="order-total">R$ ${parseFloat(order.total_amount).toFixed(2)}</div>
+                                            <div class="order-status">${this.getStatusLabel(order.status)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                    `;
+                    
+                    document.getElementById('clientModal').classList.add('show');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar detalhes do cliente:', error);
+                    this.showAlert('Erro ao carregar detalhes do cliente', 'error');
+                }
+            }
+            
+            createOrderForClient(name, phone) {
+                // Redirecionar para gestão de pedidos com cliente pré-preenchido
+                const params = new URLSearchParams({
+                    customer_name: name,
+                    customer_phone: phone,
+                    action: 'new_order'
+                });
+                
+                window.location.href = `gestao_pedidos.html?${params.toString()}`;
+            }
+            
+            setupEventListeners() {
+                // Busca em tempo real
+                document.getElementById('searchClient').addEventListener('input', 
+                    this.debounce(() => this.applyFilters(), 300)
+                );
+                
+                // Filtros
+                document.getElementById('clientType').addEventListener('change', () => this.applyFilters());
+                document.getElementById('periodFilter').addEventListener('change', () => this.applyFilters());
+            }
+            
+            // Utilitários
+            getInitials(name) {
+                return name.split(' ')
+                    .map(word => word.charAt(0))
+                    .join('')
+                    .substring(0, 2)
+                    .toUpperCase();
+            }
+            
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('pt-BR');
+            }
+            
+            getTimeAgo(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 0) return 'Hoje';
+                if (diffDays === 1) return 'Ontem';
+                if (diffDays < 30) return `${diffDays} dias atrás`;
+                if (diffDays < 365) return `${Math.floor(diffDays / 30)} meses atrás`;
+                return `${Math.floor(diffDays / 365)} anos atrás`;
+            }
+            
+            getStatusLabel(status) {
+                const statusMap = {
+                    'pending': 'Pendente',
+                    'confirmed': 'Confirmado',
+                    'preparing': 'Preparando',
+                    'ready': 'Pronto',
+                    'out_for_delivery': 'Entregando',
+                    'delivered': 'Entregue',
+                    'cancelled': 'Cancelado'
+                };
+                
+                return statusMap[status] || status;
+            }
+            
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            showAlert(message, type = 'info') {
+                console.log(`${type.toUpperCase()}: ${message}`);
+                // Implementar sistema de alertas visual
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let clientsManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Aguardar inicialização do sistema principal
+            await new Promise(resolve => {
+                const checkInit = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
+                        resolve();
+                    } else {
+                        setTimeout(checkInit, 100);
+                    }
+                };
+                checkInit();
+            });
+            
+            clientsManager = new ClientsManager();
+            await clientsManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function applyFilters() {
+            if (clientsManager) {
+                clientsManager.applyFilters();
+            }
+        }
+        
+        function exportClients() {
+            if (!clientsManager) return;
+            
+            // Preparar dados para exportação
+            const data = clientsManager.filteredClients.map(client => ({
+                'Nome': client.name,
+                'Telefone': client.phone || '',
+                'Total de Pedidos': client.total_orders,
+                'Total Gasto': `R$ ${parseFloat(client.total_amount || 0).toFixed(2)}`,
+                'Tipo': client.type_label,
+                'Primeiro Pedido': clientsManager.formatDate(client.first_order),
+                'Último Pedido': clientsManager.formatDate(client.last_order)
+            }));
+            
+            // Converter para CSV
+            const csv = [
+                Object.keys(data[0]).join(','),
+                ...data.map(row => Object.values(row).join(','))
+            ].join('\n');
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `clientes_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+        
+        function closeClientModal() {
+            document.getElementById('clientModal').classList.remove('show');
+        }
+        
+        // Fechar modal ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+    </script>
+    
+    <style>
+        .client-summary {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .client-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+        
+        .client-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-item .stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-item .stat-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    </style>
+</body>
+</html>

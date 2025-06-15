@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Pedidos - TimePulse AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .filter-section {
+            background: var(--background-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow);
+        }
+        
+        .date-range {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-box {
+            background: var(--background-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-number {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .order-details-row {
+            background: var(--background-light);
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <i class="fas fa-clock"></i> TimePulse AI
+                </a>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        Pedidos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="historico_pedidos.html" class="nav-link active">
+                        <i class="fas fa-history"></i>
+                        Histórico
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <i class="fas fa-motorcycle"></i>
+                        Entregadores
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_cardapio.html" class="nav-link">
+                        <i class="fas fa-utensils"></i>
+                        Cardápio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatórios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">Histórico de Pedidos</h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Filtros -->
+                <div class="filter-section">
+                    <h3>Filtros</h3>
+                    <div class="date-range">
+                        <div class="form-group">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" id="endDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select id="statusFilter" class="form-control form-select">
+                                <option value="">Todos</option>
+                                <option value="entregue">Entregue</option>
+                                <option value="cancelado">Cancelado</option>
+                                <option value="rejeitado">Rejeitado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cliente</label>
+                            <input type="text" id="customerFilter" class="form-control" placeholder="Nome do cliente">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" onclick="historyPage.applyFilters()">
+                                <i class="fas fa-search"></i> Filtrar
+                            </button>
+                            <button class="btn btn-secondary" onclick="historyPage.clearFilters()">
+                                <i class="fas fa-times"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumo Estatístico -->
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalOrders">0</div>
+                        <div>Total de Pedidos</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalRevenue">R$ 0,00</div>
+                        <div>Faturamento Total</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="avgOrderValue">R$ 0,00</div>
+                        <div>Ticket Médio</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="deliveredOrders">0</div>
+                        <div>Pedidos Entregues</div>
+                    </div>
+                </div>
+                
+                <!-- Botões de Exportação -->
+                <div class="export-buttons">
+                    <button class="btn btn-secondary" onclick="historyPage.exportToCSV()">
+                        <i class="fas fa-file-csv"></i> Exportar CSV
+                    </button>
+                    <button class="btn btn-secondary" onclick="historyPage.exportToPDF()">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="historyPage.printReport()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                </div>
+                
+                <!-- Lista de Pedidos -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pedidos do Período</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="ordersHistoryContainer">
+                            <div class="text-center p-4">
+                                <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
+                                <p class="mt-2 text-muted">Carregando histórico...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Paginação -->
+                        <div id="paginationContainer" class="mt-4 text-center" style="display: none;">
+                            <button class="btn btn-secondary" id="prevPage">
+                                <i class="fas fa-chevron-left"></i> Anterior
+                            </button>
+                            <span class="mx-3" id="pageInfo">Página 1 de 1</span>
+                            <button class="btn btn-secondary" id="nextPage">
+                                Próximo <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Classe para gerenciamento do histórico de pedidos
+        class HistoryPage {
+            constructor() {
+                this.orders = [];
+                this.filteredOrders = [];
+                this.currentPage = 1;
+                this.pageSize = 20;
+                this.filters = {};
+                this.init();
+            }
+
+            async init() {
+                this.setupEventListeners();
+                this.setDefaultDates();
+                await this.loadOrderHistory();
+            }
+
+            setupEventListeners() {
+                // Paginação
+                document.getElementById('prevPage').addEventListener('click', () => {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.renderOrders();
+                    }
+                });
+
+                document.getElementById('nextPage').addEventListener('click', () => {
+                    const totalPages = Math.ceil(this.filteredOrders.length / this.pageSize);
+                    if (this.currentPage < totalPages) {
+                        this.currentPage++;
+                        this.renderOrders();
+                    }
+                });
+            }
+
+            setDefaultDates() {
+                const today = new Date();
+                const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+                
+                document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+                document.getElementById('endDate').value = today.toISOString().split('T')[0];
+            }
+
+            async loadOrderHistory() {
+                try {
+                    const { data: orders, error } = await supabase
+                        .from('orders')
+                        .select(`
+                            *,
+                            customers (name, phone),
+                            deliverers (name),
+                            order_items (
+                                *,
+                                products (name, price)
+                            )
+                        `)
+                        .eq('restaurant_id', window.timePulseApp.currentRestaurant.id)
+                        .in('status', ['entregue', 'cancelado', 'rejeitado'])
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    this.orders = orders;
+                    this.applyFilters();
+
+                } catch (error) {
+                    console.error('Erro ao carregar histórico:', error);
+                    document.getElementById('ordersHistoryContainer').innerHTML = `
+                        <div class="text-center p-4">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                            <p class="mt-2 text-muted">Erro ao carregar histórico de pedidos</p>
+                        </div>
+                    `;
+                }
+            }
+
+            applyFilters() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const status = document.getElementById('statusFilter').value;
+                const customer = document.getElementById('customerFilter').value.toLowerCase();
+
+                this.filteredOrders = this.orders.filter(order => {
+                    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+                    
+                    // Filtro de data
+                    if (startDate && orderDate < startDate) return false;
+                    if (endDate && orderDate > endDate) return false;
+                    
+                    // Filtro de status
+                    if (status && order.status !== status) return false;
+                    
+                    // Filtro de cliente
+                    if (customer && !order.customers?.name?.toLowerCase().includes(customer)) return false;
+                    
+                    return true;
+                });
+
+                this.currentPage = 1;
+                this.updateStatistics();
+                this.renderOrders();
+            }
+
+            clearFilters() {
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('customerFilter').value = '';
+                this.setDefaultDates();
+                this.applyFilters();
+            }
+
+            updateStatistics() {
+                const totalOrders = this.filteredOrders.length;
+                const deliveredOrders = this.filteredOrders.filter(o => o.status === 'entregue').length;
+                const totalRevenue = this.filteredOrders
+                    .filter(o => o.status === 'entregue')
+                    .reduce((sum, order) => sum + parseFloat(order.total || 0), 0);
+                const avgOrderValue = deliveredOrders > 0 ? totalRevenue / deliveredOrders : 0;
+
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('totalRevenue').textContent = window.timePulseApp.formatCurrency(totalRevenue);
+                document.getElementById('avgOrderValue').textContent = window.timePulseApp.formatCurrency(avgOrderValue);
+                document.getElementById('deliveredOrders').textContent = deliveredOrders;
+            }
+
+            renderOrders() {
+                const container = document.getElementById('ordersHistoryContainer');
+                const startIndex = (this.currentPage - 1) * this.pageSize;
+                const endIndex = startIndex + this.pageSize;
+                const pageOrders = this.filteredOrders.slice(startIndex, endIndex);
+
+                if (pageOrders.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center p-4">
+                            <i class="fas fa-history fa-2x text-muted"></i>
+                            <p class="mt-2 text-muted">Nenhum pedido encontrado no período</p>
+                        </div>
+                    `;
+                    document.getElementById('paginationContainer').style.display = 'none';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Pedido</th>
+                                    <th>Data/Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Entregador</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${pageOrders.map(order => this.renderOrderRow(order)).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                this.updatePagination();
+            }
+
+            renderOrderRow(order) {
+                const total = parseFloat(order.total || 0);
+                
+                return `
+                    <tr>
+                        <td>
+                            <strong>#${order.id}</strong>
+                            <button class="btn btn-sm btn-secondary ml-2" onclick="historyPage.toggleOrderDetails('${order.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                        <td>${window.timePulseApp.formatDate(order.created_at)}</td>
+                        <td>
+                            <strong>${order.customers?.name || 'N/A'}</strong>
+                            <br>
+                            <small>${order.customers?.phone || ''}</small>
+                        </td>
+                        <td>
+                            <span class="status-badge status-${order.status}">
+                                ${this.getStatusLabel(order.status)}
+                            </span>
+                        </td>
+                        <td><strong>${window.timePulseApp.formatCurrency(total)}</strong></td>
+                        <td>${order.deliverers?.name || 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="historyPage.showOrderDetails('${order.id}')">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr id="details-${order.id}" class="order-details-row" style="display: none;">
+                        <td colspan="7">
+                            <div>
+                                <strong>Itens do Pedido:</strong>
+                                <ul class="mb-2">
+                                    ${order.order_items?.map(item => `
+                                        <li>${item.quantity}x ${item.products?.name || item.product_name} - ${window.timePulseApp.formatCurrency(item.price * item.quantity)}</li>
+                                    `).join('') || '<li>Itens não encontrados</li>'}
+                                </ul>
+                                ${order.delivery_address ? `<p><strong>Endereço:</strong> ${order.delivery_address}</p>` : ''}
+                                ${order.notes ? `<p><strong>Observações:</strong> ${order.notes}</p>` : ''}
+                                <p><strong>Atualizado em:</strong> ${window.timePulseApp.formatDate(order.updated_at)}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            toggleOrderDetails(orderId) {
+                const detailsRow = document.getElementById(`details-${orderId}`);
+                if (detailsRow.style.display === 'none') {
+                    detailsRow.style.display = 'table-row';
+                } else {
+                    detailsRow.style.display = 'none';
+                }
+            }
+
+            updatePagination() {
+                const totalPages = Math.ceil(this.filteredOrders.length / this.pageSize);
+                const paginationContainer = document.getElementById('paginationContainer');
+                
+                if (totalPages <= 1) {
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+
+                paginationContainer.style.display = 'block';
+                document.getElementById('pageInfo').textContent = `Página ${this.currentPage} de ${totalPages}`;
+                document.getElementById('prevPage').disabled = this.currentPage === 1;
+                document.getElementById('nextPage').disabled = this.currentPage === totalPages;
+            }
+
+            exportToCSV() {
+                const csvContent = this.generateCSV();
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `historico_pedidos_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            generateCSV() {
+                const headers = ['Pedido', 'Data', 'Cliente', 'Telefone', 'Status', 'Total', 'Entregador'];
+                const rows = this.filteredOrders.map(order => [
+                    order.id,
+                    new Date(order.created_at).toLocaleString('pt-BR'),
+                    order.customers?.name || 'N/A',
+                    order.customers?.phone || '',
+                    this.getStatusLabel(order.status),
+                    order.total || 0,
+                    order.deliverers?.name || 'N/A'
+                ]);
+
+                return [headers, ...rows].map(row => 
+                    row.map(field => `"${field}"`).join(',')
+                ).join('\n');
+            }
+
+            exportToPDF() {
+                window.timePulseApp.showNotification('Exportação para PDF em desenvolvimento', 'info');
+            }
+
+            printReport() {
+                const printWindow = window.open('', '_blank');
+                const printContent = this.generatePrintContent();
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.print();
+            }
+
+            generatePrintContent() {
+                return `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Relatório de Pedidos</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                            h1 { color: #333; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Histórico de Pedidos</h1>
+                        <p>Período: ${document.getElementById('startDate').value} até ${document.getElementById('endDate').value}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pedido</th>
+                                    <th>Data</th>
+                                    <th>Cliente</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${this.filteredOrders.map(order => `
+                                    <tr>
+                                        <td>#${order.id}</td>
+                                        <td>${new Date(order.created_at).toLocaleDateString('pt-BR')}</td>
+                                        <td>${order.customers?.name || 'N/A'}</td>
+                                        <td>${this.getStatusLabel(order.status)}</td>
+                                        <td>R$ ${parseFloat(order.total || 0).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </body>
+                    </html>
+                `;
+            }
+
+            getStatusLabel(status) {
+                const labels = {
+                    entregue: 'Entregue',
+                    cancelado: 'Cancelado',
+                    rejeitado: 'Rejeitado'
+                };
+                return labels[status] || status;
+            }
+        }
+
+        // Inicializar página quando estiver pronta
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.timePulseApp && window.timePulseApp.currentRestaurant) {
+                    window.historyPage = new HistoryPage();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - TimePulse AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color), #20c997);
+            color: white;
+            padding: var(--spacing-2xl);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin: 0 auto var(--spacing-md);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .security-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .security-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--background-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+            color: var(--primary-color);
+        }
+        
+        .activity-info {
+            flex-grow: 1;
+        }
+        
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+        
+        .danger-zone {
+            border: 2px solid var(--danger-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            background: rgba(220, 53, 69, 0.05);
+        }
+        
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .avatar-upload input[type="file"] {
+            display: none;
+        }
+        
+        .avatar-upload .upload-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <i class="fas fa-clock"></i> TimePulse AI
+                </a>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        Pedidos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="historico_pedidos.html" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        Histórico
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <i class="fas fa-motorcycle"></i>
+                        Entregadores
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_cardapio.html" class="nav-link">
+                        <i class="fas fa-utensils"></i>
+                        Cardápio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatórios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">Meu Perfil</h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Cabeçalho do Perfil -->
+                <div class="profile-header">
+                    <div class="avatar-upload">
+                        <div class="profile-avatar" id="profileAvatar">
+                            U
+                        </div>
+                        <label for="avatarUpload" class="upload-overlay">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="avatarUpload" accept="image/*">
+                    </div>
+                    <h2 id="userName">Usuário</h2>
+                    <p id="userEmail">usuario@email.com</p>
+                    <small>Membro desde <span id="memberSince">--</span></small>
+                </div>
+                
+                <!-- Seções do Perfil -->
+                <div class="profile-sections">
+                    <!-- Informações Pessoais -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="personalInfoForm">
+                                <div class="form-group">
+                                    <label class="form-label">Nome Completo</label>
+                                    <input type="text" id="fullName" class="form-control" required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">CPF</label>
+                                        <input type="text" id="cpf" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Telefone</label>
+                                        <input type="tel" id="phone" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="email" id="email" class="form-control" readonly>
+                                    <small class="text-muted">Para alterar o e-mail, entre em contato com o suporte</small>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar Alterações
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Segurança -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-shield-alt"></i> Segurança</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="security-item">
+                                <div>
+                                    <strong>Senha</strong>
+                                    <br>
+                                    <small class="text-muted">Última alteração: <span id="lastPasswordChange">--</span></small>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="profilePage.changePassword()">
+                                    <i class="fas fa-key"></i> Alterar
+                                </button>
+                            </div>
+                            
+                            <div class="security-item">
+                                <div>
+                                    <strong>Autenticação de Dois Fatores</strong>
+                                    <br>
+                                    <small class="text-muted">Adicione uma camada extra de segurança</small>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="profilePage.setup2FA()">
+                                    <i class="fas fa-mobile-alt"></i> Configurar
+                                </button>
+                            </div>
+                            
+                            <div class="security-item">
+                                <div>
+                                    <strong>Sessões Ativas</strong>
+                                    <br>
+                                    <small class="text-muted">Gerencie dispositivos conectados</small>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="profilePage.manageSessions()">
+                                    <i class="fas fa-laptop"></i> Ver Sessões
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Preferências -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-cog"></i> Preferências</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="preferencesForm">
+                                <div class="form-group">
+                                    <label class="form-label">Idioma</label>
+                                    <select id="language" class="form-control form-select">
+                                        <option value="pt-BR">Português (Brasil)</option>
+                                        <option value="en-US">English (US)</option>
+                                        <option value="es-ES">Español</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Fuso Horário</label>
+                                    <select id="timezone" class="form-control form-select">
+                                        <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
+                                        <option value="America/Manaus">Manaus (GMT-4)</option>
+                                        <option value="America/Rio_Branco">Rio Branco (GMT-5)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="d-flex align-items-center">
+                                        <input type="checkbox" id="emailNotifications" style="margin-right: 0.5rem;">
+                                        <span class="form-label mb-0">Receber notificações por e-mail</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="d-flex align-items-center">
+                                        <input type="checkbox" id="soundNotifications" style="margin-right: 0.5rem;">
+                                        <span class="form-label mb-0">Sons de notificação</span>
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar Preferências
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Atividade Recente -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> Atividade Recente</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="recentActivity">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
+                                    <p class="mt-2 text-muted">Carregando atividades...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estatísticas Pessoais -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-line"></i> Suas Estatísticas</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="metric-row">
+                                <span>Tempo como usuário</span>
+                                <span class="metric-value" id="userTime">-- dias</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Total de pedidos processados</span>
+                                <span class="metric-value" id="totalOrdersProcessed">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Faturamento total</span>
+                                <span class="metric-value" id="totalRevenue">R$ 0,00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Login streak</span>
+                                <span class="metric-value" id="loginStreak">0 dias</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Zona de Perigo -->
+                    <div class="card">
+                        <div class="card-header" style="background-color: rgba(220, 53, 69, 0.1);">
+                            <h3 style="color: var(--danger-color);"><i class="fas fa-exclamation-triangle"></i> Zona de Perigo</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="danger-zone">
+                                <h4>Excluir Conta</h4>
+                                <p class="text-muted">Uma vez excluída, sua conta não pode ser recuperada. Todos os dados serão permanentemente removidos.</p>
+                                <button class="btn btn-danger" onclick="profilePage.deleteAccount()">
+                                    <i class="fas fa-user-times"></i> Excluir Minha Conta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Alterar Senha</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label class="form-label">Senha Atual</label>
+                        <input type="password" id="currentPassword" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nova Senha</label>
+                        <input type="password" id="newPassword" class="form-control" required>
+                        <small class="text-muted">Mínimo 8 caracteres</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Nova Senha</label>
+                        <input type="password" id="confirmNewPassword" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" form="passwordForm" class="btn btn-primary">Alterar Senha</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Classe para gerenciamento do perfil
+        class ProfilePage {
+            constructor() {
+                this.user = null;
+                this.restaurant = null;
+                this.init();
+            }
+
+            async init() {
+                this.setupEventListeners();
+                await this.loadUserData();
+                await this.loadRecentActivity();
+                await this.loadUserStats();
+            }
+
+            setupEventListeners() {
+                // Formulários
+                document.getElementById('personalInfoForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.savePersonalInfo();
+                });
+
+                document.getElementById('preferencesForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.savePreferences();
+                });
+
+                document.getElementById('passwordForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updatePassword();
+                });
+
+                // Upload de avatar
+                document.getElementById('avatarUpload').addEventListener('change', (e) => {
+                    this.handleAvatarUpload(e);
+                });
+
+                // Máscaras
+                this.setupMasks();
+            }
+
+            setupMasks() {
+                document.getElementById('cpf').addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                });
+
+                document.getElementById('phone').addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                    e.target.value = value;
+                });
+            }
+
+            async loadUserData() {
+                try {
+                    // Carregar dados do usuário autenticado
+                    const { data: { user }, error: userError } = await supabase.auth.getUser();
+                    if (userError) throw userError;
+                    
+                    this.user = user;
+
+                    // Carregar dados do restaurante
+                    const { data: restaurant, error: restaurantError } = await supabase
+                        .from('restaurants')
+                        .select('*')
+                        .eq('owner_id', user.id)
+                        .single();
+
+                    if (restaurantError) throw restaurantError;
+                    
+                    this.restaurant = restaurant;
+                    this.populateUserData();
+
+                } catch (error) {
+                    console.error('Erro ao carregar dados do usuário:', error);
+                    window.timePulseApp.showNotification('Erro ao carregar dados do perfil', 'danger');
+                }
+            }
+
+            populateUserData() {
+                if (!this.user || !this.restaurant) return;
+
+                // Header do perfil
+                const userName = this.restaurant.owner_name || this.user.email;
+                const userInitial = userName.charAt(0).toUpperCase();
+                
+                document.getElementById('profileAvatar').textContent = userInitial;
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userEmail').textContent = this.user.email;
+                document.getElementById('memberSince').textContent = 
+                    new Date(this.user.created_at).toLocaleDateString('pt-BR');
+
+                // Formulário de informações pessoais
+                document.getElementById('fullName').value = this.restaurant.owner_name || '';
+                document.getElementById('cpf').value = this.restaurant.owner_cpf || '';
+                document.getElementById('phone').value = this.restaurant.owner_phone || '';
+                document.getElementById('email').value = this.user.email || '';
+
+                // Preferências (usar valores padrão se não existirem)
+                const preferences = this.restaurant.user_preferences || {};
+                document.getElementById('language').value = preferences.language || 'pt-BR';
+                document.getElementById('timezone').value = preferences.timezone || 'America/Sao_Paulo';
+                document.getElementById('emailNotifications').checked = preferences.emailNotifications !== false;
+                document.getElementById('soundNotifications').checked = preferences.soundNotifications !== false;
+            }
+
+            async savePersonalInfo() {
+                const data = {
+                    owner_name: document.getElementById('fullName').value,
+                    owner_phone: document.getElementById('phone').value
+                };
+
+                try {
+                    const { error } = await supabase
+                        .from('restaurants')
+                        .update(data)
+                        .eq('id', this.restaurant.id);
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Informações salvas com sucesso!', 'success');
+                    
+                    // Atualizar dados locais
+                    this.restaurant = { ...this.restaurant, ...data };
+                    this.populateUserData();
+
+                } catch (error) {
+                    console.error('Erro ao salvar informações:', error);
+                    window.timePulseApp.showNotification('Erro ao salvar informações', 'danger');
+                }
+            }
+
+            async savePreferences() {
+                const preferences = {
+                    language: document.getElementById('language').value,
+                    timezone: document.getElementById('timezone').value,
+                    emailNotifications: document.getElementById('emailNotifications').checked,
+                    soundNotifications: document.getElementById('soundNotifications').checked
+                };
+
+                try {
+                    const { error } = await supabase
+                        .from('restaurants')
+                        .update({ user_preferences: preferences })
+                        .eq('id', this.restaurant.id);
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Preferências salvas com sucesso!', 'success');
+
+                } catch (error) {
+                    console.error('Erro ao salvar preferências:', error);
+                    window.timePulseApp.showNotification('Erro ao salvar preferências', 'danger');
+                }
+            }
+
+            changePassword() {
+                window.showModal('passwordModal');
+            }
+
+            async updatePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    alert('As senhas não coincidem!');
+                    return;
+                }
+
+                if (newPassword.length < 8) {
+                    alert('A nova senha deve ter pelo menos 8 caracteres!');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase.auth.updateUser({
+                        password: newPassword
+                    });
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Senha alterada com sucesso!', 'success');
+                    window.closeModal();
+                    document.getElementById('passwordForm').reset();
+
+                } catch (error) {
+                    console.error('Erro ao alterar senha:', error);
+                    window.timePulseApp.showNotification('Erro ao alterar senha: ' + error.message, 'danger');
+                }
+            }
+
+            setup2FA() {
+                window.timePulseApp.showNotification('Autenticação de dois fatores em desenvolvimento', 'info');
+            }
+
+            manageSessions() {
+                window.timePulseApp.showNotification('Gerenciamento de sessões em desenvolvimento', 'info');
+            }
+
+            handleAvatarUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione apenas arquivos de imagem.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('profileAvatar').innerHTML = 
+                        `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                };
+                reader.readAsDataURL(file);
+
+                // TODO: Implementar upload real para storage
+                window.timePulseApp.showNotification('Upload de avatar em desenvolvimento', 'info');
+            }
+
+            async loadRecentActivity() {
+                // Simular atividades recentes
+                const activities = [
+                    {
+                        icon: 'fas fa-sign-in-alt',
+                        action: 'Login realizado',
+                        time: '2 horas atrás',
+                        color: 'success'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        action: 'Configurações atualizadas',
+                        time: '1 dia atrás',
+                        color: 'info'
+                    },
+                    {
+                        icon: 'fas fa-user-plus',
+                        action: 'Novo entregador cadastrado',
+                        time: '2 dias atrás',
+                        color: 'primary'
+                    },
+                    {
+                        icon: 'fas fa-chart-bar',
+                        action: 'Relatório mensal gerado',
+                        time: '3 dias atrás',
+                        color: 'warning'
+                    }
+                ];
+
+                const container = document.getElementById('recentActivity');
+                container.innerHTML = activities.map(activity => `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="${activity.icon}"></i>
+                        </div>
+                        <div class="activity-info">
+                            <strong>${activity.action}</strong>
+                            <div class="activity-time">${activity.time}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async loadUserStats() {
+                try {
+                    // Carregar estatísticas do usuário
+                    const { data: orders, error } = await supabase
+                        .from('orders')
+                        .select('*')
+                        .eq('restaurant_id', this.restaurant.id);
+
+                    if (error) throw error;
+
+                    const totalOrders = orders.length;
+                    const completedOrders = orders.filter(o => o.status === 'entregue');
+                    const totalRevenue = completedOrders.reduce((sum, order) => sum + parseFloat(order.total || 0), 0);
+                    
+                    const userTime = Math.floor((new Date() - new Date(this.user.created_at)) / (1000 * 60 * 60 * 24));
+                    const loginStreak = Math.floor(Math.random() * 30); // Placeholder
+
+                    document.getElementById('userTime').textContent = userTime + ' dias';
+                    document.getElementById('totalOrdersProcessed').textContent = totalOrders;
+                    document.getElementById('totalRevenue').textContent = window.timePulseApp.formatCurrency(totalRevenue);
+                    document.getElementById('loginStreak').textContent = loginStreak + ' dias';
+
+                } catch (error) {
+                    console.error('Erro ao carregar estatísticas:', error);
+                }
+            }
+
+            deleteAccount() {
+                if (!confirm('ATENÇÃO: Esta ação irá excluir permanentemente sua conta e todos os dados associados. Esta ação não pode ser desfeita. Deseja continuar?')) {
+                    return;
+                }
+
+                const confirmation = prompt('Digite "EXCLUIR CONTA" para confirmar a exclusão:');
+                if (confirmation !== 'EXCLUIR CONTA') {
+                    alert('Operação cancelada');
+                    return;
+                }
+
+                // TODO: Implementar exclusão de conta
+                window.timePulseApp.showNotification('Exclusão de conta em desenvolvimento', 'info');
+            }
+        }
+
+        // Inicializar página quando estiver pronta
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.timePulseApp && window.timePulseApp.currentRestaurant) {
+                    window.profilePage = new ProfilePage();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

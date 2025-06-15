@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TimePulse AI - Sistema de Gestão para Restaurantes - Login">
+    <meta name="keywords" content="restaurante, delivery, gestão, pedidos, login">
+    <meta name="author" content="TimePulse AI">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="TimePulse AI - Login">
+    <meta property="og:description" content="Sistema completo de gestão para restaurantes e delivery">
+    <meta property="og:type" content="website">
+    
+    <title>Login - TimePulse AI</title>
+    
+    <!-- CSS -->
+    <style>
+        /* ===== RESET E VARIÁVEIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --black: #000000;
+            --border-radius: 8px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        /* ===== ESTILOS GLOBAIS ===== */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* ===== CONTAINER PRINCIPAL ===== */
+        .login-container {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 40px 30px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="50" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="30" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo::before {
+            content: '⏱️';
+            margin-right: 10px;
+        }
+        
+        .tagline {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ===== FORMULÁRIO ===== */
+        .login-form {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background-color: var(--white);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: var(--gray-400);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-400);
+            font-size: 1.2rem;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.2s ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--gray-600);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 0.875rem;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+        
+        .forgot-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .forgot-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        /* ===== BOTÕES ===== */
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            margin-bottom: 16px;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgb(59 130 246 / 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: var(--white);
+            font-size: 0.875rem;
+            padding: 10px 16px;
+            margin-top: 8px;
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* ===== ALERTAS ===== */
+        .alert {
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: none;
+            position: relative;
+            animation: slideDown 0.3s ease;
+            line-height: 1.4;
+        }
+        
+        .alert-error {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .alert-success {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .alert-info {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .alert-warning {
+            background-color: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fed7aa;
+        }
+        
+        .resend-confirmation {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: var(--warning-color);
+            color: var(--white);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            border: none;
+            font-size: 0.875rem;
+        }
+        
+        .resend-confirmation:hover {
+            background: #d97706;
+        }
+        
+        .resend-confirmation:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .cooldown-timer {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-style: italic;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ===== MODAL DE RECUPERAÇÃO ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+        
+        .modal-subtitle {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-400);
+            padding: 5px;
+            border-radius: 4px;
+            transition: color 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            color: var(--gray-600);
+        }
+        
+        /* ===== LINK DE CADASTRO ===== */
+        .signup-link {
+            text-align: center;
+            padding: 20px 30px;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .signup-text {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        
+        .signup-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .signup-text a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+                margin: 0;
+            }
+            
+            .login-header {
+                padding: 30px 20px 20px;
+            }
+            
+            .login-form {
+                padding: 20px;
+            }
+            
+            .signup-link {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 1.75rem;
+            }
+        }
+        
+        /* ===== ANIMAÇÕES DE ENTRADA ===== */
+        .login-container {
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ===== ACESSIBILIDADE ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* ===== FOCUS INDICATORS ===== */
+        .btn:focus,
+        .form-input:focus,
+        .checkbox-group input:focus,
+        .forgot-link:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Container Principal -->
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <h1 class="logo">TimePulse AI</h1>
+            <p class="tagline">Sistema de Gestão para Restaurantes</p>
+        </div>
+        
+        <!-- Formulário de Login -->
+        <form class="login-form" id="loginForm" novalidate>
+            <!-- Container de Alertas -->
+            <div id="alertContainer"></div>
+            
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email" class="form-label">E-mail</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-input" 
+                    placeholder="seu@email.com"
+                    required
+                    autocomplete="email"
+                    aria-describedby="email-error"
+                >
+            </div>
+            
+            <!-- Senha -->
+            <div class="form-group">
+                <label for="password" class="form-label">Senha</label>
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="Digite sua senha"
+                        required
+                        autocomplete="current-password"
+                        aria-describedby="password-error"
+                    >
+                    <button 
+                        type="button" 
+                        class="password-toggle" 
+                        id="passwordToggle"
+                        aria-label="Mostrar/Ocultar senha"
+                    >
+                        👁️
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Lembrar e Esqueci -->
+            <div class="remember-forgot">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Lembrar de mim</label>
+                </div>
+                <a href="#" class="forgot-link" id="forgotPasswordLink">Esqueci a senha</a>
+            </div>
+            
+            <!-- Botão de Login -->
+            <button type="submit" class="btn btn-primary" id="loginButton">
+                <span id="loginText">Entrar</span>
+                <div class="loading-spinner" id="loginSpinner"></div>
+            </button>
+        </form>
+        
+        <!-- Link de Cadastro -->
+        <div class="signup-link">
+            <p class="signup-text">
+                Ainda não tem conta? 
+                <a href="cadastro_restaurante.html">Cadastre seu restaurante</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Modal de Recuperação de Senha -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Recuperar Senha</h2>
+                <p class="modal-subtitle">Digite seu e-mail para receber as instruções</p>
+            </div>
+            
+            <form id="forgotPasswordForm">
+                <div id="modalAlertContainer"></div>
+                
+                <div class="form-group">
+                    <label for="recoveryEmail" class="form-label">E-mail</label>
+                    <input 
+                        type="email" 
+                        id="recoveryEmail" 
+                        class="form-input" 
+                        placeholder="seu@email.com"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="recoveryButton">
+                    <span id="recoveryText">Enviar instruções</span>
+                    <div class="loading-spinner" id="recoverySpinner"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts: ORDEM IMPORTANTE! -->
+    <!-- 1. Carregar config.js primeiro -->
+    <script src="js/config.js"></script>
+    
+    <!-- 2. Aguardar config carregar e então carregar Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 3. Script principal -->
+    <script>
+        // ===== VARIÁVEIS GLOBAIS =====
+        let supabase = null;
+        let resendCooldown = 0;
+        let cooldownInterval;
+        
+        // ===== AGUARDAR CARREGAMENTO DAS DEPENDÊNCIAS =====
+        function waitForDependencies() {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 50; // 5 segundos máximo
+                
+                const checkDependencies = () => {
+                    attempts++;
+                    
+                    const configLoaded = typeof window.CONFIG !== 'undefined';
+                    const supabaseLoaded = typeof window.supabase !== 'undefined';
+                    
+                    console.log(`⏳ Tentativa ${attempts}/${maxAttempts} - CONFIG: ${configLoaded}, Supabase: ${supabaseLoaded}`);
+                    
+                    if (configLoaded && supabaseLoaded) {
+                        console.log('✅ Todas as dependências carregadas');
+                        resolve();
+                    } else if (attempts >= maxAttempts) {
+                        console.error('❌ Timeout aguardando dependências');
+                        reject(new Error('Timeout aguardando dependências'));
+                    } else {
+                        setTimeout(checkDependencies, 100);
+                    }
+                };
+                
+                checkDependencies();
+            });
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔑 Carregando página de login...');
+            
+            try {
+                // Aguardar todas as dependências
+                await waitForDependencies();
+                
+                // Inicializar Supabase
+                await initializeSupabase();
+                
+                // Configurar eventos
+                setupEventListeners();
+                
+                // Detectar parâmetros da URL
+                handleUrlParams();
+                
+                // Verificar se já está logado
+                await checkExistingSession();
+                
+                console.log('✅ Página de login carregada com sucesso');
+                
+            } catch (error) {
+                console.error('❌ Erro na inicialização:', error);
+                showAlert('Erro ao carregar a página. Recarregue e tente novamente.', 'error');
+            }
+        });
+        
+        // ===== INICIALIZAÇÃO DO SUPABASE =====
+        async function initializeSupabase() {
+            console.log('🔧 Inicializando Supabase...');
+            
+            if (!window.CONFIG) {
+                throw new Error('Arquivo de configuração (config.js) não foi carregado');
+            }
+            
+            if (!window.CONFIG.SUPABASE_URL || !window.CONFIG.SUPABASE_ANON_KEY) {
+                throw new Error('Credenciais do Supabase não encontradas no config.js');
+            }
+            
+            if (!window.supabase) {
+                throw new Error('Biblioteca Supabase não foi carregada');
+            }
+            
+            if (window.CONFIG.SUPABASE_URL.includes('YOUR_SUPABASE_URL') || 
+                window.CONFIG.SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')) {
+                throw new Error('Credenciais do Supabase ainda são placeholders. Configure as credenciais reais no arquivo config.js');
+            }
+            
+            supabase = window.supabase.createClient(
+                window.CONFIG.SUPABASE_URL,
+                window.CONFIG.SUPABASE_ANON_KEY
+            );
+            
+            if (!supabase) {
+                throw new Error('Falha ao criar cliente Supabase');
+            }
+            
+            console.log('✅ Supabase inicializado com sucesso');
+            console.log('📍 URL:', window.CONFIG.SUPABASE_URL);
+        }
+        
+        // ===== CONFIGURAR EVENTOS =====
+        function setupEventListeners() {
+            console.log('🔧 Configurando eventos...');
+            
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            const passwordToggle = document.getElementById('passwordToggle');
+            if (passwordToggle) {
+                passwordToggle.addEventListener('click', togglePassword);
+            }
+            
+            const forgotLink = document.getElementById('forgotPasswordLink');
+            if (forgotLink) {
+                forgotLink.addEventListener('click', openForgotPasswordModal);
+            }
+            
+            const modalClose = document.getElementById('modalClose');
+            if (modalClose) {
+                modalClose.addEventListener('click', closeForgotPasswordModal);
+            }
+            
+            const modal = document.getElementById('forgotPasswordModal');
+            if (modal) {
+                modal.addEventListener('click', handleModalClick);
+            }
+            
+            const forgotForm = document.getElementById('forgotPasswordForm');
+            if (forgotForm) {
+                forgotForm.addEventListener('submit', handleForgotPassword);
+            }
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeForgotPasswordModal();
+                }
+            });
+            
+            loadRememberedEmail();
+            
+            console.log('✅ Eventos configurados');
+        }
+        
+        // ===== HANDLE LOGIN =====
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            if (!supabase) {
+                showAlert('Sistema não inicializado. Recarregue a página.', 'error');
+                return;
+            }
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const email = formData.get('email').trim();
+            const password = formData.get('password');
+            const rememberMe = formData.get('rememberMe');
+            
+            if (!validateLoginForm(email, password)) {
+                return;
+            }
+            
+            setLoadingState(true, 'login');
+            hideAlert();
+            
+            try {
+                console.log('🔄 Tentando fazer login para:', email);
+                
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (!data.user.email_confirmed_at) {
+                    throw new Error('Email not confirmed');
+                }
+                
+                console.log('✅ Login realizado com sucesso para:', data.user.email);
+                
+                if (rememberMe) {
+                    localStorage.setItem('rememberedEmail', email);
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                }
+                
+                showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = window.CONFIG?.URLS?.dashboard || 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('❌ Erro no login:', error);
+                handleLoginError(error, email);
+            } finally {
+                setLoadingState(false, 'login');
+            }
+        }
+        
+        // ===== TRATAMENTO ESPECÍFICO DE ERROS =====
+        function handleLoginError(error, email) {
+            console.log('🔍 Tipo de erro:', error.message);
+            
+            let message = '';
+            let type = 'error';
+            
+            switch (error.message) {
+                case 'Email not confirmed':
+                    message = `
+                        <div style="text-align: left;">
+                            <strong>📧 E-mail não confirmado</strong><br>
+                            Você precisa confirmar seu e-mail antes de fazer login.<br><br>
+                            
+                            <strong>Não recebeu o e-mail?</strong><br>
+                            • Verifique sua caixa de spam/lixo eletrônico<br>
+                            • Verifique se o e-mail está correto: <strong>${email}</strong><br><br>
+                            
+                            <button class="resend-confirmation" onclick="resendEmailConfirmation('${email}')" id="resendBtn">
+                                📨 Reenviar E-mail de Confirmação
+                            </button>
+                            <span class="cooldown-timer" id="cooldownTimer"></span>
+                        </div>
+                    `;
+                    type = 'warning';
+                    break;
+                    
+                case 'Invalid login credentials':
+                    message = '🔐 E-mail ou senha incorretos. Verifique seus dados e tente novamente.';
+                    break;
+                    
+                case 'Too many requests':
+                    message = '⏱️ Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.';
+                    break;
+                    
+                case 'Email rate limit exceeded':
+                    message = '📧 Limite de tentativas de e-mail excedido. Aguarde alguns minutos.';
+                    break;
+                    
+                default:
+                    if (error.message.includes('network') || error.message.includes('fetch')) {
+                        message = '🌐 Erro de conexão. Verifique sua internet e tente novamente.';
+                    } else {
+                        message = '❌ Erro ao fazer login: ' + error.message;
+                    }
+                    break;
+            }
+            
+            showAlert(message, type);
+        }
+        
+        // ===== REENVIAR E-MAIL DE CONFIRMAÇÃO =====
+        window.resendEmailConfirmation = async function(email) {
+            if (!supabase) {
+                showAlert('Sistema não inicializado. Recarregue a página.', 'error');
+                return;
+            }
+            
+            if (resendCooldown > 0) {
+                return;
+            }
+            
+            const btn = document.getElementById('resendBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '📨 Enviando...';
+            }
+            
+            try {
+                console.log('📧 Reenviando e-mail de confirmação para:', email);
+                
+                const { error } = await supabase.auth.resend({
+                    type: 'signup',
+                    email: email,
+                    options: {
+                        emailRedirectTo: window.CONFIG?.REDIRECT_URLS?.emailConfirmation || 
+                                        `${window.location.origin}/email-confirmation.html`
+                    }
+                });
+                
+                if (error) {
+                    console.error('❌ Erro ao reenviar:', error);
+                    
+                    let errorMessage = 'Erro ao reenviar e-mail.';
+                    if (error.message.includes('rate limit')) {
+                        errorMessage = 'Muitas tentativas. Aguarde alguns minutos.';
+                        startCooldown(60);
+                    } else if (error.message.includes('not found')) {
+                        errorMessage = 'E-mail não encontrado. Verifique se você se cadastrou.';
+                    }
+                    
+                    showAlert(errorMessage, 'error');
+                } else {
+                    console.log('✅ E-mail de confirmação reenviado');
+                    showAlert('✅ E-mail de confirmação reenviado! Verifique sua caixa de entrada e spam.', 'success');
+                    startCooldown(30);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro inesperado ao reenviar:', error);
+                showAlert('Erro inesperado. Tente novamente.', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '📨 Reenviar E-mail de Confirmação';
+                }
+            }
+        };
+        
+        // ===== COOLDOWN PARA REENVIO =====
+        function startCooldown(seconds) {
+            resendCooldown = seconds;
+            const btn = document.getElementById('resendBtn');
+            const timer = document.getElementById('cooldownTimer');
+            
+            if (btn) btn.disabled = true;
+            
+            cooldownInterval = setInterval(() => {
+                resendCooldown--;
+                
+                if (timer) {
+                    if (resendCooldown > 0) {
+                        timer.textContent = `Aguarde ${resendCooldown}s para reenviar novamente`;
+                    } else {
+                        timer.textContent = '';
+                        if (btn) {
+                            btn.disabled = false;
+                        }
+                        clearInterval(cooldownInterval);
+                    }
+                }
+            }, 1000);
+        }
+        
+        // ===== HANDLE ESQUECI A SENHA =====
+        async function handleForgotPassword(event) {
+            event.preventDefault();
+            
+            if (!supabase) {
+                showModalAlert('Sistema não inicializado. Recarregue a página.', 'error');
+                return;
+            }
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const email = formData.get('recoveryEmail') || document.getElementById('recoveryEmail').value.trim();
+            
+            if (!validateEmail(email)) {
+                showModalAlert('Por favor, digite um e-mail válido.', 'error');
+                return;
+            }
+            
+            setLoadingState(true, 'recovery');
+            hideModalAlert();
+            
+            try {
+                console.log('🔄 Enviando recuperação de senha para:', email);
+                
+                const redirectUrl = window.CONFIG?.REDIRECT_URLS?.passwordReset || 
+                                   `${window.location.origin}/reset-password.html`;
+                
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                console.log('✅ E-mail de recuperação enviado para:', email);
+                
+                showModalAlert('E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'success');
+                
+                setTimeout(() => {
+                    closeForgotPasswordModal();
+                }, 3000);
+                
+            } catch (error) {
+                console.error('❌ Erro na recuperação:', error);
+                
+                let errorMessage = 'Erro ao enviar e-mail de recuperação.';
+                
+                if (error.message.includes('not found')) {
+                    errorMessage = 'E-mail não encontrado. Verifique se está cadastrado.';
+                } else if (error.message.includes('Too many requests')) {
+                    errorMessage = 'Muitas solicitações. Aguarde alguns minutos.';
+                } else if (error.message.includes('Network')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                }
+                
+                showModalAlert(errorMessage, 'error');
+                
+            } finally {
+                setLoadingState(false, 'recovery');
+            }
+        }
+        
+        // ===== VERIFICAR SESSÃO EXISTENTE =====
+        async function checkExistingSession() {
+            if (!supabase) return;
+            
+            try {
+                console.log('🔍 Verificando sessão existente...');
+                
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.warn('⚠️ Erro ao verificar sessão:', error);
+                    return;
+                }
+                
+                if (session && session.user && session.user.email_confirmed_at) {
+                    console.log('✅ Usuário já autenticado:', session.user.email);
+                    console.log('🔄 Redirecionando para dashboard...');
+                    
+                    showAlert('Redirecionando para o dashboard...', 'info');
+                    
+                    setTimeout(() => {
+                        window.location.href = window.CONFIG?.URLS?.dashboard || 'dashboard.html';
+                    }, 1000);
+                } else {
+                    console.log('ℹ️ Nenhuma sessão ativa encontrada');
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Erro ao verificar usuário logado:', error);
+            }
+        }
+        
+        // ===== VALIDAÇÕES =====
+        function validateLoginForm(email, password) {
+            if (!validateEmail(email)) {
+                showAlert('Por favor, digite um e-mail válido.', 'error');
+                document.getElementById('email').focus();
+                return false;
+            }
+            
+            if (!password || password.length < 1) {
+                showAlert('Por favor, digite sua senha.', 'error');
+                document.getElementById('password').focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // ===== UTILITÁRIOS DE UI =====
+        function setLoadingState(isLoading, type) {
+            if (type === 'login') {
+                const button = document.getElementById('loginButton');
+                const text = document.getElementById('loginText');
+                const spinner = document.getElementById('loginSpinner');
+                
+                if (button && text && spinner) {
+                    button.disabled = isLoading;
+                    text.style.display = isLoading ? 'none' : 'inline';
+                    spinner.style.display = isLoading ? 'inline' : 'none';
+                }
+                
+            } else if (type === 'recovery') {
+                const button = document.getElementById('recoveryButton');
+                const text = document.getElementById('recoveryText');
+                const spinner = document.getElementById('recoverySpinner');
+                
+                if (button && text && spinner) {
+                    button.disabled = isLoading;
+                    text.style.display = isLoading ? 'none' : 'inline';
+                    spinner.style.display = isLoading ? 'inline' : 'none';
+                }
+            }
+        }
+        
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            if (!container) return;
+            
+            const alertClass = `alert-${type}`;
+            
+            container.innerHTML = `
+                <div class="alert ${alertClass}" style="display: block;">
+                    ${message}
+                </div>
+            `;
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    hideAlert();
+                }, 5000);
+            }
+            
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function hideAlert() {
+            const container = document.getElementById('alertContainer');
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
+        
+        function showModalAlert(message, type = 'error') {
+            const container = document.getElementById('modalAlertContainer');
+            if (!container) return;
+            
+            const alertClass = `alert-${type}`;
+            
+            container.innerHTML = `
+                <div class="alert ${alertClass}" style="display: block;">
+                    ${message}
+                </div>
+            `;
+        }
+        
+        function hideModalAlert() {
+            const container = document.getElementById('modalAlertContainer');
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
+        
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleButton = document.getElementById('passwordToggle');
+            
+            if (passwordInput && toggleButton) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleButton.textContent = '🙈';
+                    toggleButton.setAttribute('aria-label', 'Ocultar senha');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleButton.textContent = '👁️';
+                    toggleButton.setAttribute('aria-label', 'Mostrar senha');
+                }
+            }
+        }
+        
+        // ===== MODAL =====
+        function openForgotPasswordModal(event) {
+            event.preventDefault();
+            
+            const modal = document.getElementById('forgotPasswordModal');
+            const emailInput = document.getElementById('recoveryEmail');
+            const currentEmail = document.getElementById('email').value.trim();
+            
+            if (modal && emailInput) {
+                if (validateEmail(currentEmail)) {
+                    emailInput.value = currentEmail;
+                }
+                
+                modal.classList.add('active');
+                emailInput.focus();
+                
+                hideModalAlert();
+            }
+        }
+        
+        function closeForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            const form = document.getElementById('forgotPasswordForm');
+            
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            
+            if (form) {
+                form.reset();
+            }
+            
+            hideModalAlert();
+            setLoadingState(false, 'recovery');
+        }
+        
+        function handleModalClick(event) {
+            if (event.target === event.currentTarget) {
+                closeForgotPasswordModal();
+            }
+        }
+        
+        // ===== CARREGAR EMAIL LEMBRADO =====
+        function loadRememberedEmail() {
+            try {
+                const rememberedEmail = localStorage.getItem('rememberedEmail');
+                if (rememberedEmail) {
+                    const emailInput = document.getElementById('email');
+                    const rememberCheckbox = document.getElementById('rememberMe');
+                    
+                    if (emailInput) {
+                        emailInput.value = rememberedEmail;
+                    }
+                    
+                    if (rememberCheckbox) {
+                        rememberCheckbox.checked = true;
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Erro ao carregar email lembrado:', error);
+            }
+        }
+        
+        // ===== DETECTAR PARÂMETROS DA URL =====
+        function handleUrlParams() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                
+                if (urlParams.get('registered') === 'true') {
+                    showAlert(
+                        '🎉 Cadastro realizado com sucesso!<br>Verifique seu e-mail para confirmar a conta antes de fazer login.',
+                        'info'
+                    );
+                }
+                
+                if (urlParams.get('confirmed') === 'true') {
+                    showAlert('✅ E-mail confirmado com sucesso! Agora você pode fazer login.', 'success');
+                }
+                
+                if (urlParams.get('reset') === 'success') {
+                    showAlert('✅ Senha alterada com sucesso! Faça login com sua nova senha.', 'success');
+                }
+                
+                if (urlParams.get('error') === 'token_expired') {
+                    showAlert('⏰ Link expirado. Solicite um novo link de recuperação.', 'error');
+                }
+                
+                if (urlParams.get('logout') === 'true') {
+                    showAlert('👋 Logout realizado com sucesso.', 'info');
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Erro ao processar parâmetros da URL:', error);
+            }
+        }
+        
+        console.log('✅ Script de login melhorado carregado');
+        
+    </script>
+</body>
+</html>

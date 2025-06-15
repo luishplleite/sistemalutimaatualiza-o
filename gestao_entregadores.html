@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Entregadores - TimePulse AI</title>
+    <meta name="description" content="Gerencie entregadores, motoboys e equipe de entrega">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link active">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-motorcycle"></i>
+                            Gestão de Entregadores
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openDelivererModal()">
+                            <i class="fas fa-plus"></i>
+                            Novo Entregador
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Estatísticas dos Entregadores -->
+                <div class="deliverers-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon active">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="activeDeliverers">0</h3>
+                            <p>Ativos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon busy">
+                            <i class="fas fa-motorcycle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="busyDeliverers">0</h3>
+                            <p>Ocupados</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon own">
+                            <i class="fas fa-id-badge"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="ownDeliverers">0</h3>
+                            <p>Próprios</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon third-party">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="thirdPartyDeliverers">0</h3>
+                            <p>Terceirizados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtros -->
+                <div class="filters-section">
+                    <div class="filters-content">
+                        <div class="filter-group">
+                            <label class="filter-label">Status</label>
+                            <select id="statusFilter" class="filter-input">
+                                <option value="">Todos</option>
+                                <option value="active">Ativo</option>
+                                <option value="busy">Ocupado</option>
+                                <option value="inactive">Inativo</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Tipo</label>
+                            <select id="typeFilter" class="filter-input">
+                                <option value="">Todos</option>
+                                <option value="own">Próprio</option>
+                                <option value="third-party">Terceirizado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Buscar</label>
+                            <input type="text" id="searchFilter" class="filter-input" placeholder="Nome ou telefone">
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="applyFilters()">
+                            <i class="fas fa-search"></i>
+                            Filtrar
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="clearFilters()">
+                            <i class="fas fa-times"></i>
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lista de Entregadores -->
+                <div class="deliverers-section">
+                    <div class="section-header">
+                        <h2>
+                            <i class="fas fa-list"></i>
+                            Lista de Entregadores
+                        </h2>
+                        <button class="btn btn-secondary" onclick="refreshDeliverers()">
+                            <i class="fas fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                    </div>
+                    
+                    <div class="deliverers-grid" id="deliverersGrid">
+                        <!-- Entregadores serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal de Entregador -->
+    <div class="modal" id="delivererModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="delivererModalTitle">Novo Entregador</h3>
+                <button class="modal-close" onclick="closeDelivererModal()">&times;</button>
+            </div>
+            
+            <form id="delivererForm">
+                <div class="modal-body">
+                    <!-- Dados Pessoais -->
+                    <div class="form-section">
+                        <h4>Dados Pessoais</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nome Completo</label>
+                                <input type="text" id="delivererName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">CPF</label>
+                                <input type="text" id="delivererCPF" class="form-input" placeholder="000.000.000-00">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Telefone</label>
+                                <input type="tel" id="delivererPhone" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" id="delivererEmail" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dados da Moto -->
+                    <div class="form-section">
+                        <h4>Dados do Veículo</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Placa da Moto</label>
+                                <input type="text" id="motorcyclePlate" class="form-input" placeholder="ABC-1234">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Modelo da Moto</label>
+                                <input type="text" id="motorcycleModel" class="form-input" placeholder="Honda Biz 125">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configurações de Trabalho -->
+                    <div class="form-section">
+                        <h4>Configurações de Trabalho</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Entregador</label>
+                                <select id="delivererType" class="form-input" required onchange="togglePaymentFields()">
+                                    <option value="">Selecione</option>
+                                    <option value="own">Próprio</option>
+                                    <option value="third-party">Terceirizado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select id="delivererStatus" class="form-input" required>
+                                    <option value="active">Ativo</option>
+                                    <option value="inactive">Inativo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="salaryGroup" style="display: none;">
+                                <label class="form-label">Salário Fixo (R$)</label>
+                                <input type="number" id="fixedSalary" class="form-input" step="0.01" placeholder="0.00">
+                            </div>
+                            
+                            <div class="form-group" id="commissionGroup" style="display: none;">
+                                <label class="form-label">Comissão por Entrega (%)</label>
+                                <input type="number" id="commissionRate" class="form-input" step="0.01" placeholder="10.00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeDelivererModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Entregador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts - SISTEMA CENTRALIZADO SEM DECLARAÇÕES DUPLICADAS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR DE ENTREGADORES =====
+        class DeliverersManager {
+            constructor() {
+                this.deliverers = [];
+                this.filteredDeliverers = [];
+                this.editingDelivererId = null;
+                this.updateInterval = null;
+            }
+            
+            async init() {
+                try {
+                    console.log('🏍️ Inicializando gestão de entregadores...');
+                    
+                    await this.loadDeliverers();
+                    this.setupEventListeners();
+                    this.setupAutoRefresh();
+                    
+                    console.log('✅ Gestão de entregadores inicializada');
+                    
+                } catch (error) {
+                    console.error('❌ Erro na inicialização:', error);
+                    this.showNotification('Erro ao carregar entregadores', 'error');
+                }
+            }
+            
+            async loadDeliverers() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    const { data: deliverers, error } = await window.TimePulseAI.supabase()
+                        .from('deliverers')
+                        .select('*')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    this.deliverers = deliverers || [];
+                    this.filteredDeliverers = [...this.deliverers];
+                    this.updateStats();
+                    this.renderDeliverers();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar entregadores:', error);
+                    this.showNotification('Erro ao carregar entregadores', 'error');
+                }
+            }
+            
+            updateStats() {
+                const stats = {
+                    active: 0,
+                    busy: 0,
+                    own: 0,
+                    thirdParty: 0
+                };
+                
+                this.deliverers.forEach(deliverer => {
+                    if (deliverer.status === 'active') stats.active++;
+                    if (deliverer.status === 'busy') stats.busy++;
+                    if (deliverer.type === 'own') stats.own++;
+                    if (deliverer.type === 'third-party') stats.thirdParty++;
+                });
+                
+                document.getElementById('activeDeliverers').textContent = stats.active;
+                document.getElementById('busyDeliverers').textContent = stats.busy;
+                document.getElementById('ownDeliverers').textContent = stats.own;
+                document.getElementById('thirdPartyDeliverers').textContent = stats.thirdParty;
+            }
+            
+            renderDeliverers() {
+                const container = document.getElementById('deliverersGrid');
+                
+                if (this.filteredDeliverers.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-motorcycle fa-3x"></i>
+                            <h3>Nenhum entregador encontrado</h3>
+                            <p>Cadastre entregadores para começar as entregas</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = this.filteredDeliverers.map(deliverer => this.createDelivererCard(deliverer)).join('');
+            }
+            
+            createDelivererCard(deliverer) {
+                const statusClass = this.getStatusClass(deliverer.status);
+                const statusLabel = this.getStatusLabel(deliverer.status);
+                const typeLabel = deliverer.type === 'own' ? 'Próprio' : 'Terceirizado';
+                
+                return `
+                    <div class="deliverer-card ${statusClass}" data-deliverer-id="${deliverer.id}">
+                        <div class="deliverer-header">
+                            <div class="deliverer-avatar">
+                                ${deliverer.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="deliverer-info">
+                                <h4>${deliverer.name}</h4>
+                                <p>${deliverer.phone}</p>
+                            </div>
+                            <div class="deliverer-status ${statusClass}">
+                                ${statusLabel}
+                            </div>
+                        </div>
+                        
+                        <div class="deliverer-details">
+                            <div class="detail-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Tipo: ${typeLabel}</span>
+                            </div>
+                            
+                            ${deliverer.motorcycle_plate ? `
+                                <div class="detail-item">
+                                    <i class="fas fa-motorcycle"></i>
+                                    <span>${deliverer.motorcycle_plate}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${deliverer.motorcycle_model ? `
+                                <div class="detail-item">
+                                    <i class="fas fa-cog"></i>
+                                    <span>${deliverer.motorcycle_model}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${deliverer.type === 'third-party' && deliverer.balance ? `
+                                <div class="detail-item">
+                                    <i class="fas fa-wallet"></i>
+                                    <span>Saldo: R$ ${parseFloat(deliverer.balance).toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${deliverer.type === 'own' && deliverer.salary ? `
+                                <div class="detail-item">
+                                    <i class="fas fa-money-bill"></i>
+                                    <span>Salário: R$ ${parseFloat(deliverer.salary).toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="deliverer-actions">
+                            <button class="btn btn-info btn-sm" onclick="deliverersManager.viewDeliverer('${deliverer.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="deliverersManager.editDeliverer('${deliverer.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-${deliverer.status === 'active' ? 'secondary' : 'success'} btn-sm" 
+                                    onclick="deliverersManager.toggleStatus('${deliverer.id}')">
+                                <i class="fas fa-${deliverer.status === 'active' ? 'pause' : 'play'}"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deliverersManager.deleteDeliverer('${deliverer.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            async saveDeliverer(delivererData) {
+                try {
+                    if (this.editingDelivererId) {
+                        // Atualizar entregador existente
+                        const { error } = await window.TimePulseAI.supabase()
+                            .from('deliverers')
+                            .update(delivererData)
+                            .eq('id', this.editingDelivererId);
+                        
+                        if (error) throw error;
+                        
+                        this.showNotification('Entregador atualizado com sucesso!', 'success');
+                    } else {
+                        // Criar novo entregador
+                        delivererData.restaurant_id = window.TimePulseAI.currentRestaurant().id;
+                        
+                        const { error } = await window.TimePulseAI.supabase()
+                            .from('deliverers')
+                            .insert(delivererData);
+                        
+                        if (error) throw error;
+                        
+                        this.showNotification('Entregador cadastrado com sucesso!', 'success');
+                    }
+                    
+                    await this.loadDeliverers();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao salvar entregador:', error);
+                    this.showNotification('Erro ao salvar entregador', 'error');
+                }
+            }
+            
+            async toggleStatus(delivererId) {
+                try {
+                    const deliverer = this.deliverers.find(d => d.id === delivererId);
+                    if (!deliverer) return;
+                    
+                    const newStatus = deliverer.status === 'active' ? 'inactive' : 'active';
+                    
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('deliverers')
+                        .update({ status: newStatus })
+                        .eq('id', delivererId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadDeliverers();
+                    this.showNotification(`Entregador ${newStatus === 'active' ? 'ativado' : 'desativado'}!`, 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao alterar status:', error);
+                    this.showNotification('Erro ao alterar status', 'error');
+                }
+            }
+            
+            async deleteDeliverer(delivererId) {
+                if (!confirm('Tem certeza que deseja excluir este entregador?')) return;
+                
+                try {
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('deliverers')
+                        .delete()
+                        .eq('id', delivererId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadDeliverers();
+                    this.showNotification('Entregador excluído com sucesso!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao excluir entregador:', error);
+                    this.showNotification('Erro ao excluir entregador', 'error');
+                }
+            }
+            
+            editDeliverer(delivererId) {
+                const deliverer = this.deliverers.find(d => d.id === delivererId);
+                if (!deliverer) return;
+                
+                this.editingDelivererId = delivererId;
+                
+                // Preencher formulário
+                document.getElementById('delivererModalTitle').textContent = 'Editar Entregador';
+                document.getElementById('delivererName').value = deliverer.name;
+                document.getElementById('delivererCPF').value = deliverer.cpf || '';
+                document.getElementById('delivererPhone').value = deliverer.phone;
+                document.getElementById('delivererEmail').value = deliverer.email || '';
+                document.getElementById('motorcyclePlate').value = deliverer.motorcycle_plate || '';
+                document.getElementById('motorcycleModel').value = deliverer.motorcycle_model || '';
+                document.getElementById('delivererType').value = deliverer.type;
+                document.getElementById('delivererStatus').value = deliverer.status;
+                document.getElementById('fixedSalary').value = deliverer.salary || '';
+                document.getElementById('commissionRate').value = deliverer.commission || '';
+                
+                // Mostrar campos relevantes
+                this.togglePaymentFields();
+                
+                // Abrir modal
+                document.getElementById('delivererModal').classList.add('show');
+            }
+            
+            togglePaymentFields() {
+                const type = document.getElementById('delivererType').value;
+                const salaryGroup = document.getElementById('salaryGroup');
+                const commissionGroup = document.getElementById('commissionGroup');
+                
+                if (type === 'own') {
+                    salaryGroup.style.display = 'block';
+                    commissionGroup.style.display = 'none';
+                } else if (type === 'third-party') {
+                    salaryGroup.style.display = 'none';
+                    commissionGroup.style.display = 'block';
+                } else {
+                    salaryGroup.style.display = 'none';
+                    commissionGroup.style.display = 'none';
+                }
+            }
+            
+            setupEventListeners() {
+                // Formulário de entregador
+                document.getElementById('delivererForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleDelivererSubmit();
+                });
+                
+                // Tipo de entregador
+                document.getElementById('delivererType').addEventListener('change', () => {
+                    this.togglePaymentFields();
+                });
+                
+                // Filtros
+                document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('typeFilter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('searchFilter').addEventListener('input', () => this.applyFilters());
+            }
+            
+            handleDelivererSubmit() {
+                const delivererData = {
+                    name: document.getElementById('delivererName').value,
+                    cpf: document.getElementById('delivererCPF').value || null,
+                    phone: document.getElementById('delivererPhone').value,
+                    email: document.getElementById('delivererEmail').value || null,
+                    motorcycle_plate: document.getElementById('motorcyclePlate').value || null,
+                    motorcycle_model: document.getElementById('motorcycleModel').value || null,
+                    type: document.getElementById('delivererType').value,
+                    status: document.getElementById('delivererStatus').value
+                };
+                
+                if (delivererData.type === 'own') {
+                    delivererData.salary = parseFloat(document.getElementById('fixedSalary').value) || null;
+                    delivererData.commission = null;
+                } else if (delivererData.type === 'third-party') {
+                    delivererData.salary = null;
+                    delivererData.commission = parseFloat(document.getElementById('commissionRate').value) || null;
+                }
+                
+                this.saveDeliverer(delivererData);
+                this.closeDelivererModal();
+            }
+            
+            applyFilters() {
+                const status = document.getElementById('statusFilter').value;
+                const type = document.getElementById('typeFilter').value;
+                const search = document.getElementById('searchFilter').value.toLowerCase();
+                
+                this.filteredDeliverers = this.deliverers.filter(deliverer => {
+                    // Filtro de status
+                    if (status && deliverer.status !== status) return false;
+                    
+                    // Filtro de tipo
+                    if (type && deliverer.type !== type) return false;
+                    
+                    // Filtro de busca
+                    if (search) {
+                        const searchInName = deliverer.name.toLowerCase().includes(search);
+                        const searchInPhone = deliverer.phone.includes(search);
+                        if (!searchInName && !searchInPhone) return false;
+                    }
+                    
+                    return true;
+                });
+                
+                this.renderDeliverers();
+            }
+            
+            clearFilters() {
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('typeFilter').value = '';
+                document.getElementById('searchFilter').value = '';
+                this.filteredDeliverers = [...this.deliverers];
+                this.renderDeliverers();
+            }
+            
+            closeDelivererModal() {
+                document.getElementById('delivererModal').classList.remove('show');
+                document.getElementById('delivererForm').reset();
+                this.editingDelivererId = null;
+                document.getElementById('delivererModalTitle').textContent = 'Novo Entregador';
+                this.togglePaymentFields();
+            }
+            
+            setupAutoRefresh() {
+                this.updateInterval = setInterval(() => {
+                    this.loadDeliverers();
+                }, 60000); // Atualizar a cada minuto
+            }
+            
+            // Utilitários
+            getStatusClass(status) {
+                const statusMap = {
+                    'active': 'active',
+                    'busy': 'busy',
+                    'inactive': 'inactive'
+                };
+                
+                return statusMap[status] || 'inactive';
+            }
+            
+            getStatusLabel(status) {
+                const statusMap = {
+                    'active': 'Ativo',
+                    'busy': 'Ocupado',
+                    'inactive': 'Inativo'
+                };
+                
+                return statusMap[status] || 'Inativo';
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 100);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => document.body.removeChild(notification), 300);
+                }, 3000);
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let deliverersManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Aguardar inicialização do sistema principal
+            await new Promise(resolve => {
+                const checkInit = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
+                        resolve();
+                    } else {
+                        setTimeout(checkInit, 100);
+                    }
+                };
+                checkInit();
+            });
+            
+            deliverersManager = new DeliverersManager();
+            await deliverersManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function openDelivererModal() {
+            document.getElementById('delivererModal').classList.add('show');
+        }
+        
+        function closeDelivererModal() {
+            if (deliverersManager) {
+                deliverersManager.closeDelivererModal();
+            }
+        }
+        
+        function togglePaymentFields() {
+            if (deliverersManager) {
+                deliverersManager.togglePaymentFields();
+            }
+        }
+        
+        function applyFilters() {
+            if (deliverersManager) {
+                deliverersManager.applyFilters();
+            }
+        }
+        
+        function clearFilters() {
+            if (deliverersManager) {
+                deliverersManager.clearFilters();
+            }
+        }
+        
+        function refreshDeliverers() {
+            if (deliverersManager) {
+                deliverersManager.loadDeliverers();
+            }
+        }
+        
+        // Fechar modal ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+    </script>
+    
+    <style>
+        /* Estilos específicos da gestão de entregadores */
+        .deliverers-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-icon.active { background: #28a745; }
+        .stat-icon.busy { background: #ffc107; }
+        .stat-icon.own { background: #007bff; }
+        .stat-icon.third-party { background: #6f42c1; }
+        
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 0 0.25rem 0;
+            color: #333;
+        }
+        
+        .stat-content p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filters-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .filter-input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .deliverers-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .deliverers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .deliverer-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .deliverer-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .deliverer-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .deliverer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        .deliverer-info {
+            flex: 1;
+        }
+        
+        .deliverer-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: #333;
+        }
+        
+        .deliverer-info p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .deliverer-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .deliverer-status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .deliverer-status.busy {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .deliverer-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .deliverer-details {
+            margin-bottom: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item i {
+            width: 16px;
+            color: var(--primary-color);
+        }
+        
+        .deliverer-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-color-dark);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .notification-content i {
+            font-size: 1.25rem;
+        }
+        
+        .notification.success .notification-content i {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-content i {
+            color: #dc3545;
+        }
+        
+        .notification.info .notification-content i {
+            color: #17a2b8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .deliverers-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filters-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .deliverers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

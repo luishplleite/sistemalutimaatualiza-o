@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio - TimePulse AI</title>
+    <meta name="description" content="Gerencie seu cardápio, produtos e categorias">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .menu-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .menu-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .categories-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .category-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover,
+        .category-card.active {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        .products-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .product-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            height: 200px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 3rem;
+        }
+        
+        .product-content {
+            padding: 1rem;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .product-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .product-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .product-status.available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .product-status.unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-color-dark);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link active">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-utensils"></i>
+                            Gestão de Cardápio
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-success" onclick="openCategoryModal()">
+                            <i class="fas fa-plus"></i>
+                            Nova Categoria
+                        </button>
+                        <button class="btn btn-primary" onclick="openProductModal()">
+                            <i class="fas fa-plus"></i>
+                            Novo Produto
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Header do Cardápio -->
+                <div class="menu-header">
+                    <h2>
+                        <i class="fas fa-book-open"></i>
+                        Seu Cardápio
+                    </h2>
+                    <p>Gerencie categorias, produtos e mantenha seu cardápio sempre atualizado</p>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="menu-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="categoriesCount">0</div>
+                        <div class="stat-label">Categorias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="productsCount">0</div>
+                        <div class="stat-label">Produtos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="availableCount">0</div>
+                        <div class="stat-label">Disponíveis</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgPrice">R$ 0,00</div>
+                        <div class="stat-label">Preço Médio</div>
+                    </div>
+                </div>
+                
+                <!-- Categorias -->
+                <div class="categories-section">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-tags"></i>
+                            Categorias
+                        </h3>
+                        <button class="btn btn-success btn-sm" onclick="openCategoryModal()">
+                            <i class="fas fa-plus"></i>
+                            Adicionar
+                        </button>
+                    </div>
+                    
+                    <div id="categoriesList" class="categories-list">
+                        <!-- Categorias serão carregadas aqui -->
+                    </div>
+                </div>
+                
+                <!-- Produtos -->
+                <div class="products-section">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-hamburger"></i>
+                            Produtos
+                            <span id="selectedCategoryName"></span>
+                        </h3>
+                        <div class="section-actions">
+                            <select id="categoryFilter" class="form-control" style="width: auto; display: inline-block; margin-right: 1rem;">
+                                <option value="">Todas as categorias</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" onclick="openProductModal()">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Produto
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="productsList" class="products-grid">
+                        <!-- Produtos serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal de Categoria -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Nova Categoria</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label class="form-label">Nome da Categoria</label>
+                    <input type="text" id="categoryName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="categoryDescription" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="categoryActive" checked>
+                        <label for="categoryActive">Categoria ativa</label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de Produto -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Novo Produto</h3>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            
+            <form id="productForm">
+                <div class="form-group">
+                    <label class="form-label">Nome do Produto</label>
+                    <input type="text" id="productName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="productDescription" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select id="productCategory" class="form-control" required>
+                        <option value="">Selecione uma categoria</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Preço (R$)</label>
+                    <input type="number" id="productPrice" class="form-control" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tempo de Preparo (minutos)</label>
+                    <input type="number" id="productPrepTime" class="form-control" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="productAvailable" checked>
+                        <label for="productAvailable">Produto disponível</label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR DO CARDÁPIO =====
+        class MenuManager {
+            constructor() {
+                this.categories = [];
+                this.products = [];
+                this.selectedCategory = null;
+                this.editingCategory = null;
+                this.editingProduct = null;
+            }
+            
+            async init() {
+                try {
+                    console.log('🍽️ Inicializando gestão de cardápio...');
+                    
+                    await this.loadCategories();
+                    await this.loadProducts();
+                    this.setupEventListeners();
+                    this.updateStats();
+                    
+                    console.log('✅ Gestão de cardápio inicializada');
+                    
+                } catch (error) {
+                    console.error('❌ Erro na inicialização:', error);
+                }
+            }
+            
+            async loadCategories() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    const { data: categories, error } = await window.TimePulseAI.supabase()
+                        .from('menu_categories')
+                        .select('*')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .order('name');
+                    
+                    if (error) throw error;
+                    
+                    this.categories = categories || [];
+                    this.renderCategories();
+                    this.updateCategorySelects();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar categorias:', error);
+                }
+            }
+            
+            async loadProducts() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    const { data: products, error } = await window.TimePulseAI.supabase()
+                        .from('menu_products')
+                        .select(`
+                            *,
+                            menu_categories (name)
+                        `)
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .order('name');
+                    
+                    if (error) throw error;
+                    
+                    this.products = products || [];
+                    this.renderProducts();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar produtos:', error);
+                }
+            }
+            
+            renderCategories() {
+                const container = document.getElementById('categoriesList');
+                
+                if (this.categories.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-tags"></i>
+                            <p>Nenhuma categoria cadastrada</p>
+                            <button class="btn btn-primary" onclick="openCategoryModal()">
+                                Criar primeira categoria
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = this.categories.map(category => `
+                    <div class="category-card ${this.selectedCategory?.id === category.id ? 'active' : ''}" 
+                         onclick="menuManager.selectCategory('${category.id}')">
+                        <div class="category-header">
+                            <h4>${category.name}</h4>
+                            <div class="category-actions">
+                                <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); menuManager.editCategory('${category.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); menuManager.deleteCategory('${category.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        ${category.description ? `<p class="category-description">${category.description}</p>` : ''}
+                        <div class="category-stats">
+                            <span class="badge">${this.getProductCountByCategory(category.id)} produtos</span>
+                            <span class="badge ${category.is_active ? 'bg-success' : 'bg-secondary'}">
+                                ${category.is_active ? 'Ativa' : 'Inativa'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            renderProducts() {
+                const container = document.getElementById('productsList');
+                let filteredProducts = this.products;
+                
+                // Filtrar por categoria se selecionada
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                if (categoryFilter) {
+                    filteredProducts = this.products.filter(product => product.category_id === categoryFilter);
+                }
+                
+                if (filteredProducts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-hamburger"></i>
+                            <p>Nenhum produto encontrado</p>
+                            <button class="btn btn-primary" onclick="openProductModal()">
+                                Adicionar produto
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = filteredProducts.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="product-content">
+                            <h5 class="product-name">${product.name}</h5>
+                            ${product.description ? `<p class="product-description">${product.description}</p>` : ''}
+                            <div class="product-price">R$ ${parseFloat(product.price).toFixed(2)}</div>
+                            <div class="product-meta">
+                                <span class="product-status ${product.is_available ? 'available' : 'unavailable'}">
+                                    ${product.is_available ? 'Disponível' : 'Indisponível'}
+                                </span>
+                                ${product.prep_time ? `<small class="text-muted">Preparo: ${product.prep_time}min</small>` : ''}
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn btn-sm btn-warning" onclick="menuManager.editProduct('${product.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm ${product.is_available ? 'btn-secondary' : 'btn-success'}" 
+                                        onclick="menuManager.toggleProductAvailability('${product.id}')">
+                                    <i class="fas fa-${product.is_available ? 'eye-slash' : 'eye'}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="menuManager.deleteProduct('${product.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            updateCategorySelects() {
+                const selects = ['productCategory', 'categoryFilter'];
+                
+                selects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    if (!select) return;
+                    
+                    const currentValue = select.value;
+                    const isFilter = selectId === 'categoryFilter';
+                    
+                    select.innerHTML = isFilter ? '<option value="">Todas as categorias</option>' : '<option value="">Selecione uma categoria</option>';
+                    
+                    this.categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                    
+                    if (currentValue) {
+                        select.value = currentValue;
+                    }
+                });
+            }
+            
+            updateStats() {
+                document.getElementById('categoriesCount').textContent = this.categories.length;
+                document.getElementById('productsCount').textContent = this.products.length;
+                document.getElementById('availableCount').textContent = this.products.filter(p => p.is_available).length;
+                
+                // Calcular preço médio
+                const avgPrice = this.products.length > 0 
+                    ? this.products.reduce((sum, p) => sum + parseFloat(p.price), 0) / this.products.length 
+                    : 0;
+                document.getElementById('avgPrice').textContent = `R$ ${avgPrice.toFixed(2)}`;
+            }
+            
+            getProductCountByCategory(categoryId) {
+                return this.products.filter(product => product.category_id === categoryId).length;
+            }
+            
+            selectCategory(categoryId) {
+                this.selectedCategory = this.categories.find(c => c.id === categoryId);
+                document.getElementById('categoryFilter').value = categoryId;
+                this.renderCategories();
+                this.renderProducts();
+            }
+            
+            async saveCategory(categoryData) {
+                try {
+                    if (this.editingCategory) {
+                        // Atualizar categoria existente
+                        const { error } = await window.TimePulseAI.supabase()
+                            .from('menu_categories')
+                            .update(categoryData)
+                            .eq('id', this.editingCategory.id);
+                        
+                        if (error) throw error;
+                    } else {
+                        // Criar nova categoria
+                        categoryData.restaurant_id = window.TimePulseAI.currentRestaurant().id;
+                        
+                        const { error } = await window.TimePulseAI.supabase()
+                            .from('menu_categories')
+                            .insert(categoryData);
+                        
+                        if (error) throw error;
+                    }
+                    
+                    await this.loadCategories();
+                    this.showAlert('Categoria salva com sucesso!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao salvar categoria:', error);
+                    this.showAlert('Erro ao salvar categoria', 'error');
+                }
+            }
+            
+            async saveProduct(productData) {
+                try {
+                    if (this.editingProduct) {
+                        // Atualizar produto existente
+                        const { error } = await window.TimePulseAI.supabase()
+                            .from('menu_products')
+                            .update(productData)
+                            .eq('id', this.editingProduct.id);
+                        
+                        if (error) throw error;
+                    } else {
+                        // Criar novo produto
+                        productData.restaurant_id = window.TimePulseAI.currentRestaurant().id;
+                        
+                        const { error } = await window.TimePulseAI.supabase()
+                            .from('menu_products')
+                            .insert(productData);
+                        
+                        if (error) throw error;
+                    }
+                    
+                    await this.loadProducts();
+                    this.updateStats();
+                    this.showAlert('Produto salvo com sucesso!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao salvar produto:', error);
+                    this.showAlert('Erro ao salvar produto', 'error');
+                }
+            }
+            
+            editCategory(categoryId) {
+                this.editingCategory = this.categories.find(c => c.id === categoryId);
+                if (!this.editingCategory) return;
+                
+                document.getElementById('categoryModalTitle').textContent = 'Editar Categoria';
+                document.getElementById('categoryName').value = this.editingCategory.name;
+                document.getElementById('categoryDescription').value = this.editingCategory.description || '';
+                document.getElementById('categoryActive').checked = this.editingCategory.is_active;
+                
+                document.getElementById('categoryModal').classList.add('show');
+            }
+            
+            editProduct(productId) {
+                this.editingProduct = this.products.find(p => p.id === productId);
+                if (!this.editingProduct) return;
+                
+                document.getElementById('productModalTitle').textContent = 'Editar Produto';
+                document.getElementById('productName').value = this.editingProduct.name;
+                document.getElementById('productDescription').value = this.editingProduct.description || '';
+                document.getElementById('productCategory').value = this.editingProduct.category_id;
+                document.getElementById('productPrice').value = this.editingProduct.price;
+                document.getElementById('productPrepTime').value = this.editingProduct.prep_time || '';
+                document.getElementById('productAvailable').checked = this.editingProduct.is_available;
+                
+                document.getElementById('productModal').classList.add('show');
+            }
+            
+            async deleteCategory(categoryId) {
+                if (!confirm('Tem certeza que deseja excluir esta categoria?')) return;
+                
+                try {
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('menu_categories')
+                        .delete()
+                        .eq('id', categoryId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadCategories();
+                    await this.loadProducts();
+                    this.updateStats();
+                    this.showAlert('Categoria excluída com sucesso!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao excluir categoria:', error);
+                    this.showAlert('Erro ao excluir categoria', 'error');
+                }
+            }
+            
+            async deleteProduct(productId) {
+                if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+                
+                try {
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('menu_products')
+                        .delete()
+                        .eq('id', productId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadProducts();
+                    this.updateStats();
+                    this.showAlert('Produto excluído com sucesso!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao excluir produto:', error);
+                    this.showAlert('Erro ao excluir produto', 'error');
+                }
+            }
+            
+            async toggleProductAvailability(productId) {
+                try {
+                    const product = this.products.find(p => p.id === productId);
+                    if (!product) return;
+                    
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('menu_products')
+                        .update({ is_available: !product.is_available })
+                        .eq('id', productId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadProducts();
+                    this.updateStats();
+                    this.showAlert(`Produto ${!product.is_available ? 'ativado' : 'desativado'} com sucesso!`, 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao alterar disponibilidade:', error);
+                    this.showAlert('Erro ao alterar disponibilidade', 'error');
+                }
+            }
+            
+            setupEventListeners() {
+                // Formulário de categoria
+                document.getElementById('categoryForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('categoryName').value,
+                        description: document.getElementById('categoryDescription').value || null,
+                        is_active: document.getElementById('categoryActive').checked
+                    };
+                    
+                    this.saveCategory(formData);
+                    this.closeCategoryModal();
+                });
+                
+                // Formulário de produto
+                document.getElementById('productForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('productName').value,
+                        description: document.getElementById('productDescription').value || null,
+                        category_id: document.getElementById('productCategory').value,
+                        price: parseFloat(document.getElementById('productPrice').value),
+                        prep_time: parseInt(document.getElementById('productPrepTime').value) || null,
+                        is_available: document.getElementById('productAvailable').checked
+                    };
+                    
+                    this.saveProduct(formData);
+                    this.closeProductModal();
+                });
+                
+                // Filtro de categoria
+                document.getElementById('categoryFilter').addEventListener('change', () => {
+                    this.renderProducts();
+                });
+            }
+            
+            closeCategoryModal() {
+                document.getElementById('categoryModal').classList.remove('show');
+                document.getElementById('categoryForm').reset();
+                this.editingCategory = null;
+                document.getElementById('categoryModalTitle').textContent = 'Nova Categoria';
+            }
+            
+            closeProductModal() {
+                document.getElementById('productModal').classList.remove('show');
+                document.getElementById('productForm').reset();
+                this.editingProduct = null;
+                document.getElementById('productModalTitle').textContent = 'Novo Produto';
+            }
+            
+            showAlert(message, type = 'info') {
+                console.log(`${type.toUpperCase()}: ${message}`);
+                // Implementar sistema de alertas visual
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let menuManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Aguardar inicialização do sistema principal
+            await new Promise(resolve => {
+                const checkInit = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
+                        resolve();
+                    } else {
+                        setTimeout(checkInit, 100);
+                    }
+                };
+                checkInit();
+            });
+            
+            menuManager = new MenuManager();
+            await menuManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function openCategoryModal() {
+            document.getElementById('categoryModal').classList.add('show');
+        }
+        
+        function closeCategoryModal() {
+            menuManager.closeCategoryModal();
+        }
+        
+        function openProductModal() {
+            document.getElementById('productModal').classList.add('show');
+        }
+        
+        function closeProductModal() {
+            menuManager.closeProductModal();
+        }
+        
+        // Fechar modais ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

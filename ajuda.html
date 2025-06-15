@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Ajuda - TimePulse AI</title>
+    <meta name="description" content="Central de ajuda e suporte do TimePulse AI">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .help-header {
+            background: linear-gradient(135deg, #6610f2, #007bff);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .help-search {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+        
+        .help-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .help-category {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .help-category:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .category-icon.getting-started {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        
+        .category-icon.orders {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+        }
+        
+        .category-icon.payments {
+            background: linear-gradient(135deg, #28a745, #ffc107);
+        }
+        
+        .category-icon.settings {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+        
+        .category-icon.integrations {
+            background: linear-gradient(135deg, #fd7e14, #dc3545);
+        }
+        
+        .category-icon.troubleshooting {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+        }
+        
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .category-description {
+            color: #6c757d;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        
+        .category-articles {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .help-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .help-content.active {
+            display: block;
+        }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .back-button {
+            background: #f8f9fa;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .back-button:hover {
+            background: #e9ecef;
+        }
+        
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .articles-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .article-item {
+            padding: 1.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .article-item:hover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.05);
+        }
+        
+        .article-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .article-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .article-content {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .article-content.active {
+            display: block;
+        }
+        
+        .article-text {
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .article-text h3 {
+            color: #333;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .article-text p {
+            margin-bottom: 1rem;
+        }
+        
+        .article-text ul, .article-text ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+        
+        .article-text li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .article-text code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .article-text .highlight {
+            background: #fff3cd;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        
+        .contact-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .contact-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .contact-description {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+        
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .contact-method {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .contact-method:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .contact-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .contact-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-info {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .help-categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link active">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-question-circle"></i>
+                            Central de Ajuda
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Vista Principal -->
+                <div id="helpMain">
+                    <!-- Header da Ajuda -->
+                    <div class="help-header">
+                        <h2>
+                            <i class="fas fa-hands-helping"></i>
+                            Como podemos ajudar você?
+                        </h2>
+                        <p>Encontre respostas rápidas para suas dúvidas sobre o TimePulse AI</p>
+                    </div>
+                    
+                    <!-- Busca -->
+                    <div class="help-search">
+                        <h3>Buscar na Central de Ajuda</h3>
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="helpSearch" class="search-input" 
+                                   placeholder="Digite sua dúvida aqui...">
+                        </div>
+                    </div>
+                    
+                    <!-- Categorias de Ajuda -->
+                    <div class="help-categories">
+                        <div class="help-category" onclick="showCategory('getting-started')">
+                            <div class="category-icon getting-started">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h3 class="category-title">Primeiros Passos</h3>
+                            <p class="category-description">
+                                Configure sua conta e aprenda o básico do sistema
+                            </p>
+                            <div class="category-articles">5 artigos</div>
+                        </div>
+                        
+                        <div class="help-category" onclick="showCategory('orders')">
+                            <div class="category-icon orders">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <h3 class="category-title">Gestão de Pedidos</h3>
+                            <p class="category-description">
+                                Aprenda a gerenciar pedidos e acompanhar entregas
+                            </p>
+                            <div class="category-articles">8 artigos</div>
+                        </div>
+                        
+                        <div class="help-category" onclick="showCategory('payments')">
+                            <div class="category-icon payments">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h3 class="category-title">Pagamentos & Financeiro</h3>
+                            <p class="category-description">
+                                Configure formas de pagamento e controle financeiro
+                            </p>
+                            <div class="category-articles">6 artigos</div>
+                        </div>
+                        
+                        <div class="help-category" onclick="showCategory('settings')">
+                            <div class="category-icon settings">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <h3 class="category-title">Configurações</h3>
+                            <p class="category-description">
+                                Personalize seu restaurante e configure preferências
+                            </p>
+                            <div class="category-articles">7 artigos</div>
+                        </div>
+                        
+                        <div class="help-category" onclick="showCategory('integrations')">
+                            <div class="category-icon integrations">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <h3 class="category-title">Integrações</h3>
+                            <p class="category-description">
+                                Conecte com WhatsApp, Asaas e outras ferramentas
+                            </p>
+                            <div class="category-articles">4 artigos</div>
+                        </div>
+                        
+                        <div class="help-category" onclick="showCategory('troubleshooting')">
+                            <div class="category-icon troubleshooting">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3 class="category-title">Solução de Problemas</h3>
+                            <p class="category-description">
+                                Resolva problemas técnicos e dúvidas frequentes
+                            </p>
+                            <div class="category-articles">9 artigos</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vista de Categoria -->
+                <div id="helpCategory" class="help-content">
+                    <div class="content-header">
+                        <button class="back-button" onclick="showMain()">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h2 class="content-title" id="categoryTitle">Categoria</h2>
+                    </div>
+                    
+                    <div class="articles-grid" id="articlesGrid">
+                        <!-- Artigos serão carregados aqui -->
+                    </div>
+                    
+                    <div class="article-content" id="articleContent">
+                        <!-- Conteúdo do artigo será carregado aqui -->
+                    </div>
+                </div>
+                
+                <!-- Seção de Contato -->
+                <div class="contact-section">
+                    <h2 class="contact-title">Não encontrou o que procurava?</h2>
+                    <p class="contact-description">
+                        Nossa equipe de suporte está sempre disponível para ajudar você
+                    </p>
+                    
+                    <div class="contact-methods">
+                        <a href="mailto:suporte@timepulse.ai" class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-label">Email</div>
+                            <div class="contact-info">suporte@timepulse.ai</div>
+                        </a>
+                        
+                        <a href="https://wa.me/5511999999999" class="contact-method" target="_blank">
+                            <div class="contact-icon">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div class="contact-label">WhatsApp</div>
+                            <div class="contact-info">(11) 99999-9999</div>
+                        </a>
+                        
+                        <div class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-label">Horário</div>
+                            <div class="contact-info">Seg-Sex: 9h às 18h</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== DADOS DA CENTRAL DE AJUDA =====
+        const helpData = {
+            'getting-started': {
+                title: 'Primeiros Passos',
+                articles: [
+                    {
+                        id: 'setup-account',
+                        title: 'Como configurar sua conta',
+                        description: 'Guia passo a passo para configurar sua conta no TimePulse AI',
+                        content: `
+                            <h3>Configurando sua conta</h3>
+                            <p>Bem-vindo ao TimePulse AI! Este guia irá ajudá-lo a configurar sua conta corretamente.</p>
+                            
+                            <h3>1. Primeiro Acesso</h3>
+                            <p>Após fazer o cadastro, você receberá um email de confirmação. <span class="highlight">Clique no link do email</span> para ativar sua conta.</p>
+                            
+                            <h3>2. Dados do Restaurante</h3>
+                            <ul>
+                                <li>Preencha o nome do seu restaurante</li>
+                                <li>Adicione o endereço completo</li>
+                                <li>Configure horários de funcionamento</li>
+                                <li>Defina taxa de entrega e tempo estimado</li>
+                            </ul>
+                            
+                            <h3>3. Configurações Iniciais</h3>
+                            <p>Acesse <code>Configurações > Restaurante</code> para personalizar:</p>
+                            <ul>
+                                <li>Logo do estabelecimento</li>
+                                <li>Cores do painel</li>
+                                <li>Formas de pagamento aceitas</li>
+                                <li>Configurações de notificação</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        id: 'first-order',
+                        title: 'Criando seu primeiro pedido',
+                        description: 'Aprenda a criar e gerenciar pedidos no sistema',
+                        content: `
+                            <h3>Criando um Pedido</h3>
+                            <p>Siga estes passos para criar seu primeiro pedido:</p>
+                            
+                            <h3>1. Acessar Gestão de Pedidos</h3>
+                            <p>No menu lateral, clique em <code>Pedidos</code> e depois em <code>Novo Pedido</code>.</p>
+                            
+                            <h3>2. Dados do Cliente</h3>
+                            <ul>
+                                <li>Nome completo do cliente</li>
+                                <li>Telefone para contato</li>
+                                <li>Endereço de entrega completo</li>
+                            </ul>
+                            
+                            <h3>3. Itens do Pedido</h3>
+                            <p>Adicione produtos do seu cardápio:</p>
+                            <ul>
+                                <li>Selecione os produtos</li>
+                                <li>Defina quantidades</li>
+                                <li>Adicione observações se necessário</li>
+                            </ul>
+                            
+                            <h3>4. Finalização</h3>
+                            <p>Configure forma de pagamento, taxa de entrega e confirme o pedido.</p>
+                        `
+                    }
+                ]
+            },
+            'orders': {
+                title: 'Gestão de Pedidos',
+                articles: [
+                    {
+                        id: 'order-status',
+                        title: 'Status de Pedidos',
+                        description: 'Entenda os diferentes status e como gerenciá-los',
+                        content: `
+                            <h3>Status de Pedidos</h3>
+                            <p>O TimePulse AI possui um fluxo completo de status para pedidos:</p>
+                            
+                            <h3>1. Pendente</h3>
+                            <p>Pedido recebido, aguardando confirmação do restaurante.</p>
+                            
+                            <h3>2. Confirmado</h3>
+                            <p>Pedido confirmado pelo restaurante, aguardando preparo.</p>
+                            
+                            <h3>3. Preparando</h3>
+                            <p>Pedido está sendo preparado na cozinha.</p>
+                            
+                            <h3>4. Pronto</h3>
+                            <p>Pedido pronto para entrega.</p>
+                            
+                            <h3>5. Saiu para Entrega</h3>
+                            <p>Pedido foi retirado pelo entregador.</p>
+                            
+                            <h3>6. Entregue</h3>
+                            <p>Pedido foi entregue ao cliente.</p>
+                            
+                            <h3>Alterando Status</h3>
+                            <p>Você pode alterar o status clicando no botão de status de cada pedido.</p>
+                        `
+                    }
+                ]
+            },
+            'payments': {
+                title: 'Pagamentos & Financeiro',
+                articles: [
+                    {
+                        id: 'payment-methods',
+                        title: 'Configurar Formas de Pagamento',
+                        description: 'Configure as formas de pagamento aceitas pelo seu restaurante',
+                        content: `
+                            <h3>Formas de Pagamento</h3>
+                            <p>Configure as formas de pagamento em <code>Configurações > Pagamentos</code>:</p>
+                            
+                            <h3>Dinheiro</h3>
+                            <ul>
+                                <li>Ative/desative pagamento em dinheiro</li>
+                                <li>Configure se precisa de troco</li>
+                            </ul>
+                            
+                            <h3>Cartão na Entrega</h3>
+                            <ul>
+                                <li>Cartão de débito</li>
+                                <li>Cartão de crédito</li>
+                                <li>Configure taxa adicional se necessário</li>
+                            </ul>
+                            
+                            <h3>PIX</h3>
+                            <ul>
+                                <li>Configure sua chave PIX</li>
+                                <li>QR Code automático</li>
+                            </ul>
+                            
+                            <h3>Pagamento Online</h3>
+                            <p>Integre com <span class="highlight">Asaas</span> para pagamentos online automáticos.</p>
+                        `
+                    }
+                ]
+            },
+            'settings': {
+                title: 'Configurações',
+                articles: [
+                    {
+                        id: 'restaurant-settings',
+                        title: 'Configurações do Restaurante',
+                        description: 'Personalize as configurações do seu estabelecimento',
+                        content: `
+                            <h3>Configurações Básicas</h3>
+                            <p>Em <code>Configurações > Restaurante</code> você pode:</p>
+                            
+                            <h3>Informações Básicas</h3>
+                            <ul>
+                                <li>Nome do restaurante</li>
+                                <li>Endereço completo</li>
+                                <li>Telefone de contato</li>
+                                <li>Email comercial</li>
+                            </ul>
+                            
+                            <h3>Horário de Funcionamento</h3>
+                            <ul>
+                                <li>Configure horários para cada dia da semana</li>
+                                <li>Defina intervalos (como almoço)</li>
+                                <li>Configure feriados e fechamentos</li>
+                            </ul>
+                            
+                            <h3>Entrega</h3>
+                            <ul>
+                                <li>Taxa de entrega padrão</li>
+                                <li>Tempo estimado de entrega</li>
+                                <li>Valor mínimo para entrega</li>
+                                <li>Raio de entrega</li>
+                            </ul>
+                        `
+                    }
+                ]
+            },
+            'integrations': {
+                title: 'Integrações',
+                articles: [
+                    {
+                        id: 'whatsapp-integration',
+                        title: 'Integração com WhatsApp',
+                        description: 'Configure notificações automáticas via WhatsApp',
+                        content: `
+                            <h3>WhatsApp Business API</h3>
+                            <p>Mantenha seus clientes informados automaticamente:</p>
+                            
+                            <h3>Configuração</h3>
+                            <ol>
+                                <li>Acesse <code>Configurações > Integrações</code></li>
+                                <li>Clique em "Configurar WhatsApp"</li>
+                                <li>Insira seu token da API</li>
+                                <li>Teste a conexão</li>
+                            </ol>
+                            
+                            <h3>Mensagens Automáticas</h3>
+                            <ul>
+                                <li><strong>Pedido Confirmado:</strong> Cliente recebe confirmação</li>
+                                <li><strong>Saiu para Entrega:</strong> Notificação de envio</li>
+                                <li><strong>Entregue:</strong> Confirmação de entrega</li>
+                            </ul>
+                            
+                            <h3>Personalização</h3>
+                            <p>Você pode personalizar as mensagens em <code>Configurações > Mensagens</code>.</p>
+                        `
+                    }
+                ]
+            },
+            'troubleshooting': {
+                title: 'Solução de Problemas',
+                articles: [
+                    {
+                        id: 'login-problems',
+                        title: 'Problemas de Login',
+                        description: 'Resolva problemas de acesso à sua conta',
+                        content: `
+                            <h3>Não Consigo Fazer Login</h3>
+                            <p>Siga estes passos para resolver problemas de acesso:</p>
+                            
+                            <h3>1. Verificar Email</h3>
+                            <ul>
+                                <li>Confirme se o email está correto</li>
+                                <li>Verifique se confirmou o email de cadastro</li>
+                                <li>Procure na caixa de spam</li>
+                            </ul>
+                            
+                            <h3>2. Resetar Senha</h3>
+                            <ol>
+                                <li>Clique em "Esqueci minha senha"</li>
+                                <li>Digite seu email</li>
+                                <li>Verifique sua caixa de entrada</li>
+                                <li>Clique no link do email</li>
+                                <li>Crie uma nova senha</li>
+                            </ol>
+                            
+                            <h3>3. Limpar Cache</h3>
+                            <p>Se ainda tiver problemas:</p>
+                            <ul>
+                                <li>Limpe o cache do navegador</li>
+                                <li>Tente em uma aba anônima</li>
+                                <li>Desative extensões do navegador</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        id: 'performance-issues',
+                        title: 'Problemas de Performance',
+                        description: 'Sistema lento ou com travamentos',
+                        content: `
+                            <h3>Sistema Lento</h3>
+                            <p>Para melhorar a performance do sistema:</p>
+                            
+                            <h3>1. Conexão com Internet</h3>
+                            <ul>
+                                <li>Verifique sua conexão</li>
+                                <li>Teste em outro dispositivo</li>
+                                <li>Reinicie seu roteador</li>
+                            </ul>
+                            
+                            <h3>2. Navegador</h3>
+                            <ul>
+                                <li>Use Chrome, Firefox ou Safari atualizados</li>
+                                <li>Feche abas desnecessárias</li>
+                                <li>Limpe cache e cookies</li>
+                            </ul>
+                            
+                            <h3>3. Dispositivo</h3>
+                            <ul>
+                                <li>Feche outros programas</li>
+                                <li>Verifique espaço em disco</li>
+                                <li>Reinicie o dispositivo</li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        };
+        
+        // ===== GERENCIADOR DA CENTRAL DE AJUDA =====
+        class HelpManager {
+            constructor() {
+                this.currentCategory = null;
+                this.currentArticle = null;
+            }
+            
+            init() {
+                console.log('❓ Inicializando central de ajuda...');
+                this.setupEventListeners();
+                console.log('✅ Central de ajuda inicializada');
+            }
+            
+            setupEventListeners() {
+                // Busca
+                document.getElementById('helpSearch').addEventListener('input', (e) => {
+                    this.performSearch(e.target.value);
+                });
+            }
+            
+            showCategory(categoryId) {
+                this.currentCategory = categoryId;
+                const category = helpData[categoryId];
+                
+                if (!category) return;
+                
+                document.getElementById('categoryTitle').textContent = category.title;
+                document.getElementById('helpMain').style.display = 'none';
+                document.getElementById('helpCategory').classList.add('active');
+                
+                this.renderArticles(category.articles);
+            }
+            
+            renderArticles(articles) {
+                const grid = document.getElementById('articlesGrid');
+                
+                grid.innerHTML = articles.map((article, index) => `
+                    <div class="article-item" onclick="helpManager.showArticle(${index})">
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-description">${article.description}</div>
+                    </div>
+                `).join('');
+                
+                // Esconder conteúdo do artigo
+                document.getElementById('articleContent').classList.remove('active');
+            }
+            
+            showArticle(articleIndex) {
+                const category = helpData[this.currentCategory];
+                const article = category.articles[articleIndex];
+                
+                if (!article) return;
+                
+                document.getElementById('articleContent').innerHTML = `
+                    <h2>${article.title}</h2>
+                    <div class="article-text">${article.content}</div>
+                `;
+                
+                document.getElementById('articleContent').classList.add('active');
+                
+                // Scroll para o artigo
+                document.getElementById('articleContent').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+            
+            showMain() {
+                document.getElementById('helpCategory').classList.remove('active');
+                document.getElementById('helpMain').style.display = 'block';
+                this.currentCategory = null;
+                this.currentArticle = null;
+            }
+            
+            performSearch(query) {
+                if (!query || query.length < 3) return;
+                
+                console.log('🔍 Buscando:', query);
+                
+                // Implementar busca nos artigos
+                const results = this.searchArticles(query.toLowerCase());
+                
+                if (results.length > 0) {
+                    this.showSearchResults(results);
+                }
+            }
+            
+            searchArticles(query) {
+                const results = [];
+                
+                for (const [categoryId, category] of Object.entries(helpData)) {
+                    category.articles.forEach((article, index) => {
+                        const score = this.calculateRelevance(article, query);
+                        if (score > 0) {
+                            results.push({
+                                categoryId,
+                                categoryTitle: category.title,
+                                articleIndex: index,
+                                article,
+                                score
+                            });
+                        }
+                    });
+                }
+                
+                return results.sort((a, b) => b.score - a.score);
+            }
+            
+            calculateRelevance(article, query) {
+                let score = 0;
+                
+                if (article.title.toLowerCase().includes(query)) score += 10;
+                if (article.description.toLowerCase().includes(query)) score += 5;
+                if (article.content.toLowerCase().includes(query)) score += 2;
+                
+                return score;
+            }
+            
+            showSearchResults(results) {
+                // Implementar exibição de resultados de busca
+                console.log('📊 Resultados encontrados:', results.length);
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let helpManager;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            helpManager = new HelpManager();
+            helpManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function showCategory(categoryId) {
+            if (helpManager) {
+                helpManager.showCategory(categoryId);
+            }
+        }
+        
+        function showMain() {
+            if (helpManager) {
+                helpManager.showMain();
+            }
+        }
+    </script>
+</body>
+</html>

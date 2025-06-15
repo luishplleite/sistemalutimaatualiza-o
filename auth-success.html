@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sucesso - TimePulse AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 1rem;
+            text-align: center;
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            animation: bounceIn 0.8s ease-out;
+            position: relative;
+        }
+        
+        .success-icon::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 3px solid rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .success-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message {
+            color: #666;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .success-details {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin: 0.75rem 0;
+            font-size: 1rem;
+        }
+        
+        .detail-item i {
+            color: #4CAF50;
+            margin-right: 1rem;
+            width: 20px;
+        }
+        
+        .countdown {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .action-buttons {
+            margin-top: 2rem;
+        }
+        
+        .tips {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .tips h4 {
+            color: #1976d2;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tips h4 i {
+            margin-right: 0.5rem;
+        }
+        
+        .tip-item {
+            margin: 0.5rem 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        /* Confetes animados */
+        .confetti {
+            position: fixed;
+            top: -10px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            animation: confetti-fall 3s linear infinite;
+        }
+        
+        .confetti:nth-child(odd) {
+            background: #ff9800;
+            animation-delay: -0.5s;
+        }
+        
+        .confetti:nth-child(even) {
+            background: #2196f3;
+            animation-delay: -1s;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        
+        <h1 class="success-title" id="successTitle">Sucesso!</h1>
+        
+        <p class="success-message" id="successMessage">
+            Operação realizada com sucesso.
+        </p>
+        
+        <div class="success-details" id="successDetails">
+            <!-- Detalhes serão inseridos aqui -->
+        </div>
+        
+        <div class="countdown" id="countdown" style="display: none;">
+            Redirecionando em <span id="countdownValue">5</span> segundos...
+        </div>
+        
+        <div class="action-buttons">
+            <a href="login.html" class="btn btn-primary" id="primaryAction">
+                <i class="fas fa-sign-in-alt"></i> Fazer Login
+            </a>
+            
+            <a href="index.html" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Página Inicial
+            </a>
+        </div>
+        
+        <div class="tips" id="tipsContainer" style="display: none;">
+            <h4>
+                <i class="fas fa-lightbulb"></i>
+                Próximos Passos
+            </h4>
+            <div id="tipsContent">
+                <!-- Dicas serão inseridas aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetes animados -->
+    <div class="confetti" style="left: 10%;"></div>
+    <div class="confetti" style="left: 20%;"></div>
+    <div class="confetti" style="left: 30%;"></div>
+    <div class="confetti" style="left: 40%;"></div>
+    <div class="confetti" style="left: 60%;"></div>
+    <div class="confetti" style="left: 70%;"></div>
+    <div class="confetti" style="left: 80%;"></div>
+    <div class="confetti" style="left: 90%;"></div>
+
+    <script>
+        // Configurações para diferentes tipos de sucesso
+        const successTypes = {
+            'email-confirmed': {
+                title: 'E-mail Confirmado!',
+                message: 'Sua conta foi ativada com sucesso. Agora você pode fazer login e começar a usar o TimePulse AI.',
+                details: [
+                    { icon: 'fa-check-circle', text: 'E-mail verificado e confirmado' },
+                    { icon: 'fa-user-check', text: 'Conta ativada com sucesso' },
+                    { icon: 'fa-unlock', text: 'Acesso liberado ao sistema' }
+                ],
+                primaryAction: {
+                    text: 'Fazer Login Agora',
+                    icon: 'fa-sign-in-alt',
+                    url: 'login.html?confirmed=true'
+                },
+                tips: [
+                    'Use suas credenciais de cadastro para fazer login',
+                    'Complete o perfil do seu restaurante nas configurações',
+                    'Explore todas as funcionalidades do dashboard'
+                ],
+                autoRedirect: true,
+                redirectDelay: 5
+            },
+            
+            'password-reset': {
+                title: 'Senha Redefinida!',
+                message: 'Sua senha foi alterada com sucesso. Use sua nova senha para fazer login.',
+                details: [
+                    { icon: 'fa-key', text: 'Nova senha definida' },
+                    { icon: 'fa-shield-alt', text: 'Conta protegida com segurança' },
+                    { icon: 'fa-sign-in-alt', text: 'Pronto para fazer login' }
+                ],
+                primaryAction: {
+                    text: 'Fazer Login',
+                    icon: 'fa-sign-in-alt',
+                    url: 'login.html?reset=success'
+                },
+                tips: [
+                    'Guarde sua nova senha em local seguro',
+                    'Use sempre senhas fortes e únicas',
+                    'Ative a autenticação de dois fatores quando disponível'
+                ],
+                autoRedirect: true,
+                redirectDelay: 5
+            },
+            
+            'registration': {
+                title: 'Cadastro Realizado!',
+                message: 'Seu restaurante foi cadastrado com sucesso. Verifique seu e-mail para ativar a conta.',
+                details: [
+                    { icon: 'fa-store', text: 'Restaurante cadastrado no sistema' },
+                    { icon: 'fa-envelope', text: 'E-mail de confirmação enviado' },
+                    { icon: 'fa-clock', text: 'Aguardando verificação do e-mail' }
+                ],
+                primaryAction: {
+                    text: 'Verificar E-mail',
+                    icon: 'fa-envelope-open',
+                    url: 'email-confirmation.html'
+                },
+                tips: [
+                    'Verifique sua caixa de entrada e spam',
+                    'Clique no link de confirmação no e-mail',
+                    'Entre em contato se não receber o e-mail em 10 minutos'
+                ],
+                autoRedirect: false
+            }
+        };
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Página de sucesso carregada');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type') || 'email-confirmed';
+            
+            setupSuccessPage(type);
+        });
+        
+        function setupSuccessPage(type) {
+            const config = successTypes[type] || successTypes['email-confirmed'];
+            
+            // Atualizar título e mensagem
+            document.getElementById('successTitle').textContent = config.title;
+            document.getElementById('successMessage').textContent = config.message;
+            
+            // Atualizar detalhes
+            const detailsContainer = document.getElementById('successDetails');
+            detailsContainer.innerHTML = config.details.map(detail => `
+                <div class="detail-item">
+                    <i class="fas ${detail.icon}"></i>
+                    <span>${detail.text}</span>
+                </div>
+            `).join('');
+            
+            // Atualizar botão principal
+            const primaryBtn = document.getElementById('primaryAction');
+            primaryBtn.href = config.primaryAction.url;
+            primaryBtn.innerHTML = `
+                <i class="fas ${config.primaryAction.icon}"></i> 
+                ${config.primaryAction.text}
+            `;
+            
+            // Mostrar dicas se disponíveis
+            if (config.tips && config.tips.length > 0) {
+                const tipsContainer = document.getElementById('tipsContainer');
+                const tipsContent = document.getElementById('tipsContent');
+                
+                tipsContent.innerHTML = config.tips.map(tip => `
+                    <div class="tip-item">• ${tip}</div>
+                `).join('');
+                
+                tipsContainer.style.display = 'block';
+            }
+            
+            // Configurar auto-redirecionamento
+            if (config.autoRedirect) {
+                startCountdown(config.redirectDelay, config.primaryAction.url);
+            }
+        }
+        
+        function startCountdown(seconds, redirectUrl) {
+            const countdownContainer = document.getElementById('countdown');
+            const countdownValue = document.getElementById('countdownValue');
+            
+            countdownContainer.style.display = 'block';
+            
+            let timeLeft = seconds;
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                countdownValue.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    window.location.href = redirectUrl;
+                }
+            }, 1000);
+            
+            // Permitir cancelar o redirecionamento clicando na página
+            document.addEventListener('click', function() {
+                clearInterval(interval);
+                countdownContainer.style.display = 'none';
+            }, { once: true });
+        }
+        
+        // Efeito de confetes adicional
+        function createConfetti() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = [
+                        '#4CAF50', '#ff9800', '#2196f3', '#e91e63', '#9c27b0'
+                    ][Math.floor(Math.random() * 5)];
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Remover depois da animação
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, 3000);
+                }, i * 100);
+            }
+        }
+        
+        // Iniciar efeito de confetes
+        setTimeout(createConfetti, 500);
+    </script>
+</body>
+</html>

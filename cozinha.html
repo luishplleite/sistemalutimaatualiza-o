@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozinha - TimePulse AI</title>
+    <meta name="description" content="Painel da cozinha para acompanhar pedidos em preparo">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        /* Estilos específicos da cozinha */
+        .kitchen-header {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .kitchen-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .orders-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-column {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 500px;
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .status-pending .status-header {
+            color: #ff6b35;
+        }
+        
+        .status-preparing .status-header {
+            color: #007bff;
+        }
+        
+        .status-ready .status-header {
+            color: #28a745;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid;
+            transition: transform 0.2s ease;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .order-card.pending {
+            border-left-color: #ff6b35;
+        }
+        
+        .order-card.preparing {
+            border-left-color: #007bff;
+        }
+        
+        .order-card.ready {
+            border-left-color: #28a745;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .order-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .order-time {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .order-items {
+            margin-bottom: 1rem;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            font-weight: 500;
+        }
+        
+        .item-quantity {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .timer {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .timer.urgent {
+            background: #f8d7da;
+            color: #721c24;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            padding: 2rem;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .orders-board {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .kitchen-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link active">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-utensils"></i>
+                            Painel da Cozinha
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="refreshOrders()">
+                            <i class="fas fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Header da Cozinha -->
+                <div class="kitchen-header">
+                    <h2>
+                        <i class="fas fa-fire"></i>
+                        Central da Cozinha
+                    </h2>
+                    <p>Acompanhe e gerencie todos os pedidos em tempo real</p>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="kitchen-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingCount">0</div>
+                        <div class="stat-label">Aguardando</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="preparingCount">0</div>
+                        <div class="stat-label">Em Preparo</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="readyCount">0</div>
+                        <div class="stat-label">Prontos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgTime">0 min</div>
+                        <div class="stat-label">Tempo Médio</div>
+                    </div>
+                </div>
+                
+                <!-- Quadro de Pedidos -->
+                <div class="orders-board">
+                    <!-- Coluna: Aguardando Preparo -->
+                    <div class="status-column status-pending">
+                        <div class="status-header">
+                            <i class="fas fa-clock"></i>
+                            Aguardando Preparo
+                            <span class="badge" id="pendingBadge">0</span>
+                        </div>
+                        <div id="pendingOrders" class="orders-list">
+                            <div class="empty-state">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p>Nenhum pedido aguardando</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Coluna: Em Preparo -->
+                    <div class="status-column status-preparing">
+                        <div class="status-header">
+                            <i class="fas fa-fire"></i>
+                            Em Preparo
+                            <span class="badge" id="preparingBadge">0</span>
+                        </div>
+                        <div id="preparingOrders" class="orders-list">
+                            <div class="empty-state">
+                                <i class="fas fa-utensils"></i>
+                                <p>Nenhum pedido em preparo</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Coluna: Prontos para Entrega -->
+                    <div class="status-column status-ready">
+                        <div class="status-header">
+                            <i class="fas fa-check-circle"></i>
+                            Prontos para Entrega
+                            <span class="badge" id="readyBadge">0</span>
+                        </div>
+                        <div id="readyOrders" class="orders-list">
+                            <div class="empty-state">
+                                <i class="fas fa-motorcycle"></i>
+                                <p>Nenhum pedido pronto</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR DA COZINHA =====
+        class KitchenManager {
+            constructor() {
+                this.orders = [];
+                this.timers = new Map();
+                this.autoRefreshInterval = null;
+            }
+            
+            async init() {
+                try {
+                    console.log('🍳 Inicializando painel da cozinha...');
+                    
+                    await this.loadOrders();
+                    this.setupEventListeners();
+                    this.startAutoRefresh();
+                    
+                    console.log('✅ Painel da cozinha inicializado');
+                    
+                } catch (error) {
+                    console.error('❌ Erro na inicialização da cozinha:', error);
+                }
+            }
+            
+            async loadOrders() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    const { data: orders, error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select(`
+                            id, order_number, status, created_at, estimated_time,
+                            customer_name, total_amount,
+                            order_items (
+                                id, product_name, quantity, price, observations
+                            )
+                        `)
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .in('status', ['confirmed', 'preparing', 'ready'])
+                        .order('created_at', { ascending: true });
+                    
+                    if (error) throw error;
+                    
+                    this.orders = orders || [];
+                    this.renderOrders();
+                    this.updateStats();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar pedidos:', error);
+                }
+            }
+            
+            renderOrders() {
+                const pendingContainer = document.getElementById('pendingOrders');
+                const preparingContainer = document.getElementById('preparingOrders');
+                const readyContainer = document.getElementById('readyOrders');
+                
+                // Limpar containers
+                [pendingContainer, preparingContainer, readyContainer].forEach(container => {
+                    container.innerHTML = '';
+                });
+                
+                // Agrupar pedidos por status
+                const pending = this.orders.filter(order => order.status === 'confirmed');
+                const preparing = this.orders.filter(order => order.status === 'preparing');
+                const ready = this.orders.filter(order => order.status === 'ready');
+                
+                // Renderizar cada grupo
+                this.renderOrdersInContainer(pending, pendingContainer, 'pending');
+                this.renderOrdersInContainer(preparing, preparingContainer, 'preparing');
+                this.renderOrdersInContainer(ready, readyContainer, 'ready');
+                
+                // Atualizar badges
+                document.getElementById('pendingBadge').textContent = pending.length;
+                document.getElementById('preparingBadge').textContent = preparing.length;
+                document.getElementById('readyBadge').textContent = ready.length;
+            }
+            
+            renderOrdersInContainer(orders, container, status) {
+                if (orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>Nenhum pedido nesta categoria</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                orders.forEach(order => {
+                    const orderCard = this.createOrderCard(order, status);
+                    container.appendChild(orderCard);
+                });
+            }
+            
+            createOrderCard(order, status) {
+                const card = document.createElement('div');
+                card.className = `order-card ${status}`;
+                card.dataset.orderId = order.id;
+                
+                const timeElapsed = this.getTimeElapsed(order.created_at);
+                const isUrgent = timeElapsed > 30; // Mais de 30 minutos
+                
+                card.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-number">#${order.order_number}</div>
+                        <div class="timer ${isUrgent ? 'urgent' : ''}" id="timer-${order.id}">
+                            ${timeElapsed} min
+                        </div>
+                    </div>
+                    
+                    <div class="order-customer">
+                        <strong>Cliente:</strong> ${order.customer_name}
+                    </div>
+                    
+                    <div class="order-items">
+                        ${order.order_items.map(item => `
+                            <div class="order-item">
+                                <div class="item-name">${item.product_name}</div>
+                                <div class="item-quantity">x${item.quantity}</div>
+                            </div>
+                            ${item.observations ? `<div class="item-obs"><small>Obs: ${item.observations}</small></div>` : ''}
+                        `).join('')}
+                    </div>
+                    
+                    <div class="order-actions">
+                        ${this.getActionButtons(order.id, status)}
+                    </div>
+                `;
+                
+                return card;
+            }
+            
+            getActionButtons(orderId, status) {
+                switch (status) {
+                    case 'pending':
+                        return `
+                            <button class="btn btn-primary btn-sm" onclick="kitchenManager.startPreparing('${orderId}')">
+                                <i class="fas fa-play"></i> Iniciar Preparo
+                            </button>
+                        `;
+                    case 'preparing':
+                        return `
+                            <button class="btn btn-success btn-sm" onclick="kitchenManager.markAsReady('${orderId}')">
+                                <i class="fas fa-check"></i> Marcar como Pronto
+                            </button>
+                        `;
+                    case 'ready':
+                        return `
+                            <button class="btn btn-info btn-sm" onclick="kitchenManager.sendToDelivery('${orderId}')">
+                                <i class="fas fa-motorcycle"></i> Enviar p/ Entrega
+                            </button>
+                        `;
+                    default:
+                        return '';
+                }
+            }
+            
+            async startPreparing(orderId) {
+                try {
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .update({ 
+                            status: 'preparing',
+                            started_preparing_at: new Date().toISOString()
+                        })
+                        .eq('id', orderId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadOrders();
+                    this.showAlert('Pedido iniciado no preparo!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao iniciar preparo:', error);
+                    this.showAlert('Erro ao atualizar pedido', 'error');
+                }
+            }
+            
+            async markAsReady(orderId) {
+                try {
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .update({ 
+                            status: 'ready',
+                            ready_at: new Date().toISOString()
+                        })
+                        .eq('id', orderId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadOrders();
+                    this.showAlert('Pedido marcado como pronto!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao marcar como pronto:', error);
+                    this.showAlert('Erro ao atualizar pedido', 'error');
+                }
+            }
+            
+            async sendToDelivery(orderId) {
+                try {
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .update({ 
+                            status: 'out_for_delivery',
+                            sent_for_delivery_at: new Date().toISOString()
+                        })
+                        .eq('id', orderId);
+                    
+                    if (error) throw error;
+                    
+                    await this.loadOrders();
+                    this.showAlert('Pedido enviado para entrega!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao enviar para entrega:', error);
+                    this.showAlert('Erro ao atualizar pedido', 'error');
+                }
+            }
+            
+            updateStats() {
+                const pending = this.orders.filter(order => order.status === 'confirmed');
+                const preparing = this.orders.filter(order => order.status === 'preparing');
+                const ready = this.orders.filter(order => order.status === 'ready');
+                
+                document.getElementById('pendingCount').textContent = pending.length;
+                document.getElementById('preparingCount').textContent = preparing.length;
+                document.getElementById('readyCount').textContent = ready.length;
+                
+                // Calcular tempo médio
+                const avgTime = this.calculateAverageTime();
+                document.getElementById('avgTime').textContent = `${avgTime} min`;
+            }
+            
+            calculateAverageTime() {
+                const completedOrders = this.orders.filter(order => order.ready_at);
+                if (completedOrders.length === 0) return 0;
+                
+                const totalTime = completedOrders.reduce((sum, order) => {
+                    const start = new Date(order.started_preparing_at || order.created_at);
+                    const end = new Date(order.ready_at);
+                    return sum + (end - start) / (1000 * 60); // em minutos
+                }, 0);
+                
+                return Math.round(totalTime / completedOrders.length);
+            }
+            
+            getTimeElapsed(createdAt) {
+                const now = new Date();
+                const created = new Date(createdAt);
+                return Math.floor((now - created) / (1000 * 60)); // em minutos
+            }
+            
+            setupEventListeners() {
+                // Listener para atualizações em tempo real
+                document.addEventListener('orderUpdate', (event) => {
+                    console.log('🔔 Atualização de pedido recebida');
+                    this.loadOrders();
+                });
+                
+                // Atualizar timers a cada minuto
+                setInterval(() => {
+                    this.updateTimers();
+                }, 60000);
+            }
+            
+            updateTimers() {
+                this.orders.forEach(order => {
+                    const timerElement = document.getElementById(`timer-${order.id}`);
+                    if (timerElement) {
+                        const timeElapsed = this.getTimeElapsed(order.created_at);
+                        timerElement.textContent = `${timeElapsed} min`;
+                        
+                        if (timeElapsed > 30) {
+                            timerElement.classList.add('urgent');
+                        }
+                    }
+                });
+            }
+            
+            startAutoRefresh() {
+                this.autoRefreshInterval = setInterval(() => {
+                    this.loadOrders();
+                }, 30000); // Atualizar a cada 30 segundos
+            }
+            
+            showAlert(message, type = 'info') {
+                // Implementar sistema de alertas
+                console.log(`${type.toUpperCase()}: ${message}`);
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let kitchenManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Aguardar inicialização do sistema principal
+            await new Promise(resolve => {
+                const checkInit = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
+                        resolve();
+                    } else {
+                        setTimeout(checkInit, 100);
+                    }
+                };
+                checkInit();
+            });
+            
+            kitchenManager = new KitchenManager();
+            await kitchenManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function refreshOrders() {
+            if (kitchenManager) {
+                kitchenManager.loadOrders();
+            }
+        }
+    </script>
+</body>
+</html>

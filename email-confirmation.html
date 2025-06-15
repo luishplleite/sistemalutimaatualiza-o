@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Confirme seu e-mail para ativar sua conta no TimePulse AI">
+    <meta name="keywords" content="confirmação, email, ativação, conta, TimePulse AI">
+    <meta name="author" content="TimePulse AI">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+    
+    <title>Confirmar E-mail - TimePulse AI</title>
+    
+    <!-- CSS -->
+    <style>
+        /* ===== RESET E VARIÁVEIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        /* ===== ESTILOS GLOBAIS ===== */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* ===== CONTAINER PRINCIPAL ===== */
+        .confirmation-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ===== HEADER ===== */
+        .confirmation-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .confirmation-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .header-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ===== CONTEÚDO PRINCIPAL ===== */
+        .confirmation-content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .email-display {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+            word-break: break-all;
+        }
+        
+        .status-message {
+            margin: 24px 0;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .status-pending {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: var(--primary-dark);
+            border: 2px solid var(--primary-light);
+        }
+        
+        .status-success {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            color: #059669;
+            border: 2px solid var(--success-color);
+        }
+        
+        .status-error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            color: #dc2626;
+            border: 2px solid var(--error-color);
+        }
+        
+        /* ===== INSTRUÇÕES ===== */
+        .instructions {
+            margin: 30px 0;
+        }
+        
+        .instruction-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+        
+        .instruction-list {
+            list-style: none;
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .instruction-item:hover {
+            background: var(--gray-100);
+            transform: translateX(4px);
+        }
+        
+        .instruction-number {
+            background: var(--primary-color);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .instruction-text {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+        
+        /* ===== BOTÕES ===== */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            min-height: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgb(59 130 246 / 0.3);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgb(59 130 246 / 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgb(16 185 129 / 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgb(16 185 129 / 0.4);
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== TIMER ===== */
+        .resend-timer {
+            margin-top: 20px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .timer-text {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+        
+        .timer-display {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--warning-color);
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        
+        /* ===== HELP SECTION ===== */
+        .help-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid var(--gray-100);
+        }
+        
+        .help-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+        
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .help-card {
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .help-card:hover {
+            background: var(--gray-100);
+            transform: translateY(-2px);
+        }
+        
+        .help-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .help-text {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+        
+        /* ===== FOOTER ===== */
+        .confirmation-footer {
+            background: var(--gray-50);
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .confirmation-container {
+                max-width: 100%;
+                border-radius: 16px;
+            }
+            
+            .confirmation-header {
+                padding: 30px 20px;
+            }
+            
+            .confirmation-content {
+                padding: 30px 20px;
+            }
+            
+            .confirmation-footer {
+                padding: 20px;
+            }
+            
+            .header-icon {
+                font-size: 3rem;
+            }
+            
+            .header-title {
+                font-size: 1.5rem;
+            }
+            
+            .email-display {
+                font-size: 0.875rem;
+                padding: 12px 16px;
+            }
+            
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+        
+        /* ===== ESTADOS DE CARREGAMENTO ===== */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .loading-text {
+            margin-top: 16px;
+            font-size: 1rem;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+        
+        /* ===== ANIMAÇÕES ESPECIAIS ===== */
+        .success-animation {
+            animation: successBounce 0.6s ease;
+        }
+        
+        @keyframes successBounce {
+            0%, 20%, 53%, 80%, 100% {
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                transform: translate3d(0, -8px, 0);
+            }
+            70% {
+                transform: translate3d(0, -4px, 0);
+            }
+            90% {
+                transform: translate3d(0, -2px, 0);
+            }
+        }
+        
+        .error-animation {
+            animation: errorShake 0.6s ease;
+        }
+        
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Container Principal -->
+    <div class="confirmation-container" id="confirmationContainer">
+        <!-- Overlay de Loading -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner" style="display: inline-block; width: 40px; height: 40px; border-width: 4px;"></div>
+            <div class="loading-text">Processando confirmação...</div>
+        </div>
+        
+        <!-- Header -->
+        <div class="confirmation-header">
+            <div class="header-icon" id="headerIcon">📧</div>
+            <h1 class="header-title" id="headerTitle">Confirme seu E-mail</h1>
+            <p class="header-subtitle" id="headerSubtitle">Verifique sua caixa de entrada</p>
+        </div>
+        
+        <!-- Conteúdo Principal -->
+        <div class="confirmation-content">
+            <!-- Exibição do E-mail -->
+            <div class="email-display" id="emailDisplay">
+                seu@email.com
+            </div>
+            
+            <!-- Mensagem de Status -->
+            <div class="status-message status-pending" id="statusMessage">
+                <strong>📬 E-mail de confirmação enviado!</strong><br>
+                Clique no link que enviamos para ativar sua conta.
+            </div>
+            
+            <!-- Timer para Reenvio -->
+            <div class="resend-timer" id="resendTimer" style="display: none;">
+                <div class="timer-text">Você poderá solicitar um novo e-mail em:</div>
+                <div class="timer-display" id="timerDisplay">02:00</div>
+            </div>
+            
+            <!-- Instruções -->
+            <div class="instructions" id="instructionsSection">
+                <h3 class="instruction-title">Como confirmar seu e-mail:</h3>
+                <ol class="instruction-list">
+                    <li class="instruction-item">
+                        <div class="instruction-number">1</div>
+                        <div class="instruction-text">
+                            Abra seu aplicativo de e-mail ou webmail
+                        </div>
+                    </li>
+                    <li class="instruction-item">
+                        <div class="instruction-number">2</div>
+                        <div class="instruction-text">
+                            Procure por um e-mail do TimePulse AI (verifique também o spam)
+                        </div>
+                    </li>
+                    <li class="instruction-item">
+                        <div class="instruction-number">3</div>
+                        <div class="instruction-text">
+                            Clique no botão "Confirmar E-mail" dentro da mensagem
+                        </div>
+                    </li>
+                    <li class="instruction-item">
+                        <div class="instruction-number">4</div>
+                        <div class="instruction-text">
+                            Você será redirecionado e poderá fazer login
+                        </div>
+                    </li>
+                </ol>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn btn-primary" id="resendButton" disabled>
+                    <span id="resendText">Reenviar E-mail</span>
+                    <div class="loading-spinner" id="resendSpinner"></div>
+                </button>
+                
+                <a href="login.html" class="btn btn-secondary" id="loginButton">
+                    ← Voltar ao Login
+                </a>
+            </div>
+            
+            <!-- Seção de Ajuda -->
+            <div class="help-section" id="helpSection">
+                <h3 class="help-title">Não recebeu o e-mail?</h3>
+                
+                <div class="help-grid">
+                    <div class="help-card" onclick="showHelp('spam')">
+                        <div class="help-icon">🗂️</div>
+                        <div class="help-text">Verificar Spam</div>
+                    </div>
+                    
+                    <div class="help-card" onclick="showHelp('wait')">
+                        <div class="help-icon">⏰</div>
+                        <div class="help-text">Aguardar 5min</div>
+                    </div>
+                    
+                    <div class="help-card" onclick="showHelp('email')">
+                        <div class="help-icon">✉️</div>
+                        <div class="help-text">E-mail Correto?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="confirmation-footer">
+            <p class="footer-text">
+                Problemas com a confirmação? Entre em contato conosco.
+            </p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Suporte</a>
+                <a href="#" class="footer-link">FAQ</a>
+                <a href="cadastro_restaurante.html" class="footer-link">Novo Cadastro</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts Externos -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Script Principal -->
+    <script>
+        // ===== CONFIGURAÇÕES =====
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Substituir pela URL real
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Substituir pela chave real
+        
+        // ===== VARIÁVEIS GLOBAIS =====
+        let supabase = null;
+        let resendTimer = null;
+        let resendCountdown = 120; // 2 minutos
+        
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📧 Carregando página de confirmação...');
+            
+            try {
+                // Inicializar Supabase
+                initializeSupabase();
+                
+                // Verificar parâmetros da URL
+                checkUrlParams();
+                
+                // Carregar email do localStorage
+                loadEmailFromStorage();
+                
+                // Configurar eventos
+                setupEventListeners();
+                
+                // Verificar status de autenticação
+                checkAuthStatus();
+                
+                console.log('✅ Página de confirmação carregada');
+                
+            } catch (error) {
+                console.error('❌ Erro na inicialização:', error);
+                showError('Erro de configuração do sistema.');
+            }
+        });
+        
+        // ===== INICIALIZAÇÃO DO SUPABASE =====
+        function initializeSupabase() {
+            if (typeof window.supabase === 'undefined') {
+                throw new Error('Biblioteca Supabase não carregada');
+            }
+            
+            supabase = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+            
+            console.log('✅ Supabase inicializado');
+        }
+        
+        // ===== VERIFICAR PARÂMETROS DA URL =====
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const type = urlParams.get('type');
+            const email = urlParams.get('email');
+            
+            if (email) {
+                document.getElementById('emailDisplay').textContent = email;
+                localStorage.setItem('pendingEmail', email);
+            }
+            
+            // Se há token na URL, processar confirmação automática
+            if (token && type === 'signup') {
+                console.log('🔑 Token de confirmação encontrado na URL');
+                confirmEmailWithToken(token);
+            }
+        }
+        
+        // ===== CARREGAR EMAIL DO LOCALSTORAGE =====
+        function loadEmailFromStorage() {
+            const pendingEmail = localStorage.getItem('pendingEmail');
+            const emailDisplay = document.getElementById('emailDisplay');
+            
+            if (pendingEmail && !emailDisplay.textContent.includes('@')) {
+                emailDisplay.textContent = pendingEmail;
+            }
+            
+            if (!emailDisplay.textContent.includes('@')) {
+                emailDisplay.textContent = 'Seu e-mail cadastrado';
+            }
+        }
+        
+        // ===== CONFIGURAR EVENTOS =====
+        function setupEventListeners() {
+            // Botão de reenvio
+            document.getElementById('resendButton').addEventListener('click', handleResendEmail);
+            
+            // Iniciar timer de reenvio
+            startResendTimer();
+        }
+        
+        // ===== VERIFICAR STATUS DE AUTENTICAÇÃO =====
+        async function checkAuthStatus() {
+            if (!supabase) return;
+            
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error) {
+                    console.log('⚠️ Erro ao verificar usuário:', error);
+                    return;
+                }
+                
+                if (user && user.email_confirmed_at) {
+                    console.log('✅ Usuário já confirmado');
+                    showConfirmed();
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Erro ao verificar status:', error);
+            }
+        }
+        
+        // ===== CONFIRMAR EMAIL COM TOKEN DA URL =====
+        async function confirmEmailWithToken(token) {
+            if (!supabase) return;
+            
+            try {
+                console.log('🔄 Processando confirmação automática...');
+                showLoading(true);
+                
+                const { data, error } = await supabase.auth.verifyOtp({
+                    token_hash: token,
+                    type: 'signup'
+                });
+                
+                if (error) {
+                    console.error('❌ Erro na confirmação:', error);
+                    
+                    if (error.message.includes('expired')) {
+                        showError('O link de confirmação expirou. Solicite um novo link.');
+                    } else if (error.message.includes('already')) {
+                        showError('Este e-mail já foi confirmado. Você pode fazer login.');
+                    } else {
+                        showError('Erro na confirmação: ' + error.message);
+                    }
+                    return;
+                }
+                
+                console.log('✅ E-mail confirmado com sucesso');
+                localStorage.removeItem('pendingEmail');
+                showConfirmed();
+                
+            } catch (error) {
+                console.error('❌ Erro inesperado:', error);
+                showError('Erro inesperado na confirmação.');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ===== REENVIAR E-MAIL DE CONFIRMAÇÃO =====
+        async function handleResendEmail() {
+            if (!supabase) {
+                showError('Erro de configuração do sistema.');
+                return;
+            }
+            
+            const emailDisplay = document.getElementById('emailDisplay');
+            const email = emailDisplay.textContent.trim();
+            
+            if (!email || !email.includes('@')) {
+                showError('E-mail não encontrado. Tente fazer um novo cadastro.');
+                return;
+            }
+            
+            try {
+                console.log('🔄 Reenviando e-mail de confirmação...');
+                setLoadingState('resend', true);
+                
+                const { error } = await supabase.auth.resend({
+                    type: 'signup',
+                    email: email
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                console.log('✅ E-mail reenviado com sucesso');
+                showSuccess('E-mail de confirmação reenviado! Verifique sua caixa de entrada.');
+                
+                // Reiniciar timer
+                resetResendTimer();
+                
+            } catch (error) {
+                console.error('❌ Erro ao reenviar e-mail:', error);
+                
+                let errorMessage = 'Erro ao reenviar e-mail.';
+                
+                if (error.message.includes('rate limit')) {
+                    errorMessage = 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.';
+                } else if (error.message.includes('not found')) {
+                    errorMessage = 'E-mail não encontrado. Verifique se o e-mail está correto.';
+                }
+                
+                showError(errorMessage);
+                
+            } finally {
+                setLoadingState('resend', false);
+            }
+        }
+        
+        // ===== TIMER DE REENVIO =====
+        function startResendTimer() {
+            const button = document.getElementById('resendButton');
+            const timerSection = document.getElementById('resendTimer');
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            button.disabled = true;
+            timerSection.style.display = 'block';
+            
+            resendTimer = setInterval(() => {
+                const minutes = Math.floor(resendCountdown / 60);
+                const seconds = resendCountdown % 60;
+                
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (resendCountdown <= 0) {
+                    clearInterval(resendTimer);
+                    button.disabled = false;
+                    timerSection.style.display = 'none';
+                    button.textContent = 'Reenviar E-mail';
+                    return;
+                }
+                
+                resendCountdown--;
+            }, 1000);
+        }
+        
+        function resetResendTimer() {
+            if (resendTimer) {
+                clearInterval(resendTimer);
+            }
+            
+            resendCountdown = 120; // Reset para 2 minutos
+            startResendTimer();
+        }
+        
+        // ===== ESTADOS DA UI =====
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.toggle('active', show);
+        }
+        
+        function setLoadingState(type, isLoading) {
+            if (type === 'resend') {
+                const button = document.getElementById('resendButton');
+                const text = document.getElementById('resendText');
+                const spinner = document.getElementById('resendSpinner');
+                
+                button.disabled = isLoading;
+                text.style.display = isLoading ? 'none' : 'inline';
+                spinner.style.display = isLoading ? 'inline' : 'none';
+            }
+        }
+        
+        function showConfirmed() {
+            const container = document.getElementById('confirmationContainer');
+            const headerIcon = document.getElementById('headerIcon');
+            const headerTitle = document.getElementById('headerTitle');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+            const statusMessage = document.getElementById('statusMessage');
+            const actionButtons = document.getElementById('actionButtons');
+            const instructionsSection = document.getElementById('instructionsSection');
+            const helpSection = document.getElementById('helpSection');
+            
+            // Animação de sucesso
+            container.classList.add('success-animation');
+            
+            // Atualizar header
+            headerIcon.textContent = '✅';
+            headerTitle.textContent = 'E-mail Confirmado!';
+            headerSubtitle.textContent = 'Sua conta foi ativada com sucesso';
+            
+            // Atualizar status
+            statusMessage.className = 'status-message status-success';
+            statusMessage.innerHTML = `
+                <strong>🎉 Parabéns!</strong><br>
+                Sua conta foi ativada. Agora você pode fazer login e começar a usar o TimePulse AI.
+            `;
+            
+            // Atualizar botões
+            actionButtons.innerHTML = `
+                <a href="login.html?confirmed=true" class="btn btn-success">
+                    🚀 Fazer Login Agora
+                </a>
+                <a href="dashboard.html" class="btn btn-secondary">
+                    📊 Ir para o Dashboard
+                </a>
+            `;
+            
+            // Ocultar seções desnecessárias
+            instructionsSection.style.display = 'none';
+            helpSection.style.display = 'none';
+            
+            // Limpar timer
+            if (resendTimer) {
+                clearInterval(resendTimer);
+            }
+            
+            // Auto-redirecionar após 5 segundos
+            setTimeout(() => {
+                window.location.href = 'login.html?confirmed=true';
+            }, 5000);
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('confirmationContainer');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            // Animação de erro
+            container.classList.add('error-animation');
+            setTimeout(() => container.classList.remove('error-animation'), 600);
+            
+            statusMessage.className = 'status-message status-error';
+            statusMessage.innerHTML = `
+                <strong>❌ Erro</strong><br>
+                ${message}
+            `;
+        }
+        
+        function showSuccess(message) {
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusMessage.className = 'status-message status-success';
+            statusMessage.innerHTML = `
+                <strong>✅ Sucesso</strong><br>
+                ${message}
+            `;
+            
+            // Voltar ao estado normal após 5 segundos
+            setTimeout(() => {
+                statusMessage.className = 'status-message status-pending';
+                statusMessage.innerHTML = `
+                    <strong>📬 E-mail de confirmação enviado!</strong><br>
+                    Clique no link que enviamos para ativar sua conta.
+                `;
+            }, 5000);
+        }
+        
+        // ===== AJUDA =====
+        function showHelp(type) {
+            let message = '';
+            
+            switch (type) {
+                case 'spam':
+                    message = 'Verifique sua pasta de spam ou lixo eletrônico. Às vezes os e-mails de confirmação podem ser filtrados automaticamente.';
+                    break;
+                case 'wait':
+                    message = 'Aguarde alguns minutos. O envio de e-mails pode demorar até 5 minutos para chegar na sua caixa de entrada.';
+                    break;
+                case 'email':
+                    message = 'Verifique se o e-mail está correto. Se houver erro, você pode fazer um novo cadastro com o e-mail correto.';
+                    break;
+            }
+            
+            alert(message); // Pode ser substituído por um modal mais elegante
+        }
+        
+        // ===== LIMPEZA =====
+        window.addEventListener('beforeunload', function() {
+            if (resendTimer) {
+                clearInterval(resendTimer);
+            }
+        });
+        
+        console.log('✅ E-mail confirmation script carregado');
+    </script>
+</body>
+</html>

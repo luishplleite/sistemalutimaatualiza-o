@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Cardápio - TimePulse AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .category-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .category-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .product-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            background: white;
+            transition: transform 0.2s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: var(--background-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            position: relative;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .status-inactive {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .product-info {
+            padding: var(--spacing-md);
+        }
+        
+        .product-price {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .product-actions {
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .drag-drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            transition: border-color 0.3s ease;
+        }
+        
+        .drag-drop-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .category-management {
+            background: var(--background-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <i class="fas fa-clock"></i> TimePulse AI
+                </a>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        Pedidos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="historico_pedidos.html" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        Histórico
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <i class="fas fa-motorcycle"></i>
+                        Entregadores
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gestao_cardapio.html" class="nav-link active">
+                        <i class="fas fa-utensils"></i>
+                        Cardápio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatórios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">Gestão de Cardápio</h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="showModal('categoryModal')">
+                            <i class="fas fa-plus"></i> Nova Categoria
+                        </button>
+                        <button class="btn btn-primary" onclick="showModal('productModal')">
+                            <i class="fas fa-plus"></i> Novo Produto
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Gestão de Categorias -->
+                <div class="category-management">
+                    <h3>Categorias</h3>
+                    <div id="categoriesContainer">
+                        <div class="text-center p-4">
+                            <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
+                            <p class="mt-2 text-muted">Carregando categorias...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabs de Categorias -->
+                <div class="category-tabs" id="categoryTabs">
+                    <button class="category-tab active" data-category="all">
+                        <i class="fas fa-list"></i> Todos os Produtos
+                    </button>
+                </div>
+                
+                <!-- Grade de Produtos -->
+                <div class="products-grid" id="productsGrid">
+                    <div class="text-center p-4" style="grid-column: 1 / -1;">
+                        <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
+                        <p class="mt-2 text-muted">Carregando produtos...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nova Categoria -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Nova Categoria</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label class="form-label">Nome da Categoria *</label>
+                        <input type="text" id="categoryName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="categoryDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ordem de Exibição</label>
+                        <input type="number" id="categoryOrder" class="form-control" min="0" value="0">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" form="categoryForm" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Produto -->
+    <div class="modal" id="productModal">
+        <div class="modal-dialog" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Novo Produto</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label class="form-label">Nome do Produto *</label>
+                        <input type="text" id="productName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Categoria *</label>
+                        <select id="productCategory" class="form-control form-select" required>
+                            <option value="">Selecione uma categoria</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Preço (R$) *</label>
+                            <input type="number" id="productPrice" class="form-control" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ordem de Exibição</label>
+                            <input type="number" id="productOrder" class="form-control" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="productDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Imagem do Produto</label>
+                        <div class="drag-drop-area" id="dragDropArea">
+                            <i class="fas fa-cloud-upload-alt fa-2x text-muted"></i>
+                            <p>Arraste uma imagem aqui ou <button type="button" class="btn btn-link">clique para selecionar</button></p>
+                            <input type="file" id="productImage" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="imagePreview" style="display: none;">
+                            <img id="previewImg" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px;">
+                            <button type="button" class="btn btn-sm btn-danger ml-2" onclick="menuPage.removeImage()">
+                                <i class="fas fa-trash"></i> Remover
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="d-flex align-items-center">
+                            <input type="checkbox" id="productActive" checked style="margin-right: 0.5rem;">
+                            <span class="form-label mb-0">Produto ativo</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" form="productForm" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Classe para gerenciamento do cardápio
+        class MenuPage {
+            constructor() {
+                this.categories = [];
+                this.products = [];
+                this.currentCategory = 'all';
+                this.editingProduct = null;
+                this.editingCategory = null;
+                this.init();
+            }
+
+            async init() {
+                this.setupEventListeners();
+                await this.loadCategories();
+                await this.loadProducts();
+                this.renderCategoryTabs();
+                this.renderProducts();
+            }
+
+            setupEventListeners() {
+                // Formulários
+                document.getElementById('categoryForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveCategory();
+                });
+
+                document.getElementById('productForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveProduct();
+                });
+
+                // Upload de imagem
+                document.getElementById('productImage').addEventListener('change', (e) => {
+                    this.handleImageUpload(e);
+                });
+
+                // Drag and drop
+                const dragDropArea = document.getElementById('dragDropArea');
+                dragDropArea.addEventListener('click', () => {
+                    document.getElementById('productImage').click();
+                });
+
+                dragDropArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dragDropArea.classList.add('dragover');
+                });
+
+                dragDropArea.addEventListener('dragleave', () => {
+                    dragDropArea.classList.remove('dragover');
+                });
+
+                dragDropArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dragDropArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleImageFile(files[0]);
+                    }
+                });
+            }
+
+            async loadCategories() {
+                try {
+                    const { data: categories, error } = await supabase
+                        .from('product_categories')
+                        .select('*')
+                        .eq('restaurant_id', window.timePulseApp.currentRestaurant.id)
+                        .order('display_order', { ascending: true });
+
+                    if (error) throw error;
+
+                    this.categories = categories;
+                    this.renderCategories();
+                    this.updateCategorySelects();
+
+                } catch (error) {
+                    console.error('Erro ao carregar categorias:', error);
+                }
+            }
+
+            async loadProducts() {
+                try {
+                    const { data: products, error } = await supabase
+                        .from('products')
+                        .select(`
+                            *,
+                            product_categories (name)
+                        `)
+                        .eq('restaurant_id', window.timePulseApp.currentRestaurant.id)
+                        .order('display_order', { ascending: true });
+
+                    if (error) throw error;
+
+                    this.products = products;
+                    this.renderProducts();
+
+                } catch (error) {
+                    console.error('Erro ao carregar produtos:', error);
+                }
+            }
+
+            renderCategories() {
+                const container = document.getElementById('categoriesContainer');
+                
+                if (this.categories.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center p-4">
+                            <i class="fas fa-tags fa-2x text-muted"></i>
+                            <p class="mt-2 text-muted">Nenhuma categoria criada</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Descrição</th>
+                                    <th>Produtos</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${this.categories.map(category => {
+                                    const productCount = this.products.filter(p => p.category_id === category.id).length;
+                                    return `
+                                        <tr>
+                                            <td><strong>${category.name}</strong></td>
+                                            <td>${category.description || '-'}</td>
+                                            <td>${productCount} produtos</td>
+                                            <td>
+                                                <span class="badge ${category.active ? 'badge-success' : 'badge-danger'}">
+                                                    ${category.active ? 'Ativa' : 'Inativa'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-secondary" onclick="menuPage.editCategory('${category.id}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="menuPage.deleteCategory('${category.id}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            renderCategoryTabs() {
+                const container = document.getElementById('categoryTabs');
+                const tabs = [`
+                    <button class="category-tab ${this.currentCategory === 'all' ? 'active' : ''}" data-category="all">
+                        <i class="fas fa-list"></i> Todos os Produtos
+                    </button>
+                `];
+
+                this.categories.forEach(category => {
+                    tabs.push(`
+                        <button class="category-tab ${this.currentCategory === category.id ? 'active' : ''}" data-category="${category.id}">
+                            <i class="fas fa-tag"></i> ${category.name}
+                        </button>
+                    `);
+                });
+
+                container.innerHTML = tabs.join('');
+
+                // Adicionar eventos de clique
+                container.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.currentCategory = e.target.dataset.category;
+                        this.renderCategoryTabs();
+                        this.renderProducts();
+                    });
+                });
+            }
+
+            renderProducts() {
+                const container = document.getElementById('productsGrid');
+                let filteredProducts = this.products;
+
+                if (this.currentCategory !== 'all') {
+                    filteredProducts = this.products.filter(p => p.category_id === this.currentCategory);
+                }
+
+                if (filteredProducts.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center p-4" style="grid-column: 1 / -1;">
+                            <i class="fas fa-utensils fa-2x text-muted"></i>
+                            <p class="mt-2 text-muted">Nenhum produto encontrado</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = filteredProducts.map(product => this.renderProductCard(product)).join('');
+            }
+
+            renderProductCard(product) {
+                return `
+                    <div class="product-card">
+                        <div class="product-image">
+                            ${product.image_url ? 
+                                `<img src="${product.image_url}" alt="${product.name}">` :
+                                '<i class="fas fa-image fa-3x"></i>'
+                            }
+                            <span class="product-status ${product.active ? 'status-active' : 'status-inactive'}">
+                                ${product.active ? 'Ativo' : 'Inativo'}
+                            </span>
+                        </div>
+                        <div class="product-info">
+                            <h4>${product.name}</h4>
+                            <p class="text-muted">${product.description || 'Sem descrição'}</p>
+                            <div class="product-price">${window.timePulseApp.formatCurrency(product.price)}</div>
+                            <small class="text-muted">Categoria: ${product.product_categories?.name || 'Sem categoria'}</small>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="menuPage.editProduct('${product.id}')">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-sm ${product.active ? 'btn-warning' : 'btn-success'}" onclick="menuPage.toggleProductStatus('${product.id}')">
+                                <i class="fas fa-${product.active ? 'eye-slash' : 'eye'}"></i> ${product.active ? 'Desativar' : 'Ativar'}
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="menuPage.deleteProduct('${product.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateCategorySelects() {
+                const select = document.getElementById('productCategory');
+                select.innerHTML = '<option value="">Selecione uma categoria</option>';
+                
+                this.categories.forEach(category => {
+                    select.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                });
+            }
+
+            async saveCategory() {
+                const data = {
+                    name: document.getElementById('categoryName').value,
+                    description: document.getElementById('categoryDescription').value,
+                    display_order: parseInt(document.getElementById('categoryOrder').value) || 0,
+                    restaurant_id: window.timePulseApp.currentRestaurant.id,
+                    active: true
+                };
+
+                try {
+                    let error;
+                    
+                    if (this.editingCategory) {
+                        ({ error } = await supabase
+                            .from('product_categories')
+                            .update(data)
+                            .eq('id', this.editingCategory));
+                    } else {
+                        ({ error } = await supabase
+                            .from('product_categories')
+                            .insert(data));
+                    }
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Categoria salva com sucesso!', 'success');
+                    window.closeModal();
+                    this.resetCategoryForm();
+                    await this.loadCategories();
+                    this.renderCategoryTabs();
+
+                } catch (error) {
+                    console.error('Erro ao salvar categoria:', error);
+                    window.timePulseApp.showNotification('Erro ao salvar categoria', 'danger');
+                }
+            }
+
+            async saveProduct() {
+                const data = {
+                    name: document.getElementById('productName').value,
+                    category_id: document.getElementById('productCategory').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    description: document.getElementById('productDescription').value,
+                    display_order: parseInt(document.getElementById('productOrder').value) || 0,
+                    active: document.getElementById('productActive').checked,
+                    restaurant_id: window.timePulseApp.currentRestaurant.id
+                };
+
+                // TODO: Implementar upload de imagem
+                // data.image_url = await this.uploadImage();
+
+                try {
+                    let error;
+                    
+                    if (this.editingProduct) {
+                        ({ error } = await supabase
+                            .from('products')
+                            .update(data)
+                            .eq('id', this.editingProduct));
+                    } else {
+                        ({ error } = await supabase
+                            .from('products')
+                            .insert(data));
+                    }
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Produto salvo com sucesso!', 'success');
+                    window.closeModal();
+                    this.resetProductForm();
+                    await this.loadProducts();
+
+                } catch (error) {
+                    console.error('Erro ao salvar produto:', error);
+                    window.timePulseApp.showNotification('Erro ao salvar produto', 'danger');
+                }
+            }
+
+            async toggleProductStatus(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (!product) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('products')
+                        .update({ active: !product.active })
+                        .eq('id', productId);
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Status atualizado!', 'success');
+                    await this.loadProducts();
+
+                } catch (error) {
+                    console.error('Erro ao atualizar status:', error);
+                    window.timePulseApp.showNotification('Erro ao atualizar status', 'danger');
+                }
+            }
+
+            async deleteProduct(productId) {
+                if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('products')
+                        .delete()
+                        .eq('id', productId);
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Produto excluído!', 'success');
+                    await this.loadProducts();
+
+                } catch (error) {
+                    console.error('Erro ao excluir produto:', error);
+                    window.timePulseApp.showNotification('Erro ao excluir produto', 'danger');
+                }
+            }
+
+            async deleteCategory(categoryId) {
+                const productCount = this.products.filter(p => p.category_id === categoryId).length;
+                
+                if (productCount > 0) {
+                    alert('Não é possível excluir uma categoria que possui produtos. Mova ou exclua os produtos primeiro.');
+                    return;
+                }
+
+                if (!confirm('Tem certeza que deseja excluir esta categoria?')) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('product_categories')
+                        .delete()
+                        .eq('id', categoryId);
+
+                    if (error) throw error;
+
+                    window.timePulseApp.showNotification('Categoria excluída!', 'success');
+                    await this.loadCategories();
+                    this.renderCategoryTabs();
+
+                } catch (error) {
+                    console.error('Erro ao excluir categoria:', error);
+                    window.timePulseApp.showNotification('Erro ao excluir categoria', 'danger');
+                }
+            }
+
+            editProduct(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (!product) return;
+
+                this.editingProduct = productId;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productCategory').value = product.category_id;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productOrder').value = product.display_order;
+                document.getElementById('productActive').checked = product.active;
+
+                document.querySelector('#productModal .modal-title').textContent = 'Editar Produto';
+                window.showModal('productModal');
+            }
+
+            editCategory(categoryId) {
+                const category = this.categories.find(c => c.id === categoryId);
+                if (!category) return;
+
+                this.editingCategory = categoryId;
+                document.getElementById('categoryName').value = category.name;
+                document.getElementById('categoryDescription').value = category.description || '';
+                document.getElementById('categoryOrder').value = category.display_order;
+
+                document.querySelector('#categoryModal .modal-title').textContent = 'Editar Categoria';
+                window.showModal('categoryModal');
+            }
+
+            resetProductForm() {
+                this.editingProduct = null;
+                document.getElementById('productForm').reset();
+                document.querySelector('#productModal .modal-title').textContent = 'Novo Produto';
+                this.removeImage();
+            }
+
+            resetCategoryForm() {
+                this.editingCategory = null;
+                document.getElementById('categoryForm').reset();
+                document.querySelector('#categoryModal .modal-title').textContent = 'Nova Categoria';
+            }
+
+            handleImageUpload(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    this.handleImageFile(file);
+                }
+            }
+
+            handleImageFile(file) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione apenas arquivos de imagem.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('dragDropArea').style.display = 'none';
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            removeImage() {
+                document.getElementById('productImage').value = '';
+                document.getElementById('dragDropArea').style.display = 'block';
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        }
+
+        // Inicializar página quando estiver pronta
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.timePulseApp && window.timePulseApp.currentRestaurant) {
+                    window.menuPage = new MenuPage();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

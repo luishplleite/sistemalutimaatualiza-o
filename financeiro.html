@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - TimePulse AI</title>
+    <meta name="description" content="Controle financeiro completo do seu restaurante">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .financial-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .financial-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-card.revenue {
+            border-left-color: #28a745;
+        }
+        
+        .stat-card.expenses {
+            border-left-color: #dc3545;
+        }
+        
+        .stat-card.profit {
+            border-left-color: #007bff;
+        }
+        
+        .stat-card.orders {
+            border-left-color: #ffc107;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-number.positive {
+            color: #28a745;
+        }
+        
+        .stat-number.negative {
+            color: #dc3545;
+        }
+        
+        .stat-number.neutral {
+            color: #007bff;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .stat-change.positive {
+            color: #28a745;
+        }
+        
+        .stat-change.negative {
+            color: #dc3545;
+        }
+        
+        .financial-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .financial-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+        }
+        
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .transactions-table th,
+        .transactions-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .transactions-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .transaction-type {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .transaction-type.income {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .transaction-type.expense {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .transaction-amount {
+            font-weight: bold;
+        }
+        
+        .transaction-amount.positive {
+            color: #28a745;
+        }
+        
+        .transaction-amount.negative {
+            color: #dc3545;
+        }
+        
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-color-dark);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .expense-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .expense-category {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .expense-category:hover,
+        .expense-category.selected {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .category-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .category-amount {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .financial-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .financial-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link active">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-chart-line"></i>
+                            Controle Financeiro
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-danger" onclick="openExpenseModal()">
+                            <i class="fas fa-minus"></i>
+                            Nova Despesa
+                        </button>
+                        <button class="btn btn-success" onclick="openIncomeModal()">
+                            <i class="fas fa-plus"></i>
+                            Nova Receita
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Header Financeiro -->
+                <div class="financial-header">
+                    <h2>
+                        <i class="fas fa-calculator"></i>
+                        Controle Financeiro
+                    </h2>
+                    <p>Acompanhe receitas, despesas e a saúde financeira do seu negócio</p>
+                </div>
+                
+                <!-- Filtros -->
+                <div class="filters-section">
+                    <h3>
+                        <i class="fas fa-filter"></i>
+                        Período de Análise
+                    </h3>
+                    
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" id="endDate" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Período Rápido</label>
+                            <select id="quickPeriod" class="form-control">
+                                <option value="">Personalizado</option>
+                                <option value="today">Hoje</option>
+                                <option value="yesterday">Ontem</option>
+                                <option value="week">Esta Semana</option>
+                                <option value="month" selected>Este Mês</option>
+                                <option value="quarter">Este Trimestre</option>
+                                <option value="year">Este Ano</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary" onclick="applyFilters()">
+                                <i class="fas fa-search"></i>
+                                Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Estatísticas Principais -->
+                <div class="financial-stats">
+                    <div class="stat-card revenue">
+                        <div class="stat-number positive" id="totalRevenue">R$ 0,00</div>
+                        <div class="stat-label">Receita Total</div>
+                        <div class="stat-change" id="revenueChange">+0%</div>
+                    </div>
+                    
+                    <div class="stat-card expenses">
+                        <div class="stat-number negative" id="totalExpenses">R$ 0,00</div>
+                        <div class="stat-label">Despesas Totais</div>
+                        <div class="stat-change" id="expensesChange">+0%</div>
+                    </div>
+                    
+                    <div class="stat-card profit">
+                        <div class="stat-number neutral" id="netProfit">R$ 0,00</div>
+                        <div class="stat-label">Lucro Líquido</div>
+                        <div class="stat-change" id="profitChange">+0%</div>
+                    </div>
+                    
+                    <div class="stat-card orders">
+                        <div class="stat-number neutral" id="totalOrders">0</div>
+                        <div class="stat-label">Pedidos no Período</div>
+                        <div class="stat-change" id="ordersChange">+0%</div>
+                    </div>
+                </div>
+                
+                <!-- Seções Financeiras -->
+                <div class="financial-sections">
+                    <!-- Gráfico de Receitas vs Despesas -->
+                    <div class="financial-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-chart-area"></i>
+                                Receitas vs Despesas
+                            </h3>
+                        </div>
+                        <div class="chart-container" id="revenueExpensesChart">
+                            <div>
+                                <i class="fas fa-chart-line fa-3x"></i>
+                                <p>Gráfico será exibido aqui</p>
+                                <small>Integração com Chart.js em desenvolvimento</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Distribuição de Despesas -->
+                    <div class="financial-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Categorias de Despesas
+                            </h3>
+                        </div>
+                        <div class="expense-categories" id="expenseCategories">
+                            <!-- Categorias serão carregadas aqui -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Transações Recentes -->
+                <div class="financial-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="fas fa-list"></i>
+                            Transações Recentes
+                        </h3>
+                        <button class="btn btn-primary" onclick="loadTransactions()">
+                            <i class="fas fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody">
+                                <!-- Transações serão carregadas aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal de Nova Receita -->
+    <div class="modal" id="incomeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nova Receita</h3>
+                <button class="modal-close" onclick="closeIncomeModal()">&times;</button>
+            </div>
+            
+            <form id="incomeForm">
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" id="incomeDescription" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Valor (R$)</label>
+                    <input type="number" id="incomeAmount" class="form-control" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Data</label>
+                    <input type="date" id="incomeDate" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select id="incomeCategory" class="form-control" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="delivery">Delivery</option>
+                        <option value="balcao">Balcão</option>
+                        <option value="eventos">Eventos</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeIncomeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Salvar Receita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de Nova Despesa -->
+    <div class="modal" id="expenseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nova Despesa</h3>
+                <button class="modal-close" onclick="closeExpenseModal()">&times;</button>
+            </div>
+            
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" id="expenseDescription" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Valor (R$)</label>
+                    <input type="number" id="expenseAmount" class="form-control" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Data</label>
+                    <input type="date" id="expenseDate" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select id="expenseCategory" class="form-control" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="ingredientes">Ingredientes</option>
+                        <option value="funcionarios">Funcionários</option>
+                        <option value="aluguel">Aluguel</option>
+                        <option value="energia">Energia Elétrica</option>
+                        <option value="gas">Gás</option>
+                        <option value="agua">Água</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="equipamentos">Equipamentos</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeExpenseModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Salvar Despesa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR FINANCEIRO =====
+        class FinancialManager {
+            constructor() {
+                this.transactions = [];
+                this.currentPeriod = {
+                    start: null,
+                    end: null
+                };
+                this.expenseCategories = [
+                    { id: 'ingredientes', name: 'Ingredientes', icon: 'fas fa-carrot', amount: 0 },
+                    { id: 'funcionarios', name: 'Funcionários', icon: 'fas fa-users', amount: 0 },
+                    { id: 'aluguel', name: 'Aluguel', icon: 'fas fa-home', amount: 0 },
+                    { id: 'energia', name: 'Energia', icon: 'fas fa-bolt', amount: 0 },
+                    { id: 'gas', name: 'Gás', icon: 'fas fa-fire', amount: 0 },
+                    { id: 'marketing', name: 'Marketing', icon: 'fas fa-bullhorn', amount: 0 }
+                ];
+            }
+            
+            async init() {
+                try {
+                    console.log('💰 Inicializando controle financeiro...');
+                    
+                    this.setDefaultPeriod();
+                    await this.loadFinancialData();
+                    this.setupEventListeners();
+                    
+                    console.log('✅ Controle financeiro inicializado');
+                    
+                } catch (error) {
+                    console.error('❌ Erro na inicialização financeira:', error);
+                }
+            }
+            
+            setDefaultPeriod() {
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                
+                document.getElementById('startDate').value = firstDay.toISOString().split('T')[0];
+                document.getElementById('endDate').value = today.toISOString().split('T')[0];
+                document.getElementById('incomeDate').value = today.toISOString().split('T')[0];
+                document.getElementById('expenseDate').value = today.toISOString().split('T')[0];
+                
+                this.currentPeriod = {
+                    start: firstDay,
+                    end: today
+                };
+            }
+            
+            async loadFinancialData() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    // Carregar pedidos do período
+                    await this.loadOrdersRevenue();
+                    
+                    // Carregar transações financeiras
+                    await this.loadTransactions();
+                    
+                    // Calcular estatísticas
+                    this.calculateStats();
+                    
+                    // Atualizar UI
+                    this.updateUI();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar dados financeiros:', error);
+                }
+            }
+            
+            async loadOrdersRevenue() {
+                try {
+                    const { data: orders, error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select('total_amount, created_at, delivery_fee')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .eq('status', 'delivered')
+                        .gte('created_at', this.currentPeriod.start.toISOString())
+                        .lte('created_at', this.currentPeriod.end.toISOString());
+                    
+                    if (error) throw error;
+                    
+                    // Adicionar receitas dos pedidos às transações
+                    this.transactions = orders.map(order => ({
+                        id: `order_${order.id}`,
+                        type: 'income',
+                        category: 'delivery',
+                        description: 'Receita de Pedido',
+                        amount: parseFloat(order.total_amount),
+                        date: order.created_at,
+                        auto_generated: true
+                    }));
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar receitas dos pedidos:', error);
+                }
+            }
+            
+            async loadTransactions() {
+                try {
+                    // Carregar transações manuais (receitas e despesas extras)
+                    const { data: manualTransactions, error } = await window.TimePulseAI.supabase()
+                        .from('financial_transactions')
+                        .select('*')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .gte('transaction_date', this.currentPeriod.start.toISOString().split('T')[0])
+                        .lte('transaction_date', this.currentPeriod.end.toISOString().split('T')[0])
+                        .order('transaction_date', { ascending: false });
+                    
+                    if (error && error.code !== 'PGRST116') {
+                        console.warn('Tabela financial_transactions não encontrada:', error);
+                        return;
+                    }
+                    
+                    // Adicionar transações manuais
+                    if (manualTransactions) {
+                        this.transactions = [
+                            ...this.transactions,
+                            ...manualTransactions.map(t => ({
+                                id: t.id,
+                                type: t.type,
+                                category: t.category,
+                                description: t.description,
+                                amount: parseFloat(t.amount),
+                                date: t.transaction_date,
+                                auto_generated: false
+                            }))
+                        ];
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar transações:', error);
+                }
+            }
+            
+            calculateStats() {
+                const revenue = this.transactions
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const expenses = this.transactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const profit = revenue - expenses;
+                const orderCount = this.transactions.filter(t => t.auto_generated).length;
+                
+                // Atualizar categorias de despesas
+                this.expenseCategories.forEach(category => {
+                    category.amount = this.transactions
+                        .filter(t => t.type === 'expense' && t.category === category.id)
+                        .reduce((sum, t) => sum + t.amount, 0);
+                });
+                
+                this.stats = {
+                    revenue,
+                    expenses,
+                    profit,
+                    orderCount
+                };
+            }
+            
+            updateUI() {
+                // Atualizar estatísticas principais
+                document.getElementById('totalRevenue').textContent = `R$ ${this.stats.revenue.toFixed(2)}`;
+                document.getElementById('totalExpenses').textContent = `R$ ${this.stats.expenses.toFixed(2)}`;
+                document.getElementById('netProfit').textContent = `R$ ${this.stats.profit.toFixed(2)}`;
+                document.getElementById('totalOrders').textContent = this.stats.orderCount;
+                
+                // Atualizar cores baseadas no lucro
+                const profitElement = document.getElementById('netProfit');
+                profitElement.className = `stat-number ${this.stats.profit >= 0 ? 'positive' : 'negative'}`;
+                
+                // Atualizar categorias de despesas
+                this.renderExpenseCategories();
+                
+                // Atualizar tabela de transações
+                this.renderTransactions();
+            }
+            
+            renderExpenseCategories() {
+                const container = document.getElementById('expenseCategories');
+                
+                container.innerHTML = this.expenseCategories.map(category => `
+                    <div class="expense-category">
+                        <div class="category-icon">
+                            <i class="${category.icon}"></i>
+                        </div>
+                        <div class="category-name">${category.name}</div>
+                        <div class="category-amount">R$ ${category.amount.toFixed(2)}</div>
+                    </div>
+                `).join('');
+            }
+            
+            renderTransactions() {
+                const tbody = document.getElementById('transactionsTableBody');
+                const recentTransactions = this.transactions
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 20);
+                
+                if (recentTransactions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="empty-state">
+                                    <i class="fas fa-receipt"></i>
+                                    <p>Nenhuma transação encontrada</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = recentTransactions.map(transaction => `
+                    <tr>
+                        <td>${this.formatDate(transaction.date)}</td>
+                        <td>${transaction.description}</td>
+                        <td>${this.getCategoryName(transaction.category)}</td>
+                        <td>
+                            <span class="transaction-type ${transaction.type}">
+                                ${transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="transaction-amount ${transaction.type === 'income' ? 'positive' : 'negative'}">
+                                ${transaction.type === 'income' ? '+' : '-'}R$ ${transaction.amount.toFixed(2)}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            async saveTransaction(data) {
+                try {
+                    // Salvar no banco de dados
+                    const transactionData = {
+                        restaurant_id: window.TimePulseAI.currentRestaurant().id,
+                        type: data.type,
+                        category: data.category,
+                        description: data.description,
+                        amount: parseFloat(data.amount),
+                        transaction_date: data.date
+                    };
+                    
+                    const { error } = await window.TimePulseAI.supabase()
+                        .from('financial_transactions')
+                        .insert(transactionData);
+                    
+                    if (error) throw error;
+                    
+                    // Recarregar dados
+                    await this.loadFinancialData();
+                    this.showAlert(`${data.type === 'income' ? 'Receita' : 'Despesa'} salva com sucesso!`, 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao salvar transação:', error);
+                    this.showAlert('Erro ao salvar transação', 'error');
+                }
+            }
+            
+            setupEventListeners() {
+                // Período rápido
+                document.getElementById('quickPeriod').addEventListener('change', (e) => {
+                    this.setQuickPeriod(e.target.value);
+                });
+                
+                // Formulário de receita
+                document.getElementById('incomeForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        type: 'income',
+                        description: document.getElementById('incomeDescription').value,
+                        amount: document.getElementById('incomeAmount').value,
+                        date: document.getElementById('incomeDate').value,
+                        category: document.getElementById('incomeCategory').value
+                    };
+                    
+                    this.saveTransaction(formData);
+                    this.closeIncomeModal();
+                });
+                
+                // Formulário de despesa
+                document.getElementById('expenseForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        type: 'expense',
+                        description: document.getElementById('expenseDescription').value,
+                        amount: document.getElementById('expenseAmount').value,
+                        date: document.getElementById('expenseDate').value,
+                        category: document.getElementById('expenseCategory').value
+                    };
+                    
+                    this.saveTransaction(formData);
+                    this.closeExpenseModal();
+                });
+            }
+            
+            setQuickPeriod(period) {
+                const today = new Date();
+                let start, end;
+                
+                switch (period) {
+                    case 'today':
+                        start = end = today;
+                        break;
+                    case 'yesterday':
+                        start = end = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+                        break;
+                    case 'week':
+                        start = new Date(today.getTime() - today.getDay() * 24 * 60 * 60 * 1000);
+                        end = today;
+                        break;
+                    case 'month':
+                        start = new Date(today.getFullYear(), today.getMonth(), 1);
+                        end = today;
+                        break;
+                    case 'quarter':
+                        const quarter = Math.floor(today.getMonth() / 3);
+                        start = new Date(today.getFullYear(), quarter * 3, 1);
+                        end = today;
+                        break;
+                    case 'year':
+                        start = new Date(today.getFullYear(), 0, 1);
+                        end = today;
+                        break;
+                    default:
+                        return;
+                }
+                
+                document.getElementById('startDate').value = start.toISOString().split('T')[0];
+                document.getElementById('endDate').value = end.toISOString().split('T')[0];
+                
+                this.currentPeriod = { start, end };
+                this.loadFinancialData();
+            }
+            
+            applyFilters() {
+                const startDate = new Date(document.getElementById('startDate').value);
+                const endDate = new Date(document.getElementById('endDate').value);
+                
+                this.currentPeriod = { start: startDate, end: endDate };
+                this.loadFinancialData();
+            }
+            
+            closeIncomeModal() {
+                document.getElementById('incomeModal').classList.remove('show');
+                document.getElementById('incomeForm').reset();
+            }
+            
+            closeExpenseModal() {
+                document.getElementById('expenseModal').classList.remove('show');
+                document.getElementById('expenseForm').reset();
+            }
+            
+            // Utilitários
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('pt-BR');
+            }
+            
+            getCategoryName(categoryId) {
+                const categories = {
+                    'delivery': 'Delivery',
+                    'balcao': 'Balcão',
+                    'eventos': 'Eventos',
+                    'ingredientes': 'Ingredientes',
+                    'funcionarios': 'Funcionários',
+                    'aluguel': 'Aluguel',
+                    'energia': 'Energia Elétrica',
+                    'gas': 'Gás',
+                    'agua': 'Água',
+                    'marketing': 'Marketing',
+                    'equipamentos': 'Equipamentos',
+                    'outros': 'Outros'
+                };
+                
+                return categories[categoryId] || categoryId;
+            }
+            
+            showAlert(message, type = 'info') {
+                console.log(`${type.toUpperCase()}: ${message}`);
+                // Implementar sistema de alertas visual
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let financialManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Aguardar inicialização do sistema principal
+            await new Promise(resolve => {
+                const checkInit = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
+                        resolve();
+                    } else {
+                        setTimeout(checkInit, 100);
+                    }
+                };
+                checkInit();
+            });
+            
+            financialManager = new FinancialManager();
+            await financialManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function applyFilters() {
+            if (financialManager) {
+                financialManager.applyFilters();
+            }
+        }
+        
+        function loadTransactions() {
+            if (financialManager) {
+                financialManager.loadFinancialData();
+            }
+        }
+        
+        function openIncomeModal() {
+            document.getElementById('incomeModal').classList.add('show');
+        }
+        
+        function closeIncomeModal() {
+            if (financialManager) {
+                financialManager.closeIncomeModal();
+            }
+        }
+        
+        function openExpenseModal() {
+            document.getElementById('expenseModal').classList.add('show');
+        }
+        
+        function closeExpenseModal() {
+            if (financialManager) {
+                financialManager.closeExpenseModal();
+            }
+        }
+        
+        // Fechar modais ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

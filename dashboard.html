@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TimePulse AI</title>
+    <meta name="description" content="Painel de controle completo para gestão do seu restaurante">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TimePulse AI</div>
+                <div class="restaurant-name" id="restaurantName">Carregando...</div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-link active">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="gestao_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        Pedidos
+                    </a>
+                    <a href="cozinha.html" class="nav-link">
+                        <span class="nav-icon">👨‍🍳</span>
+                        Cozinha
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestão</div>
+                    <a href="cardapio.html" class="nav-link">
+                        <span class="nav-icon">🍽️</span>
+                        Cardápio
+                    </a>
+                    <a href="gestao_entregadores.html" class="nav-link">
+                        <span class="nav-icon">🏍️</span>
+                        Entregadores
+                    </a>
+                    <a href="clientes.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Clientes
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="relatorios.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Vendas
+                    </a>
+                    <a href="financeiro.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        Financeiro
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="configuracoes.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Configurações
+                    </a>
+                    <a href="ajuda.html" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Ajuda
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                        <div class="user-email" id="userEmail">...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="header-title">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </h1>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="window.location.href='gestao_pedidos.html'">
+                            <i class="fas fa-plus"></i>
+                            Novo Pedido
+                        </button>
+                        
+                        <div class="user-menu">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Conteúdo -->
+            <div class="content-area">
+                <!-- Saudação e Status -->
+                <div class="welcome-section">
+                    <div class="welcome-content">
+                        <h2 id="welcomeMessage">Bem-vindo ao TimePulse AI!</h2>
+                        <p id="currentDateTime">Carregando...</p>
+                    </div>
+                    <div class="restaurant-status">
+                        <div class="status-indicator" id="restaurantStatus">
+                            <i class="fas fa-circle"></i>
+                            <span>Funcionando</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cards de Estatísticas Principais -->
+                <div class="stats-grid">
+                    <div class="stat-card pending">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="pendingOrders">0</h3>
+                            <p>Pedidos Pendentes</p>
+                            <div class="stat-change" id="pendingChange">+0 hoje</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card revenue">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="todayRevenue">R$ 0,00</h3>
+                            <p>Receita Hoje</p>
+                            <div class="stat-change positive" id="revenueChange">+0% vs ontem</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card orders">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="todayOrders">0</h3>
+                            <p>Pedidos Hoje</p>
+                            <div class="stat-change" id="ordersChange">+0 vs ontem</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card deliverers">
+                        <div class="stat-icon">
+                            <i class="fas fa-motorcycle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="activeDeliverers">0</h3>
+                            <p>Entregadores Ativos</p>
+                            <div class="stat-change" id="deliverersStatus">0 ocupados</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid Principal -->
+                <div class="dashboard-grid">
+                    <!-- Pedidos Recentes -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>
+                                <i class="fas fa-list"></i>
+                                Pedidos Recentes
+                            </h3>
+                            <a href="gestao_pedidos.html" class="btn btn-outline">Ver Todos</a>
+                        </div>
+                        <div class="card-content">
+                            <div id="recentOrdersList" class="orders-list">
+                                <!-- Pedidos serão carregados aqui -->
+                                <div class="loading-skeleton">
+                                    <div class="skeleton-item"></div>
+                                    <div class="skeleton-item"></div>
+                                    <div class="skeleton-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gráfico de Vendas -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>
+                                <i class="fas fa-chart-line"></i>
+                                Vendas dos Últimos 7 Dias
+                            </h3>
+                            <button class="btn btn-outline" onclick="refreshSalesChart()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container" id="salesChart">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line fa-3x"></i>
+                                    <p>Gráfico de vendas</p>
+                                    <small>Dados dos últimos 7 dias</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Entregadores Online -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>
+                                <i class="fas fa-motorcycle"></i>
+                                Entregadores
+                            </h3>
+                            <a href="gestao_entregadores.html" class="btn btn-outline">Gerenciar</a>
+                        </div>
+                        <div class="card-content">
+                            <div id="deliverersList" class="deliverers-list">
+                                <!-- Entregadores serão carregados aqui -->
+                                <div class="loading-skeleton">
+                                    <div class="skeleton-item"></div>
+                                    <div class="skeleton-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Produtos Populares -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>
+                                <i class="fas fa-star"></i>
+                                Produtos Populares
+                            </h3>
+                            <a href="cardapio.html" class="btn btn-outline">Ver Cardápio</a>
+                        </div>
+                        <div class="card-content">
+                            <div id="popularProductsList" class="products-list">
+                                <!-- Produtos serão carregados aqui -->
+                                <div class="loading-skeleton">
+                                    <div class="skeleton-item"></div>
+                                    <div class="skeleton-item"></div>
+                                    <div class="skeleton-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Alertas e Notificações -->
+                <div class="alerts-section" id="alertsSection" style="display: none;">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="alert-content">
+                            <h4>Atenção!</h4>
+                            <p>Você tem pedidos aguardando confirmação há mais de 10 minutos.</p>
+                        </div>
+                        <button class="alert-close">&times;</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts - SISTEMA CENTRALIZADO SEM DECLARAÇÕES DUPLICADAS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // ===== GERENCIADOR DO DASHBOARD =====
+        class DashboardManager {
+            constructor() {
+                this.refreshInterval = null;
+                this.data = {
+                    orders: [],
+                    deliverers: [],
+                    stats: {}
+                };
+            }
+            
+            async init() {
+                try {
+                    console.log('📊 Inicializando dashboard...');
+                    
+                    this.updateDateTime();
+                    await this.loadDashboardData();
+                    this.setupEventListeners();
+                    this.startAutoRefresh();
+                    
+                    console.log('✅ Dashboard inicializado com sucesso');
+                    
+                } catch (error) {
+                    console.error('❌ Erro na inicialização do dashboard:', error);
+                    this.showError('Erro ao carregar o dashboard');
+                }
+            }
+            
+            async loadDashboardData() {
+                try {
+                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    
+                    // Carregar dados em paralelo
+                    await Promise.all([
+                        this.loadOrdersStats(),
+                        this.loadRecentOrders(),
+                        this.loadDeliverers(),
+                        this.loadPopularProducts()
+                    ]);
+                    
+                    this.updateStatsCards();
+                    this.renderRecentOrders();
+                    this.renderDeliverers();
+                    this.renderPopularProducts();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar dados do dashboard:', error);
+                    this.showError('Erro ao carregar dados');
+                }
+            }
+            
+            async loadOrdersStats() {
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                    
+                    // Pedidos de hoje
+                    const { data: todayOrders, error: todayError } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select('total_amount, status')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .gte('created_at', today + 'T00:00:00')
+                        .lte('created_at', today + 'T23:59:59');
+                    
+                    if (todayError) throw todayError;
+                    
+                    // Pedidos de ontem para comparação
+                    const { data: yesterdayOrders, error: yesterdayError } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select('total_amount, status')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .gte('created_at', yesterday + 'T00:00:00')
+                        .lte('created_at', yesterday + 'T23:59:59');
+                    
+                    if (yesterdayError) throw yesterdayError;
+                    
+                    const todayStats = this.calculateStats(todayOrders || []);
+                    const yesterdayStats = this.calculateStats(yesterdayOrders || []);
+                    
+                    this.data.stats = {
+                        today: todayStats,
+                        yesterday: yesterdayStats,
+                        comparison: this.calculateComparison(todayStats, yesterdayStats)
+                    };
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar estatísticas de pedidos:', error);
+                    this.data.stats = { today: {}, yesterday: {}, comparison: {} };
+                }
+            }
+            
+            async loadRecentOrders() {
+                try {
+                    const { data: orders, error } = await window.TimePulseAI.supabase()
+                        .from('orders')
+                        .select(`
+                            id, order_number, customer_name, total_amount, 
+                            status, created_at
+                        `)
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .order('created_at', { ascending: false })
+                        .limit(5);
+                    
+                    if (error) throw error;
+                    
+                    this.data.orders = orders || [];
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar pedidos recentes:', error);
+                    this.data.orders = [];
+                }
+            }
+            
+            async loadDeliverers() {
+                try {
+                    const { data: deliverers, error } = await window.TimePulseAI.supabase()
+                        .from('deliverers')
+                        .select('id, name, status, type')
+                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .order('name');
+                    
+                    if (error) throw error;
+                    
+                    this.data.deliverers = deliverers || [];
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar entregadores:', error);
+                    this.data.deliverers = [];
+                }
+            }
+            
+            async loadPopularProducts() {
+                try {
+                    // Buscar produtos mais vendidos nos últimos 7 dias
+                    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+                    
+                    const { data: orderItems, error } = await window.TimePulseAI.supabase()
+                        .from('order_items')
+                        .select(`
+                            product_name, quantity, price,
+                            orders!inner(restaurant_id, created_at)
+                        `)
+                        .eq('orders.restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .gte('orders.created_at', sevenDaysAgo);
+                    
+                    if (error) throw error;
+                    
+                    // Agrupar e calcular produtos populares
+                    const productsMap = new Map();
+                    
+                    (orderItems || []).forEach(item => {
+                        const key = item.product_name;
+                        if (!productsMap.has(key)) {
+                            productsMap.set(key, {
+                                name: item.product_name,
+                                totalQuantity: 0,
+                                totalRevenue: 0
+                            });
+                        }
+                        
+                        const product = productsMap.get(key);
+                        product.totalQuantity += item.quantity;
+                        product.totalRevenue += item.quantity * parseFloat(item.price);
+                    });
+                    
+                    this.data.popularProducts = Array.from(productsMap.values())
+                        .sort((a, b) => b.totalQuantity - a.totalQuantity)
+                        .slice(0, 5);
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar produtos populares:', error);
+                    this.data.popularProducts = [];
+                }
+            }
+            
+            calculateStats(orders) {
+                const totalOrders = orders.length;
+                const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0);
+                const pendingOrders = orders.filter(order => 
+                    ['pending', 'confirmed'].includes(order.status)
+                ).length;
+                
+                return {
+                    totalOrders,
+                    totalRevenue,
+                    pendingOrders,
+                    averageTicket: totalOrders > 0 ? totalRevenue / totalOrders : 0
+                };
+            }
+            
+            calculateComparison(today, yesterday) {
+                const revenueChange = yesterday.totalRevenue > 0 
+                    ? ((today.totalRevenue - yesterday.totalRevenue) / yesterday.totalRevenue * 100)
+                    : 0;
+                
+                const ordersChange = yesterday.totalOrders > 0
+                    ? ((today.totalOrders - yesterday.totalOrders) / yesterday.totalOrders * 100)
+                    : 0;
+                
+                return {
+                    revenue: revenueChange,
+                    orders: ordersChange
+                };
+            }
+            
+            updateStatsCards() {
+                const stats = this.data.stats.today || {};
+                const comparison = this.data.stats.comparison || {};
+                const deliverers = this.data.deliverers || [];
+                
+                // Pedidos pendentes
+                document.getElementById('pendingOrders').textContent = stats.pendingOrders || 0;
+                document.getElementById('pendingChange').textContent = `+${stats.totalOrders || 0} hoje`;
+                
+                // Receita
+                document.getElementById('todayRevenue').textContent = `R$ ${(stats.totalRevenue || 0).toFixed(2)}`;
+                const revenueChangeEl = document.getElementById('revenueChange');
+                revenueChangeEl.textContent = `${comparison.revenue >= 0 ? '+' : ''}${(comparison.revenue || 0).toFixed(1)}% vs ontem`;
+                revenueChangeEl.className = `stat-change ${comparison.revenue >= 0 ? 'positive' : 'negative'}`;
+                
+                // Pedidos
+                document.getElementById('todayOrders').textContent = stats.totalOrders || 0;
+                const ordersChangeEl = document.getElementById('ordersChange');
+                ordersChangeEl.textContent = `${comparison.orders >= 0 ? '+' : ''}${(comparison.orders || 0).toFixed(1)}% vs ontem`;
+                ordersChangeEl.className = `stat-change ${comparison.orders >= 0 ? 'positive' : 'negative'}`;
+                
+                // Entregadores
+                const activeDeliverers = deliverers.filter(d => d.status === 'active').length;
+                const busyDeliverers = deliverers.filter(d => d.status === 'busy').length;
+                
+                document.getElementById('activeDeliverers').textContent = activeDeliverers;
+                document.getElementById('deliverersStatus').textContent = `${busyDeliverers} ocupados`;
+            }
+            
+            renderRecentOrders() {
+                const container = document.getElementById('recentOrdersList');
+                
+                if (this.data.orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Nenhum pedido hoje</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = this.data.orders.map(order => `
+                    <div class="order-item">
+                        <div class="order-info">
+                            <div class="order-number">#${order.order_number}</div>
+                            <div class="order-customer">${order.customer_name}</div>
+                        </div>
+                        <div class="order-details">
+                            <div class="order-amount">R$ ${parseFloat(order.total_amount).toFixed(2)}</div>
+                            <div class="order-status ${this.getStatusClass(order.status)}">
+                                ${this.getStatusLabel(order.status)}
+                            </div>
+                        </div>
+                        <div class="order-time">${this.getTimeAgo(order.created_at)}</div>
+                    </div>
+                `).join('');
+            }
+            
+            renderDeliverers() {
+                const container = document.getElementById('deliverersList');
+                
+                if (this.data.deliverers.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-motorcycle"></i>
+                            <p>Nenhum entregador cadastrado</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = this.data.deliverers.slice(0, 4).map(deliverer => `
+                    <div class="deliverer-item">
+                        <div class="deliverer-avatar">
+                            ${deliverer.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="deliverer-info">
+                            <div class="deliverer-name">${deliverer.name}</div>
+                            <div class="deliverer-type">${deliverer.type === 'own' ? 'Próprio' : 'Terceirizado'}</div>
+                        </div>
+                        <div class="deliverer-status ${deliverer.status}">
+                            ${this.getDelivererStatusLabel(deliverer.status)}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            renderPopularProducts() {
+                const container = document.getElementById('popularProductsList');
+                
+                if (!this.data.popularProducts || this.data.popularProducts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-star"></i>
+                            <p>Nenhum produto vendido esta semana</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = this.data.popularProducts.map((product, index) => `
+                    <div class="product-item">
+                        <div class="product-rank">${index + 1}º</div>
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-stats">${product.totalQuantity} vendidos</div>
+                        </div>
+                        <div class="product-revenue">R$ ${product.totalRevenue.toFixed(2)}</div>
+                    </div>
+                `).join('');
+            }
+            
+            updateDateTime() {
+                const now = new Date();
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                
+                document.getElementById('currentDateTime').textContent = 
+                    now.toLocaleDateString('pt-BR', options);
+                
+                // Atualizar a cada minuto
+                setTimeout(() => this.updateDateTime(), 60000);
+            }
+            
+            setupEventListeners() {
+                // Listener para atualizações em tempo real
+                document.addEventListener('orderUpdate', () => {
+                    this.loadDashboardData();
+                });
+                
+                // Fechar alertas
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('alert-close')) {
+                        e.target.closest('.alert').remove();
+                    }
+                });
+            }
+            
+            startAutoRefresh() {
+                this.refreshInterval = setInterval(() => {
+                    this.loadDashboardData();
+                }, 30000); // Atualizar a cada 30 segundos
+            }
+            
+            // Utilitários
+            getStatusClass(status) {
+                const statusMap = {
+                    'pending': 'pending',
+                    'confirmed': 'confirmed',
+                    'preparing': 'preparing',
+                    'ready': 'ready',
+                    'out_for_delivery': 'delivering',
+                    'delivered': 'delivered',
+                    'cancelled': 'cancelled'
+                };
+                
+                return statusMap[status] || 'pending';
+            }
+            
+            getStatusLabel(status) {
+                const statusMap = {
+                    'pending': 'Pendente',
+                    'confirmed': 'Confirmado',
+                    'preparing': 'Preparando',
+                    'ready': 'Pronto',
+                    'out_for_delivery': 'Entregando',
+                    'delivered': 'Entregue',
+                    'cancelled': 'Cancelado'
+                };
+                
+                return statusMap[status] || 'Pendente';
+            }
+            
+            getDelivererStatusLabel(status) {
+                const statusMap = {
+                    'active': 'Disponível',
+                    'busy': 'Ocupado',
+                    'inactive': 'Inativo'
+                };
+                
+                return statusMap[status] || 'Inativo';
+            }
+            
+            getTimeAgo(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                
+                if (diffMins < 1) return 'Agora mesmo';
+                if (diffMins < 60) return `${diffMins} min atrás`;
+                
+                const diffHours = Math.floor(diffMins / 60);
+                if (diffHours < 24) return `${diffHours}h atrás`;
+                
+                const diffDays = Math.floor(diffHours / 24);
+                return `${diffDays} dias atrás`;
+            }
+            
+            showError(message) {
+                console.error('Dashboard Error:', message);
+                // Implementar notificação de erro visual
+            }
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        let dashboardManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Aguardar inicialização do sistema principal
+            await new Promise(resolve => {
+                const checkInit = () => {
+                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
+                        resolve();
+                    } else {
+                        setTimeout(checkInit, 100);
+                    }
+                };
+                checkInit();
+            });
+            
+            dashboardManager = new DashboardManager();
+            await dashboardManager.init();
+        });
+        
+        // ===== FUNÇÕES GLOBAIS =====
+        function refreshSalesChart() {
+            if (dashboardManager) {
+                dashboardManager.loadDashboardData();
+            }
+        }
+    </script>
+    
+    <style>
+        /* Estilos específicos do dashboard */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color), #6610f2);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .welcome-content h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+        }
+        
+        .welcome-content p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .restaurant-status {
+            text-align: right;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .status-indicator i {
+            color: #28a745;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-card.pending .stat-icon {
+            background: #ffc107;
+        }
+        
+        .stat-card.revenue .stat-icon {
+            background: #28a745;
+        }
+        
+        .stat-card.orders .stat-icon {
+            background: #007bff;
+        }
+        
+        .stat-card.deliverers .stat-icon {
+            background: #6f42c1;
+        }
+        
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 0 0.25rem 0;
+            color: #333;
+        }
+        
+        .stat-content p {
+            margin: 0 0 0.5rem 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .stat-change.positive {
+            color: #28a745;
+        }
+        
+        .stat-change.negative {
+            color: #dc3545;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+            text-align: center;
+        }
+        
+        .chart-placeholder i {
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .orders-list,
+        .deliverers-list,
+        .products-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .order-item,
+        .deliverer-item,
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            transition: background 0.2s ease;
+        }
+        
+        .order-item:hover,
+        .deliverer-item:hover,
+        .product-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .order-item:last-child,
+        .deliverer-item:last-child,
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-info {
+            flex: 1;
+        }
+        
+        .order-number {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .order-customer {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .order-details {
+            text-align: right;
+            margin-right: 1rem;
+        }
+        
+        .order-amount {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .order-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .order-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .order-status.confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .order-status.preparing {
+            background: #ffd7a3;
+            color: #8a5a00;
+        }
+        
+        .order-status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .order-status.delivering {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .order-status.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .order-time {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .deliverer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .deliverer-info {
+            flex: 1;
+        }
+        
+        .deliverer-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .deliverer-type {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .deliverer-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .deliverer-status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .deliverer-status.busy {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .deliverer-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .product-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .product-info {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-stats {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .product-revenue {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .alerts-section {
+            margin-bottom: 2rem;
+        }
+        
+        .alert {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert.alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .alert i {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-content h4 {
+            margin: 0 0 0.25rem 0;
+            font-weight: 600;
+        }
+        
+        .alert-content p {
+            margin: 0;
+        }
+        
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.5;
+        }
+        
+        .alert-close:hover {
+            opacity: 1;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .loading-skeleton {
+            animation: pulse 1.5s infinite;
+        }
+        
+        .skeleton-item {
+            height: 60px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-color-dark);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .order-item,
+            .deliverer-item,
+            .product-item {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: left;
+            }
+        }
+    </style>
+</body>
+</html>

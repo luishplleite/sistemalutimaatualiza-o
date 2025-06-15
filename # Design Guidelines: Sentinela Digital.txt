@@ -1,0 +1,41 @@
+# Design Guidelines: Sentinela Digital
+
+## 1. Princípios Fundamentais
+
+* **Confiança:** O design deve ser sóbrio, profissional e seguro. Evitar elementos lúdicos ou casuais.
+* **Clareza:** A informação mais crítica (o alerta) deve ser inequívoca e instantaneamente compreensível.
+* **Não Intrusivo:** A interface deve operar em segundo plano, sem atrapalhar a experiência da videochamada até que um alerta seja necessário.
+
+## 2. Estilo Visual
+
+* **Estilo Geral:** Corporativo, minimalista e limpo. Foco na função sobre a forma. Interfaces com bom uso de espaço em branco e hierarquia visual clara.
+
+## 3. Paleta de Cores
+
+A paleta é baseada em um sistema de semáforo, universalmente entendido.
+
+* **Cor Primária (Segurança):**
+    * Verde Sentinela: `#2E8540` (Um verde sóbrio e confiante)
+* **Cores de Alerta:**
+    * Amarelo (Risco Médio/Atenção): `#FFBF00`
+    * Vermelho (Risco Alto/Ação Imediata): `#D93025`
+* **Cores Neutras:**
+    * Fundo: `#FFFFFF` / `#F8F9FA` (Branco / Cinza claro)
+    * Texto Principal: `#202124` (Cinza escuro)
+    * Texto Secundário: `#5F6368` (Cinza médio)
+
+## 4. Tipografia
+
+* **Família Tipográfica:** **Roboto** ou **Inter**. São fontes sans-serif modernas, altamente legíveis em telas e com diversas variações de peso.
+* **Hierarquia:**
+    * Títulos (Painel Admin): Roboto Bold, 24px
+    * Texto do Alerta: Roboto Medium, 16px
+    * Corpo de Texto: Roboto Regular, 14px
+
+## 5. Componentes de UI & UX
+
+* **O Alerta em Chamada:**
+    * **Ícone Ativo:** Um pequeno ícone de escudo (`🛡️`) em cor neutra (`#5F6368`) deve ficar visível em um canto da tela, indicando que a proteção está ativa.
+    * **Notificação de Alerta:** Ao detectar alto risco, o ícone muda de cor para Vermelho (`#D93025`) e uma notificação discreta, mas clara, aparece na parte superior ou inferior da tela com o texto: "**ALERTA:** Chamada potencialmente **FALSA** detectada."
+    * **Estado Seguro:** O ícone pode assumir a cor Verde (`#2E8540`) para indicar que a chamada foi verificada e é considerada autêntica.
+* **Painel de Administrador:** O design do painel deve ser funcional, focado em gráficos e tabelas claras para a visualização de dados e logs de alertas.
