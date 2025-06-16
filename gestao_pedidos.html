@@ -15,9 +15,611 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --primary-dark: #1e7e34;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .restaurant-name {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 1.5rem;
+            color: #6c757d;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #495057;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .filter-input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Orders Section */
+        .orders-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .order-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .order-status.novo { background: #fff3cd; color: #856404; }
+        .order-status.aceito { background: #d1ecf1; color: #0c5460; }
+        .order-status.preparo { background: #ffd7a3; color: #8a5a00; }
+        .order-status.pronto { background: #d4edda; color: #155724; }
+        .order-status.saiu_entrega { background: #cce5ff; color: #004085; }
+        .order-status.entregue { background: #d4edda; color: #155724; }
+        .order-status.rejeitado, .order-status.cancelado { background: #f8d7da; color: #721c24; }
+
+        .order-customer h4 {
+            margin: 0 0 0.25rem 0;
+            color: #333;
+        }
+
+        .order-customer p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .order-address {
+            margin: 1rem 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .order-address i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .order-items {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .order-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .order-total {
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+            text-align: right;
+            color: var(--primary-color);
+        }
+
+        .order-time {
+            margin-bottom: 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .order-time i {
+            margin-right: 0.5rem;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .order-notes {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #fff3cd;
+            border-radius: 6px;
+            color: #856404;
+            font-size: 0.9rem;
+        }
+
+        .order-notes i {
+            margin-right: 0.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content.large {
+            max-width: 1000px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* Form */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1rem;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 1rem 1.5rem;
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success-color);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        /* Real-time indicator */
+        .realtime-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .realtime-indicator .pulse {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -65,11 +667,11 @@
                     <div class="nav-section-title">Relatórios</div>
                     <a href="relatorios.html" class="nav-link">
                         <span class="nav-icon">📈</span>
-                        Vendas
+                        Análises
                     </a>
-                    <a href="financeiro.html" class="nav-link">
-                        <span class="nav-icon">💰</span>
-                        Financeiro
+                    <a href="historico_pedidos.html" class="nav-link">
+                        <span class="nav-icon">📋</span>
+                        Histórico
                     </a>
                 </div>
                 
@@ -83,153 +685,97 @@
                         <span class="nav-icon">❓</span>
                         Ajuda
                     </a>
+                    <a href="#" class="nav-link" onclick="signOut()">
+                        <span class="nav-icon">🚪</span>
+                        Sair
+                    </a>
                 </div>
-            </div>
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">?</div>
-                    <div class="user-details">
-                        <div class="user-name" id="userName">Carregando...</div>
-                        <div class="user-email" id="userEmail">...</div>
-                    </div>
-                </div>
-                <button class="logout-btn" id="logoutBtn">
-                    <span class="nav-icon">🚪</span>
-                    Sair
-                </button>
             </div>
         </nav>
-        
-        <!-- Conteúdo Principal -->
+
+        <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
-            <header class="main-header">
-                <div class="header-content">
-                    <div class="header-left">
-                        <button class="btn btn-secondary d-md-none" data-action="toggle-sidebar">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <h1 class="header-title">
-                            <i class="fas fa-shopping-cart"></i>
-                            Gestão de Pedidos
-                        </h1>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <button class="btn btn-primary" onclick="openNewOrderModal()">
-                            <i class="fas fa-plus"></i>
-                            Novo Pedido
-                        </button>
-                        
-                        <div class="user-menu">
-                            <div class="user-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            
-            <!-- Área de Conteúdo -->
-            <div class="content-area">
-                <!-- Estatísticas Rápidas -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon pending">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="pendingOrders">0</h3>
-                            <p>Pendentes</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon preparing">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="preparingOrders">0</h3>
-                            <p>Em Preparo</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon ready">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="readyOrders">0</h3>
-                            <p>Prontos</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon delivering">
-                            <i class="fas fa-motorcycle"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="deliveringOrders">0</h3>
-                            <p>Entregando</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    Gestão de Pedidos
+                </h1>
+                <p class="page-subtitle">Acompanhe e gerencie todos os pedidos em tempo real</p>
                 
-                <!-- Filtros -->
-                <div class="filters-section">
-                    <div class="filters-content">
-                        <div class="filter-group">
-                            <label class="filter-label">Status</label>
-                            <select id="statusFilter" class="filter-input">
-                                <option value="">Todos</option>
-                                <option value="pending">Pendente</option>
-                                <option value="confirmed">Confirmado</option>
-                                <option value="preparing">Preparando</option>
-                                <option value="ready">Pronto</option>
-                                <option value="out_for_delivery">Entregando</option>
-                                <option value="delivered">Entregue</option>
-                                <option value="cancelled">Cancelado</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label class="filter-label">Buscar</label>
-                            <input type="text" id="searchInput" class="filter-input" placeholder="Cliente ou número do pedido">
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label class="filter-label">Data</label>
-                            <input type="date" id="dateFilter" class="filter-input">
-                        </div>
-                        
+                <div class="page-actions">
+                    <button class="btn btn-primary" onclick="openNewOrderModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Pedido
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="refreshOrders()">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select id="statusFilter" class="filter-input">
+                            <option value="">Todos os status</option>
+                            <option value="novo">Novo</option>
+                            <option value="aceito">Aceito</option>
+                            <option value="preparo">Em Preparo</option>
+                            <option value="pronto">Pronto</option>
+                            <option value="saiu_entrega">Saiu para Entrega</option>
+                            <option value="entregue">Entregue</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Buscar</label>
+                        <input type="text" id="searchInput" class="filter-input" placeholder="Cliente ou número do pedido">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Data</label>
+                        <input type="date" id="dateFilter" class="filter-input">
+                    </div>
+                    
+                    <div class="filter-group">
                         <button class="btn btn-primary" onclick="applyFilters()">
                             <i class="fas fa-search"></i>
                             Filtrar
                         </button>
-                        
+                    </div>
+                    
+                    <div class="filter-group">
                         <button class="btn btn-secondary" onclick="clearFilters()">
                             <i class="fas fa-times"></i>
                             Limpar
                         </button>
                     </div>
                 </div>
-                
-                <!-- Lista de Pedidos -->
-                <div class="orders-section">
-                    <div class="section-header">
-                        <h2>
-                            <i class="fas fa-list"></i>
-                            Pedidos Recentes
-                        </h2>
-                        <button class="btn btn-secondary" onclick="refreshOrders()">
-                            <i class="fas fa-sync-alt"></i>
-                            Atualizar
-                        </button>
+            </div>
+            
+            <!-- Orders List -->
+            <div class="orders-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-list"></i>
+                        Pedidos Recentes (<span id="ordersCount">0</span>)
+                    </h2>
+                    <div class="realtime-status" id="realtimeStatus">
+                        <span class="pulse"></span>
+                        Tempo real ativo
                     </div>
-                    
-                    <div class="orders-grid" id="ordersGrid">
-                        <!-- Pedidos serão carregados aqui -->
+                </div>
+                
+                <div class="orders-grid" id="ordersGrid">
+                    <div class="loading" id="loadingState">
+                        <i class="fas fa-spinner"></i>
+                        <p>Carregando pedidos...</p>
                     </div>
                 </div>
             </div>
@@ -271,7 +817,7 @@
                     <div class="form-section">
                         <h4>Itens do Pedido</h4>
                         <div id="orderItems">
-                            <div class="order-item">
+                            <div class="order-item-form">
                                 <div class="item-grid">
                                     <div>
                                         <label class="form-label">Produto</label>
@@ -330,33 +876,51 @@
                                     <option value="money">Dinheiro</option>
                                     <option value="card">Cartão</option>
                                     <option value="pix">PIX</option>
-                                    <option value="online">Online</option>
+                                    <option value="voucher">Vale</option>
                                 </select>
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Observações do Pedido</label>
-                            <textarea id="orderNotes" class="form-input" rows="3" placeholder="Observações gerais do pedido"></textarea>
+                            
+                            <div class="form-group full-width">
+                                <label class="form-label">Observações do Pedido</label>
+                                <textarea id="orderNotes" class="form-input" rows="2" placeholder="Observações gerais do pedido"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeNewOrderModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Pedido</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeNewOrderModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Salvar Pedido
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <!-- Scripts - SISTEMA CENTRALIZADO SEM DECLARAÇÕES DUPLICADAS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/app.js"></script>
-    
+
+    <!-- Indicador de Tempo Real -->
+    <div class="realtime-indicator" id="realtimeIndicator">
+        <div class="pulse"></div>
+        Conectado em tempo real
+    </div>
+
     <script>
-        // ===== GERENCIADOR DE PEDIDOS =====
+        // ===== CONFIGURAÇÃO SUPABASE =====
+        const SUPABASE_URL = 'https://sguirxaunajirfvlzbac.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWlyeGF1bmFqaXJmdmx6YmFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTQ4MDIsImV4cCI6MjA2NTY3MDgwMn0.5vQj3LmBbpP0WosMwreboRww97wZyXBByQqG8oaI59k';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ===== ESTADO GLOBAL =====
+        let orders = [];
+        let filteredOrders = [];
+        let currentRestaurant = null;
+        let realtimeSubscription = null;
+
+        // ===== CLASSE PRINCIPAL =====
         class OrdersManager {
             constructor() {
                 this.orders = [];
@@ -364,112 +928,118 @@
                 this.editingOrderId = null;
                 this.updateInterval = null;
             }
-            
+
             async init() {
+                console.log('🚀 Inicializando Gestão de Pedidos...');
+                
                 try {
-                    console.log('📦 Inicializando gestão de pedidos...');
-                    
+                    await this.loadRestaurantInfo();
                     await this.loadOrders();
                     this.setupEventListeners();
+                    this.setupRealtimeUpdates();
                     this.setupAutoRefresh();
                     
-                    console.log('✅ Gestão de pedidos inicializada');
-                    
+                    console.log('✅ Gestão de Pedidos iniciada com sucesso!');
                 } catch (error) {
-                    console.error('❌ Erro na inicialização:', error);
-                    this.showNotification('Erro ao carregar pedidos', 'error');
+                    console.error('❌ Erro ao inicializar:', error);
+                    this.showNotification('Erro ao carregar dados', 'error');
                 }
             }
-            
+
+            async loadRestaurantInfo() {
+                try {
+                    // Para demo, vamos usar o restaurante de exemplo
+                    const restaurantId = '50b2dbcb-66bb-4969-92cf-493f03237e49';
+                    
+                    const { data: restaurant, error } = await supabase
+                        .from('restaurants')
+                        .select('*')
+                        .eq('id', restaurantId)
+                        .single();
+
+                    if (error) throw error;
+
+                    currentRestaurant = restaurant;
+                    document.getElementById('restaurantName').textContent = restaurant.name;
+                    
+                    // Aplicar cor do tema
+                    if (restaurant.primary_color) {
+                        document.documentElement.style.setProperty('--primary-color', restaurant.primary_color);
+                    }
+
+                    console.log('🏪 Restaurante carregado:', restaurant.name);
+                } catch (error) {
+                    console.error('❌ Erro ao carregar restaurante:', error);
+                }
+            }
+
             async loadOrders() {
                 try {
-                    if (!window.TimePulseAI.currentRestaurant()) return;
+                    document.getElementById('loadingState').style.display = 'block';
                     
-                    const { data: orders, error } = await window.TimePulseAI.supabase()
+                    const { data: ordersData, error } = await supabase
                         .from('orders')
                         .select(`
-                            id, order_number, customer_name, customer_phone,
-                            delivery_address, total_amount, delivery_fee,
-                            status, payment_method, notes, created_at,
-                            order_items (
-                                id, product_name, quantity, price, notes
-                            )
+                            *,
+                            order_items(*)
                         `)
-                        .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
                         .order('created_at', { ascending: false });
-                    
+
                     if (error) throw error;
-                    
-                    this.orders = orders || [];
+
+                    this.orders = ordersData.map(order => ({
+                        ...order,
+                        order_number: String(order.id).slice(-8).toUpperCase()
+                    }));
+
                     this.filteredOrders = [...this.orders];
-                    this.updateStats();
                     this.renderOrders();
                     
+                    document.getElementById('ordersCount').textContent = this.orders.length;
+                    document.getElementById('loadingState').style.display = 'none';
+                    
+                    console.log(`📦 ${this.orders.length} pedidos carregados`);
                 } catch (error) {
                     console.error('❌ Erro ao carregar pedidos:', error);
                     this.showNotification('Erro ao carregar pedidos', 'error');
+                    document.getElementById('loadingState').style.display = 'none';
                 }
             }
-            
-            updateStats() {
-                const stats = {
-                    pending: 0,
-                    preparing: 0,
-                    ready: 0,
-                    delivering: 0
-                };
-                
-                this.orders.forEach(order => {
-                    switch (order.status) {
-                        case 'pending':
-                        case 'confirmed':
-                            stats.pending++;
-                            break;
-                        case 'preparing':
-                            stats.preparing++;
-                            break;
-                        case 'ready':
-                            stats.ready++;
-                            break;
-                        case 'out_for_delivery':
-                            stats.delivering++;
-                            break;
-                    }
-                });
-                
-                document.getElementById('pendingOrders').textContent = stats.pending;
-                document.getElementById('preparingOrders').textContent = stats.preparing;
-                document.getElementById('readyOrders').textContent = stats.ready;
-                document.getElementById('deliveringOrders').textContent = stats.delivering;
-            }
-            
+
             renderOrders() {
                 const container = document.getElementById('ordersGrid');
+                const loadingState = document.getElementById('loadingState');
                 
+                if (loadingState) {
+                    loadingState.style.display = 'none';
+                }
+
                 if (this.filteredOrders.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <i class="fas fa-shopping-cart fa-3x"></i>
+                            <i class="fas fa-shopping-cart"></i>
                             <h3>Nenhum pedido encontrado</h3>
                             <p>Novos pedidos aparecerão aqui automaticamente</p>
                         </div>
                     `;
                     return;
                 }
-                
+
                 container.innerHTML = this.filteredOrders.map(order => this.createOrderCard(order)).join('');
             }
-            
+
             createOrderCard(order) {
                 const statusClass = this.getStatusClass(order.status);
                 const statusLabel = this.getStatusLabel(order.status);
                 const timeAgo = this.getTimeAgo(order.created_at);
-                
+                const total = parseFloat(order.total || order.total_amount || 0);
+
                 return `
                     <div class="order-card ${statusClass}" data-order-id="${order.id}">
                         <div class="order-header">
                             <div class="order-number">#${order.order_number}</div>
-                            <div class="order-status ${statusClass}">${statusLabel}</div>
+                            <div class="order-status ${order.status}">${statusLabel}</div>
                         </div>
                         
                         <div class="order-customer">
@@ -492,7 +1062,7 @@
                         </div>
                         
                         <div class="order-total">
-                            <strong>Total: R$ ${parseFloat(order.total_amount).toFixed(2)}</strong>
+                            <strong>Total: R$ ${total.toFixed(2)}</strong>
                         </div>
                         
                         <div class="order-time">
@@ -513,160 +1083,215 @@
                     </div>
                 `;
             }
-            
+
             getOrderActions(order) {
+                const actions = [];
+                
                 switch (order.status) {
-                    case 'pending':
-                        return `
-                            <button class="btn btn-success btn-sm" onclick="ordersManager.updateOrderStatus('${order.id}', 'confirmed')">
-                                <i class="fas fa-check"></i> Confirmar
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="ordersManager.updateOrderStatus('${order.id}', 'cancelled')">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
-                        `;
-                    case 'confirmed':
-                        return `
-                            <button class="btn btn-primary btn-sm" onclick="ordersManager.updateOrderStatus('${order.id}', 'preparing')">
-                                <i class="fas fa-fire"></i> Iniciar Preparo
-                            </button>
-                        `;
-                    case 'preparing':
-                        return `
-                            <button class="btn btn-success btn-sm" onclick="ordersManager.updateOrderStatus('${order.id}', 'ready')">
-                                <i class="fas fa-check-circle"></i> Marcar como Pronto
-                            </button>
-                        `;
-                    case 'ready':
-                        return `
-                            <button class="btn btn-warning btn-sm" onclick="ordersManager.updateOrderStatus('${order.id}', 'out_for_delivery')">
-                                <i class="fas fa-motorcycle"></i> Saiu para Entrega
-                            </button>
-                        `;
-                    case 'out_for_delivery':
-                        return `
-                            <button class="btn btn-success btn-sm" onclick="ordersManager.updateOrderStatus('${order.id}', 'delivered')">
-                                <i class="fas fa-check-double"></i> Marcar como Entregue
-                            </button>
-                        `;
-                    default:
-                        return `
-                            <button class="btn btn-info btn-sm" onclick="ordersManager.viewOrder('${order.id}')">
-                                <i class="fas fa-eye"></i> Ver Detalhes
-                            </button>
-                        `;
+                    case 'novo':
+                        actions.push(`<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'aceito')">
+                            <i class="fas fa-check"></i> Aceitar
+                        </button>`);
+                        actions.push(`<button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}', 'rejeitado')">
+                            <i class="fas fa-times"></i> Rejeitar
+                        </button>`);
+                        break;
+                    case 'aceito':
+                        actions.push(`<button class="btn btn-warning btn-sm" onclick="updateOrderStatus('${order.id}', 'preparo')">
+                            <i class="fas fa-utensils"></i> Iniciar Preparo
+                        </button>`);
+                        break;
+                    case 'preparo':
+                        actions.push(`<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'pronto')">
+                            <i class="fas fa-check-circle"></i> Marcar Pronto
+                        </button>`);
+                        break;
+                    case 'pronto':
+                        actions.push(`<button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}', 'saiu_entrega')">
+                            <i class="fas fa-motorcycle"></i> Saiu p/ Entrega
+                        </button>`);
+                        break;
+                    case 'saiu_entrega':
+                        actions.push(`<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'entregue')">
+                            <i class="fas fa-flag-checkered"></i> Entregue
+                        </button>`);
+                        break;
                 }
+                
+                return actions.join('');
             }
-            
+
+            getStatusClass(status) {
+                const classes = {
+                    'novo': 'novo',
+                    'aceito': 'aceito',
+                    'preparo': 'preparo',
+                    'pronto': 'pronto',
+                    'saiu_entrega': 'saiu_entrega',
+                    'entregue': 'entregue',
+                    'rejeitado': 'rejeitado',
+                    'cancelado': 'cancelado'
+                };
+                return classes[status] || 'novo';
+            }
+
+            getStatusLabel(status) {
+                const labels = {
+                    'novo': 'Novo',
+                    'aceito': 'Aceito',
+                    'preparo': 'Em Preparo',
+                    'pronto': 'Pronto',
+                    'saiu_entrega': 'Saiu p/ Entrega',
+                    'entregue': 'Entregue',
+                    'rejeitado': 'Rejeitado',
+                    'cancelado': 'Cancelado'
+                };
+                return labels[status] || 'Novo';
+            }
+
+            getTimeAgo(dateString) {
+                const now = new Date();
+                const date = new Date(dateString);
+                const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+                
+                if (diffInMinutes < 1) return 'Agora';
+                if (diffInMinutes < 60) return `${diffInMinutes}min atrás`;
+                
+                const diffInHours = Math.floor(diffInMinutes / 60);
+                if (diffInHours < 24) return `${diffInHours}h atrás`;
+                
+                const diffInDays = Math.floor(diffInHours / 24);
+                return `${diffInDays}d atrás`;
+            }
+
             async updateOrderStatus(orderId, newStatus) {
                 try {
-                    const { error } = await window.TimePulseAI.supabase()
+                    const { data, error } = await supabase
                         .from('orders')
-                        .update({ status: newStatus })
-                        .eq('id', orderId);
-                    
+                        .update({ 
+                            status: newStatus,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', orderId)
+                        .select()
+                        .single();
+
                     if (error) throw error;
-                    
+
+                    this.showNotification(`Status atualizado para: ${this.getStatusLabel(newStatus)}`, 'success');
                     await this.loadOrders();
-                    this.showNotification('Status do pedido atualizado!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao atualizar status:', error);
                     this.showNotification('Erro ao atualizar status', 'error');
                 }
             }
-            
+
             async saveOrder(orderData) {
                 try {
-                    if (this.editingOrderId) {
-                        // Atualizar pedido existente
-                        const { error } = await window.TimePulseAI.supabase()
-                            .from('orders')
-                            .update(orderData)
-                            .eq('id', this.editingOrderId);
-                        
-                        if (error) throw error;
-                        
-                        this.showNotification('Pedido atualizado com sucesso!', 'success');
-                    } else {
-                        // Criar novo pedido
-                        orderData.restaurant_id = window.TimePulseAI.currentRestaurant().id;
-                        orderData.order_number = await this.generateOrderNumber();
-                        
-                        const { data: order, error } = await window.TimePulseAI.supabase()
-                            .from('orders')
-                            .insert(orderData)
-                            .select()
-                            .single();
-                        
-                        if (error) throw error;
-                        
-                        // Salvar itens do pedido
-                        if (orderData.items && orderData.items.length > 0) {
-                            const items = orderData.items.map(item => ({
-                                order_id: order.id,
-                                product_name: item.name,
-                                quantity: item.quantity,
-                                price: item.price,
-                                notes: item.notes
-                            }));
-                            
-                            const { error: itemsError } = await window.TimePulseAI.supabase()
-                                .from('order_items')
-                                .insert(items);
-                            
-                            if (itemsError) throw itemsError;
-                        }
-                        
-                        this.showNotification('Pedido criado com sucesso!', 'success');
-                    }
-                    
+                    // Inserir pedido
+                    const { data: order, error: orderError } = await supabase
+                        .from('orders')
+                        .insert([{
+                            restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
+                            customer_name: orderData.customer_name,
+                            customer_phone: orderData.customer_phone,
+                            delivery_address: orderData.delivery_address,
+                            delivery_fee: orderData.delivery_fee,
+                            subtotal: orderData.subtotal,
+                            total: orderData.total_amount,
+                            payment_method: orderData.payment_method,
+                            notes: orderData.notes,
+                            status: 'novo'
+                        }])
+                        .select()
+                        .single();
+
+                    if (orderError) throw orderError;
+
+                    // Inserir itens do pedido
+                    const orderItems = orderData.items.map(item => ({
+                        order_id: order.id,
+                        product_name: item.name,
+                        quantity: item.quantity,
+                        price: item.price,
+                        notes: item.notes
+                    }));
+
+                    const { error: itemsError } = await supabase
+                        .from('order_items')
+                        .insert(orderItems);
+
+                    if (itemsError) throw itemsError;
+
+                    this.showNotification('Pedido criado com sucesso!', 'success');
                     await this.loadOrders();
                     
                 } catch (error) {
                     console.error('❌ Erro ao salvar pedido:', error);
-                    this.showNotification('Erro ao salvar pedido', 'error');
+                    this.showNotification('Erro ao criar pedido', 'error');
                 }
             }
-            
-            async generateOrderNumber() {
-                const today = new Date();
-                const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
-                
-                const { data, error } = await window.TimePulseAI.supabase()
-                    .from('orders')
-                    .select('order_number')
-                    .eq('restaurant_id', window.TimePulseAI.currentRestaurant().id)
-                    .like('order_number', `${dateStr}%`)
-                    .order('order_number', { ascending: false })
-                    .limit(1);
-                
-                if (error) {
-                    console.error('Erro ao gerar número do pedido:', error);
-                    return `${dateStr}001`;
+
+            setupRealtimeUpdates() {
+                try {
+                    // Cancelar subscription anterior se existir
+                    if (realtimeSubscription) {
+                        realtimeSubscription.unsubscribe();
+                    }
+
+                    // Configurar subscription para pedidos
+                    realtimeSubscription = supabase
+                        .channel('orders_realtime')
+                        .on('postgres_changes', {
+                            event: '*',
+                            schema: 'public',
+                            table: 'orders',
+                            filter: `restaurant_id=eq.${currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49'}`
+                        }, (payload) => {
+                            console.log('📡 Atualização em tempo real:', payload);
+                            this.handleRealtimeUpdate(payload);
+                        })
+                        .subscribe();
+
+                    console.log('📡 Updates em tempo real configurados');
+                } catch (error) {
+                    console.error('❌ Erro ao configurar tempo real:', error);
                 }
-                
-                if (data.length === 0) {
-                    return `${dateStr}001`;
-                }
-                
-                const lastNumber = parseInt(data[0].order_number.slice(-3));
-                const nextNumber = (lastNumber + 1).toString().padStart(3, '0');
-                
-                return `${dateStr}${nextNumber}`;
             }
-            
+
+            handleRealtimeUpdate(payload) {
+                const { eventType, new: newRecord, old: oldRecord } = payload;
+                
+                switch (eventType) {
+                    case 'INSERT':
+                        this.showNotification('Novo pedido recebido!', 'success');
+                        this.loadOrders();
+                        break;
+                    case 'UPDATE':
+                        if (oldRecord && newRecord && oldRecord.status !== newRecord.status) {
+                            this.showNotification(`Pedido #${String(newRecord.id).slice(-8)} - Status: ${this.getStatusLabel(newRecord.status)}`, 'info');
+                        }
+                        this.loadOrders();
+                        break;
+                    case 'DELETE':
+                        this.showNotification('Pedido removido', 'warning');
+                        this.loadOrders();
+                        break;
+                }
+            }
+
             setupEventListeners() {
+                // Filtros
+                document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('searchInput').addEventListener('input', () => this.applyFilters());
+                document.getElementById('dateFilter').addEventListener('change', () => this.applyFilters());
+                
                 // Formulário de novo pedido
                 document.getElementById('newOrderForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.handleOrderSubmit();
                 });
-                
-                // Eventos de filtros
-                document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
-                document.getElementById('searchInput').addEventListener('input', () => this.applyFilters());
-                document.getElementById('dateFilter').addEventListener('change', () => this.applyFilters());
                 
                 // Cálculo automático do total
                 document.addEventListener('input', (e) => {
@@ -679,38 +1304,31 @@
                 document.addEventListener('click', (e) => {
                     if (e.target.matches('.remove-item, .remove-item *')) {
                         e.preventDefault();
-                        const orderItem = e.target.closest('.order-item');
-                        if (document.querySelectorAll('.order-item').length > 1) {
+                        const orderItem = e.target.closest('.order-item-form');
+                        if (document.querySelectorAll('.order-item-form').length > 1) {
                             orderItem.remove();
                             this.calculateOrderTotal();
+                        } else {
+                            this.showNotification('Deve haver pelo menos um item', 'warning');
                         }
                     }
                 });
-                
-                // Listener para atualizações em tempo real
-                document.addEventListener('orderUpdate', () => {
-                    this.loadOrders();
-                });
             }
-            
+
             handleOrderSubmit() {
-                const formData = new FormData(document.getElementById('newOrderForm'));
-                
                 // Coletar dados do cliente
                 const orderData = {
                     customer_name: document.getElementById('customerName').value,
                     customer_phone: document.getElementById('customerPhone').value,
                     delivery_address: document.getElementById('deliveryAddress').value,
                     delivery_fee: parseFloat(document.getElementById('deliveryFee').value) || 0,
-                    total_amount: parseFloat(document.getElementById('orderTotal').value) || 0,
                     payment_method: document.getElementById('paymentMethod').value,
-                    notes: document.getElementById('orderNotes').value,
-                    status: 'pending'
+                    notes: document.getElementById('orderNotes').value
                 };
                 
                 // Coletar itens
                 const items = [];
-                document.querySelectorAll('.order-item').forEach(itemEl => {
+                document.querySelectorAll('.order-item-form').forEach(itemEl => {
                     const name = itemEl.querySelector('.item-name').value;
                     const quantity = parseInt(itemEl.querySelector('.item-quantity').value);
                     const price = parseFloat(itemEl.querySelector('.item-price').value);
@@ -721,17 +1339,23 @@
                     }
                 });
                 
+                if (items.length === 0) {
+                    this.showNotification('Adicione pelo menos um item', 'warning');
+                    return;
+                }
+                
                 orderData.items = items;
                 orderData.subtotal = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+                orderData.total_amount = orderData.subtotal + orderData.delivery_fee;
                 
                 this.saveOrder(orderData);
                 this.closeNewOrderModal();
             }
-            
+
             calculateOrderTotal() {
                 let subtotal = 0;
                 
-                document.querySelectorAll('.order-item').forEach(itemEl => {
+                document.querySelectorAll('.order-item-form').forEach(itemEl => {
                     const quantity = parseInt(itemEl.querySelector('.item-quantity').value) || 0;
                     const price = parseFloat(itemEl.querySelector('.item-price').value) || 0;
                     subtotal += quantity * price;
@@ -743,11 +1367,11 @@
                 document.getElementById('subtotal').value = subtotal.toFixed(2);
                 document.getElementById('orderTotal').value = total.toFixed(2);
             }
-            
+
             addOrderItem() {
                 const container = document.getElementById('orderItems');
                 const itemHtml = `
-                    <div class="order-item">
+                    <div class="order-item-form">
                         <div class="item-grid">
                             <div>
                                 <label class="form-label">Produto</label>
@@ -775,8 +1399,9 @@
                 `;
                 
                 container.insertAdjacentHTML('beforeend', itemHtml);
+                this.calculateOrderTotal();
             }
-            
+
             applyFilters() {
                 const status = document.getElementById('statusFilter').value;
                 const search = document.getElementById('searchInput').value.toLowerCase();
@@ -789,7 +1414,7 @@
                     // Filtro de busca
                     if (search) {
                         const searchInName = order.customer_name.toLowerCase().includes(search);
-                        const searchInNumber = order.order_number.includes(search);
+                        const searchInNumber = order.order_number.toLowerCase().includes(search);
                         if (!searchInName && !searchInNumber) return false;
                     }
                     
@@ -803,87 +1428,43 @@
                 });
                 
                 this.renderOrders();
+                document.getElementById('ordersCount').textContent = this.filteredOrders.length;
             }
-            
+
             clearFilters() {
                 document.getElementById('statusFilter').value = '';
                 document.getElementById('searchInput').value = '';
                 document.getElementById('dateFilter').value = '';
                 this.filteredOrders = [...this.orders];
                 this.renderOrders();
+                document.getElementById('ordersCount').textContent = this.filteredOrders.length;
             }
-            
+
             setupAutoRefresh() {
                 this.updateInterval = setInterval(() => {
                     this.loadOrders();
-                }, 30000); // Atualizar a cada 30 segundos
+                }, 60000); // Atualizar a cada 1 minuto
             }
-            
+
             closeNewOrderModal() {
                 document.getElementById('newOrderModal').classList.remove('show');
                 document.getElementById('newOrderForm').reset();
-                this.editingOrderId = null;
                 
                 // Reset order items to single item
                 const container = document.getElementById('orderItems');
-                const items = container.querySelectorAll('.order-item');
+                const items = container.querySelectorAll('.order-item-form');
                 for (let i = 1; i < items.length; i++) {
                     items[i].remove();
                 }
                 
                 this.calculateOrderTotal();
             }
-            
-            // Utilitários
-            getStatusClass(status) {
-                const statusMap = {
-                    'pending': 'pending',
-                    'confirmed': 'confirmed',
-                    'preparing': 'preparing',
-                    'ready': 'ready',
-                    'out_for_delivery': 'delivering',
-                    'delivered': 'delivered',
-                    'cancelled': 'cancelled'
-                };
-                
-                return statusMap[status] || 'pending';
-            }
-            
-            getStatusLabel(status) {
-                const statusMap = {
-                    'pending': 'Pendente',
-                    'confirmed': 'Confirmado',
-                    'preparing': 'Preparando',
-                    'ready': 'Pronto',
-                    'out_for_delivery': 'Entregando',
-                    'delivered': 'Entregue',
-                    'cancelled': 'Cancelado'
-                };
-                
-                return statusMap[status] || 'Pendente';
-            }
-            
-            getTimeAgo(dateString) {
-                const date = new Date(dateString);
-                const now = new Date();
-                const diffMs = now - date;
-                const diffMins = Math.floor(diffMs / 60000);
-                
-                if (diffMins < 1) return 'Agora mesmo';
-                if (diffMins < 60) return `${diffMins} min atrás`;
-                
-                const diffHours = Math.floor(diffMins / 60);
-                if (diffHours < 24) return `${diffHours}h atrás`;
-                
-                const diffDays = Math.floor(diffHours / 24);
-                return `${diffDays} dias atrás`;
-            }
-            
+
             showNotification(message, type = 'info') {
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.innerHTML = `
-                    <div class="notification-content">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                         <span>${message}</span>
                     </div>
@@ -894,584 +1475,86 @@
                 setTimeout(() => notification.classList.add('show'), 100);
                 setTimeout(() => {
                     notification.classList.remove('show');
-                    setTimeout(() => document.body.removeChild(notification), 300);
+                    setTimeout(() => {
+                        if (document.body.contains(notification)) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 300);
                 }, 3000);
             }
         }
-        
-        // ===== INICIALIZAÇÃO =====
+
+        // ===== INSTÂNCIA GLOBAL =====
         let ordersManager;
-        
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Aguardar inicialização do sistema principal
-            await new Promise(resolve => {
-                const checkInit = () => {
-                    if (window.TimePulseAI && window.TimePulseAI.supabase()) {
-                        resolve();
-                    } else {
-                        setTimeout(checkInit, 100);
-                    }
-                };
-                checkInit();
-            });
-            
-            ordersManager = new OrdersManager();
-            await ordersManager.init();
-        });
-        
+
         // ===== FUNÇÕES GLOBAIS =====
         function openNewOrderModal() {
             document.getElementById('newOrderModal').classList.add('show');
         }
-        
+
         function closeNewOrderModal() {
             if (ordersManager) {
                 ordersManager.closeNewOrderModal();
             }
         }
-        
+
         function addOrderItem() {
             if (ordersManager) {
                 ordersManager.addOrderItem();
             }
         }
-        
+
         function applyFilters() {
             if (ordersManager) {
                 ordersManager.applyFilters();
             }
         }
-        
+
         function clearFilters() {
             if (ordersManager) {
                 ordersManager.clearFilters();
             }
         }
-        
+
         function refreshOrders() {
             if (ordersManager) {
                 ordersManager.loadOrders();
             }
         }
-        
-        // Fechar modal ao clicar fora
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('show');
+
+        async function updateOrderStatus(orderId, newStatus) {
+            if (ordersManager) {
+                await ordersManager.updateOrderStatus(orderId, newStatus);
+            }
+        }
+
+        function signOut() {
+            if (confirm('Deseja realmente sair?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Iniciando aplicação...');
+            
+            ordersManager = new OrdersManager();
+            await ordersManager.init();
+            
+            // Configurar data de hoje como padrão
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateFilter').value = today;
+        });
+
+        // ===== CLEANUP =====
+        window.addEventListener('beforeunload', () => {
+            if (realtimeSubscription) {
+                realtimeSubscription.unsubscribe();
+            }
+            if (ordersManager && ordersManager.updateInterval) {
+                clearInterval(ordersManager.updateInterval);
             }
         });
     </script>
-    
-    <style>
-        /* Estilos específicos da gestão de pedidos */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-        
-        .stat-icon.pending { background: #ffc107; }
-        .stat-icon.preparing { background: #fd7e14; }
-        .stat-icon.ready { background: #28a745; }
-        .stat-icon.delivering { background: #007bff; }
-        
-        .stat-content h3 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0 0 0.25rem 0;
-            color: #333;
-        }
-        
-        .stat-content p {
-            margin: 0;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .filters-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .filters-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            align-items: end;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .filter-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        
-        .filter-input {
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        
-        .filter-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .orders-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .section-header h2 {
-            margin: 0;
-            color: #333;
-        }
-        
-        .orders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .order-card {
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1.5rem;
-            background: white;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .order-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .order-number {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #333;
-        }
-        
-        .order-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .order-status.pending { background: #fff3cd; color: #856404; }
-        .order-status.confirmed { background: #d1ecf1; color: #0c5460; }
-        .order-status.preparing { background: #ffd7a3; color: #8a5a00; }
-        .order-status.ready { background: #d4edda; color: #155724; }
-        .order-status.delivering { background: #cce5ff; color: #004085; }
-        .order-status.delivered { background: #d4edda; color: #155724; }
-        .order-status.cancelled { background: #f8d7da; color: #721c24; }
-        
-        .order-customer h4 {
-            margin: 0 0 0.25rem 0;
-            color: #333;
-        }
-        
-        .order-customer p {
-            margin: 0;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .order-address {
-            margin: 1rem 0;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .order-address i {
-            margin-right: 0.5rem;
-            color: var(--primary-color);
-        }
-        
-        .order-items {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .order-item:last-child {
-            margin-bottom: 0;
-        }
-        
-        .order-total {
-            margin: 1rem 0;
-            padding-top: 1rem;
-            border-top: 1px solid #e9ecef;
-            text-align: right;
-            color: var(--primary-color);
-        }
-        
-        .order-time {
-            margin-bottom: 1rem;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .order-time i {
-            margin-right: 0.5rem;
-        }
-        
-        .order-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .order-notes {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: #fff3cd;
-            border-radius: 6px;
-            color: #856404;
-            font-size: 0.9rem;
-        }
-        
-        .order-notes i {
-            margin-right: 0.5rem;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-        
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-content.large {
-            max-width: 1000px;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .modal-header h3 {
-            margin: 0;
-            color: #333;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6c757d;
-        }
-        
-        .modal-body {
-            padding: 1.5rem;
-        }
-        
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            padding: 1.5rem;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .form-section {
-            margin-bottom: 2rem;
-        }
-        
-        .form-section h4 {
-            margin: 0 0 1rem 0;
-            color: #333;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 0.5rem;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        
-        .form-input {
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .item-grid {
-            display: grid;
-            grid-template-columns: 2fr 80px 120px 60px;
-            gap: 1rem;
-            align-items: end;
-            margin-bottom: 1rem;
-        }
-        
-        .item-actions {
-            display: flex;
-            align-items: end;
-            padding-bottom: 0.75rem;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-color-dark);
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-        
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #218838;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-warning:hover {
-            background: #e0a800;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
-        
-        .btn-info:hover {
-            background: #138496;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #6c757d;
-        }
-        
-        .empty-state i {
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            z-index: 10000;
-            max-width: 300px;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            border-left: 4px solid #28a745;
-        }
-        
-        .notification.error {
-            border-left: 4px solid #dc3545;
-        }
-        
-        .notification.info {
-            border-left: 4px solid #17a2b8;
-        }
-        
-        .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .notification-content i {
-            font-size: 1.25rem;
-        }
-        
-        .notification.success .notification-content i {
-            color: #28a745;
-        }
-        
-        .notification.error .notification-content i {
-            color: #dc3545;
-        }
-        
-        .notification.info .notification-content i {
-            color: #17a2b8;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .filters-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .orders-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .item-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </body>
 </html>
