@@ -179,6 +179,10 @@
             grid-template-columns: 1fr 1fr;
         }
         
+        .form-row.three-cols {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        
         .form-group {
             display: flex;
             flex-direction: column;
@@ -431,7 +435,8 @@
                 min-height: 100vh;
             }
             
-            .form-row.two-cols {
+            .form-row.two-cols,
+            .form-row.three-cols {
                 grid-template-columns: 1fr;
             }
             
@@ -523,7 +528,7 @@
                             class="form-input" 
                             placeholder="Ex: Pizzaria do João"
                             required
-                            maxlength="100"
+                            maxlength="255"
                         >
                         <div class="field-error" id="restaurantNameError"></div>
                     </div>
@@ -551,19 +556,19 @@
                         </label>
                         <select id="category" name="category" class="form-select" required>
                             <option value="">Selecione...</option>
-                            <option value="pizzaria">Pizzaria</option>
-                            <option value="hamburgueria">Hamburgueria</option>
-                            <option value="churrascaria">Churrascaria</option>
-                            <option value="japonesa">Comida Japonesa</option>
-                            <option value="italiana">Comida Italiana</option>
-                            <option value="brasileira">Comida Brasileira</option>
-                            <option value="mexicana">Comida Mexicana</option>
-                            <option value="chinesa">Comida Chinesa</option>
-                            <option value="vegetariana">Vegetariana/Vegana</option>
-                            <option value="acai">Açaí e Sucos</option>
-                            <option value="lanchonete">Lanchonete</option>
-                            <option value="padaria">Padaria</option>
-                            <option value="outro">Outro</option>
+                            <option value="Pizzaria">Pizzaria</option>
+                            <option value="Hamburgueria">Hamburgueria</option>
+                            <option value="Churrascaria">Churrascaria</option>
+                            <option value="Japonês">Comida Japonesa</option>
+                            <option value="Italiano">Comida Italiana</option>
+                            <option value="Brasileiro">Comida Brasileira</option>
+                            <option value="Mexicano">Comida Mexicana</option>
+                            <option value="Restaurante">Restaurante</option>
+                            <option value="Vegetariano">Vegetariana/Vegana</option>
+                            <option value="Açaí">Açaí e Sucos</option>
+                            <option value="Lanchonete">Lanchonete</option>
+                            <option value="Padaria">Padaria</option>
+                            <option value="Sorveteria">Sorveteria</option>
                         </select>
                         <div class="field-error" id="categoryError"></div>
                     </div>
@@ -572,17 +577,89 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="address" class="form-label">
-                            Endereço Completo <span class="required">*</span>
+                            Endereço <span class="required">*</span>
                         </label>
-                        <textarea 
+                        <input 
+                            type="text" 
                             id="address" 
                             name="address" 
-                            class="form-textarea" 
-                            placeholder="Rua, número, bairro, cidade - CEP"
+                            class="form-input" 
+                            placeholder="Rua, número, bairro"
                             required
-                            maxlength="300"
-                        ></textarea>
+                            maxlength="255"
+                        >
                         <div class="field-error" id="addressError"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row three-cols">
+                    <div class="form-group">
+                        <label for="city" class="form-label">
+                            Cidade <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="city" 
+                            name="city" 
+                            class="form-input" 
+                            placeholder="São Paulo"
+                            required
+                            maxlength="100"
+                        >
+                        <div class="field-error" id="cityError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="state" class="form-label">
+                            Estado <span class="required">*</span>
+                        </label>
+                        <select id="state" name="state" class="form-select" required>
+                            <option value="">UF</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+                        </select>
+                        <div class="field-error" id="stateError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="zipCode" class="form-label">
+                            CEP <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="zipCode" 
+                            name="zipCode" 
+                            class="form-input" 
+                            placeholder="00000-000"
+                            required
+                            maxlength="10"
+                        >
+                        <div class="field-error" id="zipCodeError"></div>
                     </div>
                 </div>
             </div>
@@ -603,7 +680,7 @@
                             class="form-input" 
                             placeholder="Ex: João Silva Santos"
                             required
-                            maxlength="100"
+                            maxlength="255"
                         >
                         <div class="field-error" id="ownerNameError"></div>
                     </div>
@@ -803,8 +880,8 @@
     <!-- Script Principal -->
     <script>
         // ===== CONFIGURAÇÕES =====
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Substituir pela URL real
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Substituir pela chave real
+        const SUPABASE_URL = 'https://sguirxaunajirfvlzbac.supabase.co'; // Substituir pela URL real
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWlyeGF1bmFqaXJmdmx6YmFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTQ4MDIsImV4cCI6MjA2NTY3MDgwMn0.5vQj3LmBbpP0WosMwreboRww97wZyXBByQqG8oaI59k'; // Substituir pela chave real
         
         // ===== VARIÁVEIS GLOBAIS =====
         let supabase = null;
@@ -922,12 +999,28 @@
                 
                 e.target.value = value;
             });
+            
+            // Máscara de CEP
+            const zipCodeInput = document.getElementById('zipCode');
+            zipCodeInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length <= 8) {
+                    if (value.length <= 5) {
+                        value = value.replace(/(\d{0,5})/, '$1');
+                    } else {
+                        value = value.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+                    }
+                }
+                
+                e.target.value = value;
+            });
         }
         
         // ===== VALIDAÇÃO EM TEMPO REAL =====
         function setupRealTimeValidation() {
             const fields = [
-                'restaurantName', 'phone', 'category', 'address', 
+                'restaurantName', 'phone', 'category', 'address', 'city', 'state', 'zipCode',
                 'ownerName', 'cpf', 'cnpj',
                 'email', 'password', 'confirmPassword'
             ];
@@ -966,17 +1059,22 @@
                 
                 const userData = {
                     name: formData.get('restaurantName'),
-                    phone: formData.get('phone'),
-                    category: formData.get('category'),
+                    ownerPhone: formData.get('phone'),
+                    businessType: formData.get('category'),
                     address: formData.get('address'),
+                    city: formData.get('city'),
+                    state: formData.get('state'),
+                    zipCode: formData.get('zipCode'),
                     ownerName: formData.get('ownerName'),
-                    cpf: formData.get('cpf').replace(/\D/g, ''),
+                    ownerCpf: formData.get('cpf').replace(/\D/g, ''),
                     cnpj: formData.get('cnpj').replace(/\D/g, '') || null,
                     email: email,
                     deliveryFee: parseFloat(formData.get('deliveryFee')) || 5.00,
                     preparationTime: parseInt(formData.get('preparationTime')) || 30,
                     acceptEmails: formData.get('acceptEmails') === 'on'
                 };
+                
+                console.log('📝 Dados preparados:', userData);
                 
                 // Criar usuário no Supabase Auth
                 const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -992,25 +1090,45 @@
                 
                 if (authError) throw authError;
                 
-                // Inserir dados do restaurante
-                const { error: insertError } = await supabase
-                    .from('restaurants')
-                    .insert([{
-                        user_id: authData.user.id,
-                        name: userData.name,
-                        phone: userData.phone,
-                        category: userData.category,
-                        address: userData.address,
-                        owner_name: userData.ownerName,
-                        cpf: userData.cpf,
-                        cnpj: userData.cnpj,
-                        delivery_fee: userData.deliveryFee,
-                        preparation_time: userData.preparationTime,
-                        accept_emails: userData.acceptEmails,
-                        is_active: true
-                    }]);
+                console.log('✅ Usuário criado:', authData.user.id);
                 
-                if (insertError) throw insertError;
+                // Preparar dados para inserção
+                const restaurantData = {
+                    name: userData.name,
+                    owner_id: authData.user.id,
+                    owner_name: userData.ownerName,
+                    owner_cpf: userData.ownerCpf,
+                    owner_phone: userData.ownerPhone,
+                    cnpj: userData.cnpj,
+                    business_type: userData.businessType,
+                    address: userData.address,
+                    city: userData.city,
+                    state: userData.state,
+                    zip_code: userData.zipCode,
+                    delivery_fee: userData.deliveryFee,
+                    preparation_time: userData.preparationTime,
+                    notification_settings: JSON.stringify({
+                        email: userData.acceptEmails,
+                        whatsapp: true,
+                        sound: true
+                    }),
+                    status: 'active'
+                };
+                
+                console.log('📝 Dados do restaurante:', restaurantData);
+                
+                // Inserir dados do restaurante
+                const { data: restaurantInserted, error: insertError } = await supabase
+                    .from('restaurants')
+                    .insert([restaurantData])
+                    .select();
+                
+                if (insertError) {
+                    console.error('❌ Erro na inserção:', insertError);
+                    throw insertError;
+                }
+                
+                console.log('✅ Restaurante criado:', restaurantInserted);
                 
                 showAlert('Cadastro realizado com sucesso! Verifique seu e-mail para confirmar a conta.', 'success');
                 
@@ -1019,8 +1137,7 @@
                 
                 // Redirecionar após delay
                 setTimeout(() => {
-                    const email = encodeURIComponent(userData.email);
-                    window.location.href = `email-confirmation.html?email=${email}`;
+                    window.location.href = `login.html?message=Cadastro realizado! Verifique seu email para ativar a conta.`;
                 }, 2000);
                 
             } catch (error) {
@@ -1034,8 +1151,10 @@
                     errorMessage = 'E-mail inválido. Verifique o formato.';
                 } else if (error.message.includes('Password should be at least')) {
                     errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
-                } else if (error.message.includes('restaurante')) {
-                    errorMessage = error.message;
+                } else if (error.code === 'PGRST204') {
+                    errorMessage = 'Erro na estrutura do banco de dados. Contate o suporte.';
+                } else if (error.message.includes('duplicate key')) {
+                    errorMessage = 'Este restaurante já está cadastrado.';
                 }
                 
                 showAlert(errorMessage, 'error');
@@ -1055,6 +1174,9 @@
                 { name: 'phone', label: 'Telefone' },
                 { name: 'category', label: 'Categoria' },
                 { name: 'address', label: 'Endereço' },
+                { name: 'city', label: 'Cidade' },
+                { name: 'state', label: 'Estado' },
+                { name: 'zipCode', label: 'CEP' },
                 { name: 'ownerName', label: 'Nome do proprietário' },
                 { name: 'cpf', label: 'CPF' },
                 { name: 'email', label: 'E-mail' },
@@ -1118,6 +1240,34 @@
                         isValid = false;
                     } else if (value.length < 10) {
                         errorMessage = 'Endereço deve ser mais completo';
+                        isValid = false;
+                    }
+                    break;
+                    
+                case 'city':
+                    if (!value) {
+                        errorMessage = 'Cidade é obrigatória';
+                        isValid = false;
+                    } else if (value.length < 2) {
+                        errorMessage = 'Nome da cidade inválido';
+                        isValid = false;
+                    }
+                    break;
+                    
+                case 'state':
+                    if (!value) {
+                        errorMessage = 'Estado é obrigatório';
+                        isValid = false;
+                    }
+                    break;
+                    
+                case 'zipCode':
+                    const zipRegex = /^\d{5}-\d{3}$/;
+                    if (!value) {
+                        errorMessage = 'CEP é obrigatório';
+                        isValid = false;
+                    } else if (!zipRegex.test(value)) {
+                        errorMessage = 'CEP inválido. Use o formato 00000-000';
                         isValid = false;
                     }
                     break;
