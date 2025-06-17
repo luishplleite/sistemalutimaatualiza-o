@@ -261,132 +261,181 @@
             color: #333;
         }
 
-        .orders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
+        /* Orders Container */
+        .orders-container {
+            width: 100%;
         }
 
-        .order-card {
+        /* Orders List */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .order-list-item {
+            background: white;
             border: 1px solid #e9ecef;
             border-radius: 8px;
-            padding: 1.5rem;
-            background: white;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
         }
 
-        .order-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        .order-list-item:hover {
+            background: #f8f9fa;
+            border-color: var(--primary-color);
+            transform: translateX(2px);
         }
 
-        .order-header {
+        .order-list-item.novo {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .order-list-item.aceito {
+            border-left-color: #17a2b8;
+            background: rgba(23, 162, 184, 0.05);
+        }
+
+        .order-list-item.preparo {
+            border-left-color: #fd7e14;
+            background: rgba(253, 126, 20, 0.05);
+        }
+
+        .order-list-item.pronto {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .order-list-item.saiu_entrega {
+            border-left-color: #007bff;
+            background: rgba(0, 123, 255, 0.05);
+        }
+
+        .order-list-item.entregue {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .order-list-item.rejeitado,
+        .order-list-item.cancelado {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .order-list-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
         }
 
-        .order-number {
-            font-weight: bold;
+        .order-main-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .customer-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .customer-name {
             font-size: 1.1rem;
+            font-weight: 600;
             color: #333;
+            margin: 0 0 0.25rem 0;
         }
 
-        .order-status {
+        .customer-phone {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .customer-address {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .order-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+            min-width: 120px;
+        }
+
+        .order-status-badge {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
+            text-align: center;
         }
 
-        .order-status.novo { background: #fff3cd; color: #856404; }
-        .order-status.aceito { background: #d1ecf1; color: #0c5460; }
-        .order-status.preparo { background: #ffd7a3; color: #8a5a00; }
-        .order-status.pronto { background: #d4edda; color: #155724; }
-        .order-status.saiu_entrega { background: #cce5ff; color: #004085; }
-        .order-status.entregue { background: #d4edda; color: #155724; }
-        .order-status.rejeitado, .order-status.cancelado { background: #f8d7da; color: #721c24; }
-
-        .order-customer h4 {
-            margin: 0 0 0.25rem 0;
-            color: #333;
+        .order-status-badge.novo { 
+            background: #fff3cd; 
+            color: #856404; 
         }
-
-        .order-customer p {
-            margin: 0;
-            color: #6c757d;
-            font-size: 0.9rem;
+        .order-status-badge.aceito { 
+            background: #d1ecf1; 
+            color: #0c5460; 
         }
-
-        .order-address {
-            margin: 1rem 0;
-            color: #6c757d;
-            font-size: 0.9rem;
+        .order-status-badge.preparo { 
+            background: #ffd7a3; 
+            color: #8a5a00; 
         }
-
-        .order-address i {
-            margin-right: 0.5rem;
-            color: var(--primary-color);
+        .order-status-badge.pronto { 
+            background: #d4edda; 
+            color: #155724; 
         }
-
-        .order-items {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
+        .order-status-badge.saiu_entrega { 
+            background: #cce5ff; 
+            color: #004085; 
         }
-
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+        .order-status-badge.entregue { 
+            background: #d4edda; 
+            color: #155724; 
         }
-
-        .order-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .order-total {
-            margin: 1rem 0;
-            padding-top: 1rem;
-            border-top: 1px solid #e9ecef;
-            text-align: right;
-            color: var(--primary-color);
+        .order-status-badge.rejeitado, 
+        .order-status-badge.cancelado { 
+            background: #f8d7da; 
+            color: #721c24; 
         }
 
         .order-time {
-            margin-bottom: 1rem;
             color: #6c757d;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
-        .order-time i {
-            margin-right: 0.5rem;
+        .order-total {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1rem;
         }
 
-        .order-actions {
+        .order-preview {
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            color: #6c757d;
         }
 
-        .order-notes {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: #fff3cd;
-            border-radius: 6px;
-            color: #856404;
+        .items-count {
             font-size: 0.9rem;
         }
 
-        .order-notes i {
-            margin-right: 0.5rem;
+        .order-preview i {
+            font-size: 0.8rem;
         }
 
-        /* Modal */
+        /* MODAL MELHORADO - Header e Footer Fixos */
         .modal {
             display: none;
             position: fixed;
@@ -395,7 +444,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            z-index: 10000;
         }
 
         .modal.show {
@@ -407,27 +456,39 @@
         .modal-content {
             background: white;
             border-radius: 12px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 900px;
+            width: 95%;
+            max-height: 95vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
 
         .modal-content.large {
-            max-width: 1000px;
+            max-width: 1100px;
         }
 
+        /* Header fixo */
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid #e9ecef;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .modal-header h3 {
             margin: 0;
             color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
         }
 
         .modal-close {
@@ -436,23 +497,222 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: #6c757d;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
         }
 
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        /* Corpo scrollável */
         .modal-body {
+            flex: 1;
+            overflow-y: auto;
             padding: 1.5rem;
+            max-height: calc(95vh - 140px); /* Ajustado para header e footer fixos */
         }
 
+        /* Footer fixo */
         .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 1rem;
-            padding: 1.5rem;
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
             border-top: 1px solid #e9ecef;
+            background: white;
+            border-radius: 0 0 12px 12px;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* LAYOUT COMPACTO DO MODAL DE DETALHES */
+        .order-details-content {
+            max-width: 100%;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-section h4 {
+            color: #333;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item span {
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        /* Lista de itens compacta */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+
+        .item-detail:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .item-quantity {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .item-notes {
+            color: #856404;
+            font-style: italic;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .item-price {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1rem;
+            text-align: right;
+        }
+
+        /* Resumo financeiro compacto */
+        .financial-summary {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .financial-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+        }
+
+        .financial-item:not(:last-child) {
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .financial-item.total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border-top: 2px solid var(--primary-color);
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            border-bottom: none;
+        }
+
+        /* Informações adicionais em linha */
+        .info-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-line:last-child {
+            border-bottom: none;
+        }
+
+        .info-line label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .info-line span {
+            color: #333;
+            font-size: 0.9rem;
+            text-align: right;
+            flex: 1;
+        }
+
+        .text-success {
+            color: var(--success-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .text-danger {
+            color: var(--danger-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         /* Form */
         .form-section {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-section h4 {
@@ -611,12 +871,65 @@
                 padding: 1rem;
             }
 
-            .orders-grid {
+            .filters-grid {
                 grid-template-columns: 1fr;
             }
 
-            .filters-grid {
+            .order-list-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .order-main-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .order-meta {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                min-width: auto;
+            }
+
+            .order-preview {
+                align-self: flex-end;
+            }
+
+            .detail-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .item-detail {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .item-price {
+                align-self: flex-end;
+            }
+
+            .modal-content {
+                width: 98%;
+                max-height: 98vh;
+            }
+
+            .modal-body {
+                max-height: calc(98vh - 140px);
+            }
+
+            .modal-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -772,7 +1085,7 @@
                     </div>
                 </div>
                 
-                <div class="orders-grid" id="ordersGrid">
+                <div class="orders-container" id="ordersGrid">
                     <div class="loading" id="loadingState">
                         <i class="fas fa-spinner"></i>
                         <p>Carregando pedidos...</p>
@@ -901,6 +1214,24 @@
         </div>
     </div>
 
+    <!-- Modal de Detalhes do Pedido - MELHORADO -->
+    <div class="modal" id="orderDetailsModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="orderDetailsTitle">Detalhes do Pedido</h3>
+                <button class="modal-close" onclick="closeOrderDetailsModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body" id="orderDetailsBody">
+                <!-- Conteúdo será inserido dinamicamente -->
+            </div>
+            
+            <div class="modal-actions" id="orderDetailsActions">
+                <!-- Ações serão inseridas dinamicamente -->
+            </div>
+        </div>
+    </div>
+
     <!-- Indicador de Tempo Real -->
     <div class="realtime-indicator" id="realtimeIndicator">
         <div class="pulse"></div>
@@ -1026,99 +1357,266 @@
                     return;
                 }
 
-                container.innerHTML = this.filteredOrders.map(order => this.createOrderCard(order)).join('');
+                container.innerHTML = `
+                    <div class="orders-list">
+                        ${this.filteredOrders.map(order => this.createOrderListItem(order)).join('')}
+                    </div>
+                `;
             }
 
-            createOrderCard(order) {
+            createOrderListItem(order) {
                 const statusClass = this.getStatusClass(order.status);
                 const statusLabel = this.getStatusLabel(order.status);
                 const timeAgo = this.getTimeAgo(order.created_at);
                 const total = parseFloat(order.total || order.total_amount || 0);
 
                 return `
-                    <div class="order-card ${statusClass}" data-order-id="${order.id}">
-                        <div class="order-header">
-                            <div class="order-number">#${order.order_number}</div>
-                            <div class="order-status ${order.status}">${statusLabel}</div>
-                        </div>
-                        
-                        <div class="order-customer">
-                            <h4>${order.customer_name}</h4>
-                            <p>${order.customer_phone}</p>
-                        </div>
-                        
-                        <div class="order-address">
-                            <i class="fas fa-map-marker-alt"></i>
-                            ${order.delivery_address}
-                        </div>
-                        
-                        <div class="order-items">
-                            ${order.order_items.map(item => `
-                                <div class="order-item">
-                                    <span>${item.quantity}x ${item.product_name}</span>
-                                    <span>R$ ${(item.quantity * parseFloat(item.price)).toFixed(2)}</span>
+                    <div class="order-list-item ${statusClass}" data-order-id="${order.id}" onclick="openOrderDetails('${order.id}')">
+                        <div class="order-list-content">
+                            <div class="order-main-info">
+                                <div class="customer-info">
+                                    <h4 class="customer-name">${order.customer_name}</h4>
+                                    <p class="customer-phone">${order.customer_phone}</p>
+                                    <p class="customer-address">${order.delivery_address}</p>
                                 </div>
-                            `).join('')}
-                        </div>
-                        
-                        <div class="order-total">
-                            <strong>Total: R$ ${total.toFixed(2)}</strong>
-                        </div>
-                        
-                        <div class="order-time">
-                            <i class="fas fa-clock"></i>
-                            ${timeAgo}
-                        </div>
-                        
-                        <div class="order-actions">
-                            ${this.getOrderActions(order)}
-                        </div>
-                        
-                        ${order.notes ? `
-                            <div class="order-notes">
-                                <i class="fas fa-sticky-note"></i>
-                                ${order.notes}
+                                <div class="order-meta">
+                                    <div class="order-status-badge ${order.status}">${statusLabel}</div>
+                                    <div class="order-time">${timeAgo}</div>
+                                    <div class="order-total">R$ ${total.toFixed(2)}</div>
+                                </div>
                             </div>
-                        ` : ''}
+                            <div class="order-preview">
+                                <span class="items-count">${order.order_items.length} ${order.order_items.length === 1 ? 'item' : 'itens'}</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
 
-            getOrderActions(order) {
+            async saveOrder(orderData) {
+                try {
+                    // Inserir pedido - pedidos manuais já entram como "aceito"
+                    const { data: order, error: orderError } = await supabase
+                        .from('orders')
+                        .insert([{
+                            restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
+                            customer_name: orderData.customer_name,
+                            customer_phone: orderData.customer_phone,
+                            delivery_address: orderData.delivery_address,
+                            delivery_fee: orderData.delivery_fee,
+                            subtotal: orderData.subtotal,
+                            total: orderData.total_amount,
+                            payment_method: orderData.payment_method,
+                            notes: orderData.notes,
+                            status: 'aceito' // Pedidos manuais já entram como aceito
+                        }])
+                        .select()
+                        .single();
+
+                    if (orderError) throw orderError;
+
+                    // Inserir itens do pedido
+                    const orderItems = orderData.items.map(item => ({
+                        order_id: order.id,
+                        product_name: item.name,
+                        quantity: item.quantity,
+                        price: item.price,
+                        notes: item.notes
+                    }));
+
+                    const { error: itemsError } = await supabase
+                        .from('order_items')
+                        .insert(orderItems);
+
+                    if (itemsError) throw itemsError;
+
+                    this.showNotification('Pedido criado com sucesso!', 'success');
+                    await this.loadOrders();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao salvar pedido:', error);
+                    this.showNotification('Erro ao criar pedido', 'error');
+                }
+            }
+
+            openOrderDetails(orderId) {
+                const order = this.orders.find(o => o.id === orderId);
+                if (!order) return;
+
+                const modal = document.getElementById('orderDetailsModal');
+                const title = document.getElementById('orderDetailsTitle');
+                const body = document.getElementById('orderDetailsBody');
+                const actions = document.getElementById('orderDetailsActions');
+
+                title.textContent = `Pedido #${order.order_number}`;
+
+                // Conteúdo do modal COMPACTO
+                body.innerHTML = `
+                    <div class="order-details-content">
+                        <div class="detail-section">
+                            <h4><i class="fas fa-user"></i> Cliente</h4>
+                            <div class="info-line">
+                                <label>Nome:</label>
+                                <span>${order.customer_name}</span>
+                            </div>
+                            <div class="info-line">
+                                <label>Telefone:</label>
+                                <span>${order.customer_phone}</span>
+                            </div>
+                            <div class="info-line">
+                                <label>Endereço:</label>
+                                <span>${order.delivery_address}</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4><i class="fas fa-shopping-cart"></i> Itens (${order.order_items.length})</h4>
+                            <div class="items-list">
+                                ${order.order_items.map(item => `
+                                    <div class="item-detail">
+                                        <div class="item-info">
+                                            <span class="item-name">${item.product_name}</span>
+                                            <span class="item-quantity">Qtd: ${item.quantity} × R$ ${parseFloat(item.price).toFixed(2)}</span>
+                                            ${item.notes ? `<span class="item-notes">${item.notes}</span>` : ''}
+                                        </div>
+                                        <div class="item-price">
+                                            R$ ${(item.quantity * parseFloat(item.price)).toFixed(2)}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4><i class="fas fa-calculator"></i> Resumo</h4>
+                            <div class="financial-summary">
+                                <div class="financial-item">
+                                    <span>Subtotal:</span>
+                                    <span>R$ ${parseFloat(order.subtotal || 0).toFixed(2)}</span>
+                                </div>
+                                <div class="financial-item">
+                                    <span>Taxa de Entrega:</span>
+                                    <span>R$ ${parseFloat(order.delivery_fee || 0).toFixed(2)}</span>
+                                </div>
+                                <div class="financial-item total">
+                                    <span>Total:</span>
+                                    <span>R$ ${parseFloat(order.total || order.total_amount || 0).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4><i class="fas fa-info-circle"></i> Informações</h4>
+                            <div class="info-line">
+                                <label>Status:</label>
+                                <span class="order-status-badge ${order.status}">${this.getStatusLabel(order.status)}</span>
+                            </div>
+                            <div class="info-line">
+                                <label>Pagamento:</label>
+                                <span>${this.getPaymentMethodLabel(order.payment_method)}</span>
+                            </div>
+                            <div class="info-line">
+                                <label>Criado em:</label>
+                                <span>${new Date(order.created_at).toLocaleString()}</span>
+                            </div>
+                            ${order.notes ? `
+                                <div class="info-line">
+                                    <label>Observações:</label>
+                                    <span>${order.notes}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                // Ações do modal
+                actions.innerHTML = `
+                    <button type="button" class="btn btn-secondary" onclick="closeOrderDetailsModal()">
+                        Fechar
+                    </button>
+                    ${this.getOrderDetailActions(order)}
+                `;
+
+                modal.classList.add('show');
+            }
+
+            getOrderDetailActions(order) {
                 const actions = [];
                 
                 switch (order.status) {
                     case 'novo':
-                        actions.push(`<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'aceito')">
-                            <i class="fas fa-check"></i> Aceitar
-                        </button>`);
-                        actions.push(`<button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}', 'rejeitado')">
-                            <i class="fas fa-times"></i> Rejeitar
-                        </button>`);
+                        actions.push(`
+                            <button class="btn btn-success" onclick="updateOrderStatusFromDetails('${order.id}', 'aceito')">
+                                <i class="fas fa-check"></i> Aceitar Pedido
+                            </button>
+                        `);
+                        actions.push(`
+                            <button class="btn btn-danger" onclick="updateOrderStatusFromDetails('${order.id}', 'rejeitado')">
+                                <i class="fas fa-times"></i> Rejeitar Pedido
+                            </button>
+                        `);
                         break;
                     case 'aceito':
-                        actions.push(`<button class="btn btn-warning btn-sm" onclick="updateOrderStatus('${order.id}', 'preparo')">
-                            <i class="fas fa-utensils"></i> Iniciar Preparo
-                        </button>`);
+                        actions.push(`
+                            <button class="btn btn-warning" onclick="updateOrderStatusFromDetails('${order.id}', 'preparo')">
+                                <i class="fas fa-utensils"></i> Iniciar Preparo
+                            </button>
+                        `);
                         break;
                     case 'preparo':
-                        actions.push(`<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'pronto')">
-                            <i class="fas fa-check-circle"></i> Marcar Pronto
-                        </button>`);
+                        actions.push(`
+                            <button class="btn btn-success" onclick="updateOrderStatusFromDetails('${order.id}', 'pronto')">
+                                <i class="fas fa-check-circle"></i> Marcar como Pronto
+                            </button>
+                        `);
                         break;
                     case 'pronto':
-                        actions.push(`<button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}', 'saiu_entrega')">
-                            <i class="fas fa-motorcycle"></i> Saiu p/ Entrega
-                        </button>`);
+                        actions.push(`
+                            <button class="btn btn-primary" onclick="updateOrderStatusFromDetails('${order.id}', 'saiu_entrega')">
+                                <i class="fas fa-motorcycle"></i> Saiu para Entrega
+                            </button>
+                        `);
                         break;
                     case 'saiu_entrega':
-                        actions.push(`<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'entregue')">
-                            <i class="fas fa-flag-checkered"></i> Entregue
-                        </button>`);
+                        actions.push(`
+                            <button class="btn btn-success" onclick="updateOrderStatusFromDetails('${order.id}', 'entregue')">
+                                <i class="fas fa-flag-checkered"></i> Marcar como Entregue
+                            </button>
+                        `);
+                        break;
+                    case 'entregue':
+                        actions.push(`
+                            <span class="text-success">
+                                <i class="fas fa-check-circle"></i> Pedido Finalizado
+                            </span>
+                        `);
+                        break;
+                    case 'rejeitado':
+                    case 'cancelado':
+                        actions.push(`
+                            <span class="text-danger">
+                                <i class="fas fa-exclamation-circle"></i> Pedido ${order.status === 'rejeitado' ? 'Rejeitado' : 'Cancelado'}
+                            </span>
+                        `);
                         break;
                 }
                 
                 return actions.join('');
+            }
+
+            getPaymentMethodLabel(method) {
+                const labels = {
+                    'money': 'Dinheiro',
+                    'card': 'Cartão',
+                    'pix': 'PIX',
+                    'voucher': 'Vale'
+                };
+                return labels[method] || method || 'Não informado';
+            }
+
+            closeOrderDetailsModal() {
+                document.getElementById('orderDetailsModal').classList.remove('show');
             }
 
             getStatusClass(status) {
@@ -1184,52 +1682,6 @@
                 } catch (error) {
                     console.error('❌ Erro ao atualizar status:', error);
                     this.showNotification('Erro ao atualizar status', 'error');
-                }
-            }
-
-            async saveOrder(orderData) {
-                try {
-                    // Inserir pedido
-                    const { data: order, error: orderError } = await supabase
-                        .from('orders')
-                        .insert([{
-                            restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
-                            customer_name: orderData.customer_name,
-                            customer_phone: orderData.customer_phone,
-                            delivery_address: orderData.delivery_address,
-                            delivery_fee: orderData.delivery_fee,
-                            subtotal: orderData.subtotal,
-                            total: orderData.total_amount,
-                            payment_method: orderData.payment_method,
-                            notes: orderData.notes,
-                            status: 'novo'
-                        }])
-                        .select()
-                        .single();
-
-                    if (orderError) throw orderError;
-
-                    // Inserir itens do pedido
-                    const orderItems = orderData.items.map(item => ({
-                        order_id: order.id,
-                        product_name: item.name,
-                        quantity: item.quantity,
-                        price: item.price,
-                        notes: item.notes
-                    }));
-
-                    const { error: itemsError } = await supabase
-                        .from('order_items')
-                        .insert(orderItems);
-
-                    if (itemsError) throw itemsError;
-
-                    this.showNotification('Pedido criado com sucesso!', 'success');
-                    await this.loadOrders();
-                    
-                } catch (error) {
-                    console.error('❌ Erro ao salvar pedido:', error);
-                    this.showNotification('Erro ao criar pedido', 'error');
                 }
             }
 
@@ -1528,6 +1980,26 @@
             }
         }
 
+        async function updateOrderStatusFromDetails(orderId, newStatus) {
+            if (ordersManager) {
+                await ordersManager.updateOrderStatus(orderId, newStatus);
+                // Fechar modal após atualizar
+                ordersManager.closeOrderDetailsModal();
+            }
+        }
+
+        function openOrderDetails(orderId) {
+            if (ordersManager) {
+                ordersManager.openOrderDetails(orderId);
+            }
+        }
+
+        function closeOrderDetailsModal() {
+            if (ordersManager) {
+                ordersManager.closeOrderDetailsModal();
+            }
+        }
+
         function signOut() {
             if (confirm('Deseja realmente sair?')) {
                 window.location.href = 'login.html';
@@ -1553,6 +2025,13 @@
             }
             if (ordersManager && ordersManager.updateInterval) {
                 clearInterval(ordersManager.updateInterval);
+            }
+        });
+
+        // ===== FECHAR MODAL CLICANDO FORA =====
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
             }
         });
     </script>
