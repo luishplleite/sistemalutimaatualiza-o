@@ -6,17 +6,17 @@
     <title>Gestão de Pedidos - TimePulse AI</title>
     <meta name="description" content="Gerencie pedidos, acompanhe entregas e controle seu negócio">
     
-    <!-- Favicon -->
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Mapbox GL JS -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
     
     <style>
         :root {
@@ -456,7 +456,7 @@
         .modal-content {
             background: white;
             border-radius: 12px;
-            max-width: 900px;
+            max-width: 600px;
             width: 95%;
             max-height: 95vh;
             position: relative;
@@ -512,7 +512,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 1.5rem;
-            max-height: calc(95vh - 140px); /* Ajustado para header e footer fixos */
+            max-height: calc(95vh - 140px);
         }
 
         /* Footer fixo */
@@ -530,184 +530,479 @@
             box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
         }
 
-        /* LAYOUT COMPACTO DO MODAL DE DETALHES */
-        .order-details-content {
+        /* ===== NOVO ESTILO PARA ITENS DO PEDIDO - CONFORME IMAGEM ===== */
+        .invoice-container {
             max-width: 100%;
-        }
-
-        .detail-section {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 3px solid var(--primary-color);
-        }
-
-        .detail-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .detail-section h4 {
-            color: #333;
-            margin: 0 0 0.75rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 0.75rem;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .detail-item.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .detail-item label {
-            font-weight: 600;
-            color: #6c757d;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .detail-item span {
-            color: #333;
-            font-size: 0.95rem;
-        }
-
-        /* Lista de itens compacta */
-        .items-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .item-detail {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 0.75rem;
             background: white;
-            border-radius: 6px;
-            border: 1px solid #e9ecef;
-            transition: all 0.2s ease;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        .item-detail:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .invoice-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
         }
 
-        .item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-            flex: 1;
-        }
-
-        .item-name {
+        .invoice-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
             font-weight: 600;
-            color: #333;
-            font-size: 0.95rem;
         }
 
-        .item-quantity {
-            color: #6c757d;
-            font-size: 0.85rem;
-        }
-
-        .item-notes {
-            color: #856404;
-            font-style: italic;
-            font-size: 0.85rem;
+        .invoice-number {
+            font-size: 0.9rem;
+            opacity: 0.9;
             margin-top: 0.25rem;
         }
 
-        .item-price {
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 1rem;
-            text-align: right;
-        }
-
-        /* Resumo financeiro compacto */
-        .financial-summary {
-            background: white;
-            padding: 0.75rem;
-            border-radius: 6px;
-            border: 1px solid #e9ecef;
-        }
-
-        .financial-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.3rem 0;
-            font-size: 0.9rem;
-        }
-
-        .financial-item:not(:last-child) {
-            border-bottom: 1px solid #f8f9fa;
-        }
-
-        .financial-item.total {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--primary-color);
-            border-top: 2px solid var(--primary-color);
-            margin-top: 0.5rem;
-            padding-top: 0.75rem;
-            border-bottom: none;
-        }
-
-        /* Informações adicionais em linha */
-        .info-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
+        .invoice-section {
+            padding: 1rem;
             border-bottom: 1px solid #f0f0f0;
         }
-
-        .info-line:last-child {
+        .invoice-section:first-of-type {
+            padding-top: 0;
+        }
+        .invoice-section:last-child {
             border-bottom: none;
         }
 
-        .info-line label {
+        .section-title {
+            font-size: 0.9rem;
             font-weight: 600;
-            color: #6c757d;
-            font-size: 0.85rem;
-            flex: 1;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
         }
 
-        .info-line span {
+        .customer-data {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .customer-line {
+            display: flex;
+            margin-bottom: 0.4rem;
+        }
+
+        .customer-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .customer-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 70px;
+            font-size: 0.85rem;
+        }
+
+        .customer-value {
             color: #333;
             font-size: 0.9rem;
+        }
+
+        /* NOVA TABELA DE ITENS ESTILO CONFORME IMAGEM */
+        .order-items-container {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .order-items-header {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .order-items-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-items-title i {
+            color: var(--primary-color);
+        }
+
+        .order-items-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .add-item-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .add-item-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .items-table thead {
+            background: #f8f9fa;
+        }
+
+        .items-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .items-table th:last-child,
+        .items-table td:last-child {
+            text-align: center;
+            width: 80px;
+        }
+        
+        .items-table th:nth-child(2) {
+            text-align: center;
+            width: 80px;
+        }
+
+        .items-table th:nth-child(3),
+        .items-table th:nth-child(4) {
             text-align: right;
-            flex: 1;
+            width: 100px;
         }
 
-        .text-success {
-            color: var(--success-color) !important;
+        .items-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .items-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        #newOrderItemsTableBody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .items-table .no-items-row td {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .item-name-cell {
+            font-weight: 500;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .item-notes-cell {
+            font-style: italic;
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .item-quantity-cell {
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-price-cell {
+            font-weight: 500;
+            color: #333;
+            text-align: right;
+        }
+
+        .item-total-cell {
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .item-action-btn {
+            padding: 0.3rem 0.6rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-action-btn.edit {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .item-action-btn.edit:hover {
+            background: #e0a800;
+        }
+
+        .item-action-btn.delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .item-action-btn.delete:hover {
+            background: #c82333;
+        }
+
+        /* RESUMO FINANCEIRO ESTILO CONFORME IMAGEM */
+        .financial-summary-container {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .financial-summary-header {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .financial-summary-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            margin: 0;
         }
 
-        .text-danger {
-            color: var(--danger-color) !important;
+        .financial-summary-title i {
+            color: var(--primary-color);
+        }
+
+        .financial-summary {
+            background: white;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+
+        .summary-line:last-child {
+            border-bottom: none;
+        }
+
+        .summary-line.total {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 1rem;
+        }
+
+        .summary-label {
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        /* STATUS E INFORMAÇÕES */
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid #ddd;
+        }
+
+        .info-card.status {
+            border-left-color: var(--primary-color);
+        }
+
+        .info-card.payment {
+            border-left-color: #17a2b8;
+        }
+
+        .info-card.change {
+            border-left-color: #ffc107;
+            background: #fff9e6;
+        }
+
+        .info-card-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-card-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .timestamp-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 1rem;
+        }
+
+        /* SEÇÃO DE INFORMAÇÕES DA ROTA */
+        .route-info-container {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .route-info-header {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .route-info-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-color);
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            margin: 0;
+        }
+
+        .route-info-title i {
+            color: var(--primary-color);
+        }
+
+        .roundtrip-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .roundtrip-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .route-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .route-metric {
+            text-align: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .route-metric-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.25rem;
+        }
+
+        .route-metric-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .route-loading {
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .route-error {
+            padding: 1rem;
+            text-align: center;
+            color: var(--danger-color);
+            background: #ffeaea;
+            border-left: 3px solid var(--danger-color);
         }
 
         /* Form */
@@ -737,6 +1032,11 @@
             grid-column: 1 / -1;
         }
 
+        .form-group.half-width {
+            grid-column: span 1;
+            min-width: 150px;
+        }
+
         .form-label {
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -754,18 +1054,113 @@
             outline: none;
             border-color: var(--primary-color);
         }
-
-        .item-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 1rem;
-            align-items: end;
-            margin-bottom: 1rem;
+        
+        .form-input[readonly] {
+            background-color: #e9ecef;
+            opacity: 1;
         }
 
-        .item-actions {
+        /* Change fields styling */
+        .change-fields {
+            display: none;
+            background: #fff9e6;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            grid-column: 1 / -1;
+        }
+
+        .change-fields.show {
+            display: block;
+        }
+
+        .change-fields h5 {
+            color: #856404;
+            margin: 0 0 1rem 0;
             display: flex;
             align-items: center;
+            gap: 0.5rem;
+        }
+
+        .change-calculation {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .change-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .change-value {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        /* Product Search */
+        .product-search-container {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-search-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .search-result-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            border-color: var(--primary-color);
+            background: #f0f8ff;
+        }
+
+        .search-result-item.selected {
+            border-color: var(--primary-color);
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .product-search-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .product-search-price {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .product-search-category {
+            color: #666;
+            font-size: 0.85rem;
         }
 
         /* Loading */
@@ -809,8 +1204,8 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             padding: 1rem 1.5rem;
             z-index: 10000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
+            transform: translateX(120%);
+            transition: transform 0.4s ease-in-out;
             border-left: 4px solid var(--primary-color);
         }
 
@@ -860,6 +1255,111 @@
             100% { opacity: 1; }
         }
 
+        .text-success {
+            color: var(--success-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .text-danger {
+            color: var(--danger-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* CEP Field Styles */
+        .loading-cep {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Product selection styles */
+        #productsSelect {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        #productsSelect option {
+            padding: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        #categoriesSelect {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Search result styles */
+        #searchResult {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+
+        #searchResult:hover {
+            background: #e9ecef;
+            border-color: var(--primary-color);
+        }
+
+        /* Customer Registration Modal Adjustments */
+        #customerRegistrationModal .modal-content,
+        #delivererSelectionModal .modal-content,
+        #paymentMethodModal .modal-content {
+            max-width: 500px;
+        }
+
+        /* Payment method modal specific styles */
+        #paymentMethodModal .info-card {
+            background: #e8f5e8;
+            border-left-color: var(--success-color);
+        }
+
+        /* Quick search in new order */
+        .quick-search-container {
+            background: #e8f5e8;
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .quick-search-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-search-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-search-input:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+        }
+
+        .quick-search-results {
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -900,17 +1400,21 @@
                 align-self: flex-end;
             }
 
-            .detail-grid {
+            .order-info-grid {
                 grid-template-columns: 1fr;
             }
 
-            .item-detail {
-                flex-direction: column;
-                gap: 0.5rem;
+            .route-info-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .item-price {
-                align-self: flex-end;
+            .items-table {
+                font-size: 0.8rem;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.5rem 0.25rem;
             }
 
             .modal-content {
@@ -931,12 +1435,39 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .order-items-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .order-items-actions {
+                justify-content: stretch;
+            }
+
+            .order-items-actions .add-item-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .item-actions {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.half-width {
+                grid-column: span 1;
+            }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-layout">
-        <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">TimePulse AI</div>
@@ -1006,9 +1537,7 @@
             </div>
         </nav>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Page Header -->
             <div class="page-header">
                 <h1 class="page-title">
                     <i class="fas fa-shopping-cart"></i>
@@ -1029,7 +1558,6 @@
                 </div>
             </div>
 
-            <!-- Filters -->
             <div class="filters-section">
                 <div class="filters-grid">
                     <div class="filter-group">
@@ -1072,7 +1600,6 @@
                 </div>
             </div>
             
-            <!-- Orders List -->
             <div class="orders-section">
                 <div class="section-header">
                     <h2>
@@ -1095,7 +1622,6 @@
         </main>
     </div>
     
-    <!-- Modal de Novo Pedido -->
     <div class="modal" id="newOrderModal">
         <div class="modal-content large">
             <div class="modal-header">
@@ -1105,86 +1631,100 @@
             
             <form id="newOrderForm">
                 <div class="modal-body">
-                    <!-- Dados do Cliente -->
                     <div class="form-section">
-                        <h4>Dados do Cliente</h4>
+                        <h4><i class="fas fa-user-circle"></i> Dados do Cliente</h4>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Nome do Cliente</label>
+                                <label class="form-label">Buscar por Telefone</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="tel" id="searchPhone" class="form-input" placeholder="(XX) XXXXX-XXXX" style="flex: 1;">
+                                    <button type="button" class="btn btn-primary" onclick="searchCustomerByPhone()">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Nome do Cliente *</label>
                                 <input type="text" id="customerName" class="form-input" required>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Telefone</label>
+                                <label class="form-label">Telefone *</label>
                                 <input type="tel" id="customerPhone" class="form-input" required>
                             </div>
                             
                             <div class="form-group full-width">
-                                <label class="form-label">Endereço de Entrega</label>
+                                <label class="form-label">Endereço de Entrega *</label>
                                 <textarea id="deliveryAddress" class="form-input" rows="2" required></textarea>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Itens do Pedido -->
                     <div class="form-section">
-                        <h4>Itens do Pedido</h4>
-                        <div id="orderItems">
-                            <div class="order-item-form">
-                                <div class="item-grid">
-                                    <div>
-                                        <label class="form-label">Produto</label>
-                                        <input type="text" class="form-input item-name" placeholder="Nome do produto" required>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">Qtd</label>
-                                        <input type="number" class="form-input item-quantity" min="1" value="1" required>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">Preço Unit.</label>
-                                        <input type="number" class="form-input item-price" step="0.01" placeholder="0.00" required>
-                                    </div>
-                                    <div class="item-actions">
-                                        <button type="button" class="btn btn-danger btn-sm remove-item">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
+                        <div class="order-items-container">
+                            <div class="order-items-header">
+                                <div class="order-items-title">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    ITENS DO PEDIDO
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Observações</label>
-                                    <input type="text" class="form-input item-notes" placeholder="Observações do item">
+                                <div class="order-items-actions">
+                                    <button type="button" class="add-item-btn" onclick="openAddProductToNewOrderModal()">
+                                        <i class="fas fa-plus"></i>
+                                        Adicionar Produto
+                                    </button>
                                 </div>
                             </div>
+                            
+                            <div class="quick-search-container">
+                                <div class="quick-search-label">
+                                    <i class="fas fa-search"></i>
+                                    Busca Rápida de Produtos
+                                </div>
+                                <input type="text" id="newOrderProductSearch" class="quick-search-input" placeholder="Digite ID ou nome do produto e pressione Enter...">
+                                <div id="newOrderSearchResults" class="quick-search-results"></div>
+                            </div>
+                            
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>ITEM</th>
+                                        <th>QTD</th>
+                                        <th>VLR. UNIT.</th>
+                                        <th>TOTAL</th>
+                                        <th>AÇÕES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="newOrderItemsTableBody">
+                                    <tr class="no-items-row">
+                                        <td colspan="5">Nenhum item adicionado ainda. Use a busca acima ou o botão "Adicionar Produto".</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        
-                        <button type="button" class="btn btn-secondary" onclick="addOrderItem()">
-                            <i class="fas fa-plus"></i>
-                            Adicionar Item
-                        </button>
                     </div>
                     
-                    <!-- Resumo do Pedido -->
                     <div class="form-section">
-                        <h4>Resumo do Pedido</h4>
+                        <h4><i class="fas fa-receipt"></i> Resumo e Pagamento</h4>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label">Taxa de Entrega</label>
-                                <input type="number" id="deliveryFee" class="form-input" step="0.01" value="5.00">
+                                <input type="number" id="deliveryFee" class="form-input" step="0.01" value="8.00" readonly>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">Subtotal</label>
-                                <input type="number" id="subtotal" class="form-input" readonly>
+                                <input type="text" id="subtotal" class="form-input" readonly>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">Total</label>
-                                <input type="number" id="orderTotal" class="form-input" readonly>
+                                <input type="text" id="orderTotal" class="form-input" readonly>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Forma de Pagamento</label>
-                                <select id="paymentMethod" class="form-input" required>
+                                <label class="form-label">Forma de Pagamento *</label>
+                                <select id="paymentMethod" class="form-input" required onchange="toggleChangeFields()">
                                     <option value="">Selecione</option>
                                     <option value="money">Dinheiro</option>
                                     <option value="card">Cartão</option>
@@ -1192,10 +1732,53 @@
                                     <option value="voucher">Vale</option>
                                 </select>
                             </div>
+
+                            <div class="change-fields" id="changeFields">
+                                <h5>
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Informações de Troco
+                                </h5>
+                                <div class="form-grid">
+                                    <div class="form-group half-width">
+                                        <label class="form-label">Cliente vai pagar</label>
+                                        <input type="number" id="changeForAmount" class="form-input" step="0.01" placeholder="0.00" onchange="calculateChange()">
+                                    </div>
+                                    <div class="form-group half-width">
+                                        <label class="form-label">Troco necessário</label>
+                                        <input type="text" id="changeAmount" class="form-input" readonly placeholder="R$ 0,00">
+                                    </div>
+                                </div>
+                                <div class="change-calculation" id="changeCalculation" style="display: none;">
+                                    <span class="change-label">Troco a levar:</span>
+                                    <span class="change-value" id="changeDisplay">R$ 0,00</span>
+                                </div>
+                            </div>
                             
                             <div class="form-group full-width">
                                 <label class="form-label">Observações do Pedido</label>
                                 <textarea id="orderNotes" class="form-input" rows="2" placeholder="Observações gerais do pedido"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NOVA SEÇÃO: INFORMAÇÕES DA ROTA -->
+                    <div class="form-section">
+                        <div class="route-info-container">
+                            <div class="route-info-header">
+                                <div class="route-info-title">
+                                    <i class="fas fa-route"></i>
+                                    Cálculo de Entrega
+                                </div>
+                                <div class="roundtrip-checkbox">
+                                    <input type="checkbox" id="includeRoundtrip" onchange="calculateRoute()">
+                                    <label for="includeRoundtrip">Incluir retorno ao restaurante (ida e volta)</label>
+                                </div>
+                            </div>
+                            
+                            <div id="routeInfo">
+                                <div class="route-loading">
+                                    Insira o endereço de entrega para calcular a rota
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1214,7 +1797,6 @@
         </div>
     </div>
 
-    <!-- Modal de Detalhes do Pedido - MELHORADO -->
     <div class="modal" id="orderDetailsModal">
         <div class="modal-content large">
             <div class="modal-header">
@@ -1223,16 +1805,318 @@
             </div>
             
             <div class="modal-body" id="orderDetailsBody">
-                <!-- Conteúdo será inserido dinamicamente -->
-            </div>
+                </div>
             
             <div class="modal-actions" id="orderDetailsActions">
-                <!-- Ações serão inseridas dinamicamente -->
+                </div>
+        </div>
+    </div>
+
+    <div class="modal" id="paymentMethodModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Finalizar Entrega</h3>
+                <button class="modal-close" onclick="closePaymentMethodModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-section">
+                    <h4>Confirme a forma de pagamento</h4>
+                    <div class="form-group">
+                        <label class="form-label">Forma de Pagamento</label>
+                        <select id="finalPaymentMethod" class="form-input" required onchange="toggleFinalChangeFields()">
+                            <option value="">Selecione a forma de pagamento...</option>
+                            <option value="money">Dinheiro</option>
+                            <option value="card">Cartão</option>
+                            <option value="pix">PIX</option>
+                            <option value="voucher">Vale</option>
+                        </select>
+                    </div>
+
+                    <div class="change-fields" id="finalChangeFields">
+                        <h5>
+                            <i class="fas fa-money-bill-wave"></i>
+                            Informações de Troco
+                        </h5>
+                        <div class="form-grid">
+                            <div class="form-group half-width">
+                                <label class="form-label">Cliente pagou</label>
+                                <input type="number" id="finalChangeForAmount" class="form-input" step="0.01" placeholder="0.00" onchange="calculateFinalChange()">
+                            </div>
+                            <div class="form-group half-width">
+                                <label class="form-label">Troco dado</label>
+                                <input type="text" id="finalChangeAmount" class="form-input" readonly placeholder="R$ 0,00">
+                            </div>
+                        </div>
+                        <div class="change-calculation" id="finalChangeCalculation" style="display: none;">
+                            <span class="change-label">Troco confirmado:</span>
+                            <span class="change-value" id="finalChangeDisplay">R$ 0,00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-card-label">Informação</div>
+                        <div class="info-card-value">
+                            Confirme como o cliente pagou pela entrega para finalizar o pedido.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePaymentMethodModal()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-success" onclick="confirmPaymentAndFinish()">
+                    <i class="fas fa-check-circle"></i>
+                    Finalizar Entrega
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Indicador de Tempo Real -->
+    <div class="modal" id="delivererSelectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Saiu para Entrega</h3>
+                <button class="modal-close" onclick="closeDelivererSelectionModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-section">
+                    <h4>Selecione o entregador que saiu com o pedido</h4>
+                    <div class="form-group">
+                        <label class="form-label">Entregador</label>
+                        <select id="delivererSelect" class="form-input" required>
+                            <option value="">Carregando entregadores...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeDelivererSelectionModal()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="confirmDelivererSelection()">
+                    <i class="fas fa-motorcycle"></i>
+                    Confirmar Saída
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addProductModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Adicionar Produto ao Pedido</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-section" id="selectedProductSection" style="display: none;">
+                    <h4>Produto Selecionado</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Produto</label>
+                            <input type="text" id="selectedProductName" class="form-input" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Preço</label>
+                            <input type="number" id="selectedProductPrice" class="form-input" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" id="selectedProductQuantity" class="form-input" min="1" value="1">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">Observações</label>
+                            <input type="text" id="selectedProductNotes" class="form-input" placeholder="Observações do item">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="form-group">
+                        <label class="form-label">Buscar Produto</label>
+                        <input type="text" id="productSearchInput" class="form-input" placeholder="Digite o nome ou últimos 4 dígitos do ID...">
+                    </div>
+                    
+                    <div id="searchResultContainer" style="display: none; margin-top: 1rem;">
+                        <h5>Resultado da Busca:</h5>
+                        <div id="searchResult" style="border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; cursor: pointer; background: #f8f9fa;">
+                            </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4>Produtos Disponíveis</h4>
+                    <div class="form-group">
+                        <label class="form-label">Filtrar por Categoria</label>
+                        <select id="categoriesSelect" class="form-input">
+                            <option value="">Todas as categorias</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <select id="productsSelect" class="form-input" size="8" style="height: 300px;">
+                            <option value="">Carregando produtos...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="addProductToOrder()" id="addProductBtn" disabled>
+                    <i class="fas fa-plus"></i>
+                    Adicionar ao Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Item</h3>
+                <button class="modal-close" onclick="closeEditItemModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Produto</label>
+                            <input type="text" id="editItemName" class="form-input" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" id="editItemQuantity" class="form-input" min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Preço Unitário</label>
+                            <input type="number" id="editItemPrice" class="form-input" step="0.01">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">Observações</label>
+                            <input type="text" id="editItemNotes" class="form-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeEditItemModal()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="updateOrderItem()">
+                    <i class="fas fa-save"></i>
+                    Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="customerRegistrationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cadastrar Novo Cliente</h3>
+                <button class="modal-close" onclick="closeCustomerRegistrationModal()">&times;</button>
+            </div>
+            
+            <form id="customerRegistrationForm">
+                <div class="modal-body">
+                    <div class="form-section">
+                        <h4>Dados Pessoais</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nome Completo</label>
+                                <input type="text" id="newCustomerName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Telefone</label>
+                                <input type="tel" id="newCustomerPhone" class="form-input" required readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" id="newCustomerEmail" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Data de Nascimento</label>
+                                <input type="date" id="newCustomerBirthDate" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4>Endereço</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">CEP</label>
+                                <input type="text" id="newCustomerCep" class="form-input" placeholder="00000-000" maxlength="9" 
+                                       oninput="formatCEP(this)" onblur="pesquisacep(this.value);">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Rua</label>
+                                <input type="text" id="rua" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Número</label>
+                                <input type="text" id="newCustomerNumber" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Complemento</label>
+                                <input type="text" id="newCustomerComplement" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Bairro</label>
+                                <input type="text" id="bairro" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Cidade</label>
+                                <input type="text" id="cidade" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Estado</label>
+                                <input type="text" id="uf" class="form-input" maxlength="2">
+                            </div>
+                            
+                            <input type="hidden" id="ibge">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCustomerRegistrationModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Cadastrar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="realtime-indicator" id="realtimeIndicator">
         <div class="pulse"></div>
         Conectado em tempo real
@@ -1245,11 +2129,362 @@
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ===== CONFIGURAÇÃO MAPBOX =====
+        const MAPBOX_ACCESS_TOKEN = 'sk.eyJ1IjoibGhwbCIsImEiOiJjbWMzcGV4cDIwN2R1MmtxMng2b2poc2NuIn0.JOh6dhDYxVXT7P_5itT65g';
+
         // ===== ESTADO GLOBAL =====
         let orders = [];
         let filteredOrders = [];
         let currentRestaurant = null;
         let realtimeSubscription = null;
+        let deliveryConfig = null;
+
+        // ===== FUNÇÕES PARA TROCO =====
+        function toggleChangeFields() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const changeFields = document.getElementById('changeFields');
+            
+            if (paymentMethod === 'money') {
+                changeFields.classList.add('show');
+            } else {
+                changeFields.classList.remove('show');
+                // Limpar campos de troco
+                document.getElementById('changeForAmount').value = '';
+                document.getElementById('changeAmount').value = '';
+                document.getElementById('changeCalculation').style.display = 'none';
+            }
+        }
+
+        function calculateChange() {
+            const orderTotal = parseFloat(document.getElementById('orderTotal').value) || 0;
+            const changeForAmount = parseFloat(document.getElementById('changeForAmount').value) || 0;
+            
+            if (changeForAmount > 0 && changeForAmount >= orderTotal) {
+                const changeAmount = changeForAmount - orderTotal;
+                document.getElementById('changeAmount').value = changeAmount.toFixed(2);
+                document.getElementById('changeDisplay').textContent = `R$ ${changeAmount.toFixed(2)}`;
+                document.getElementById('changeCalculation').style.display = 'flex';
+            } else {
+                document.getElementById('changeAmount').value = '';
+                document.getElementById('changeCalculation').style.display = 'none';
+            }
+        }
+
+        function toggleFinalChangeFields() {
+            const paymentMethod = document.getElementById('finalPaymentMethod').value;
+            const changeFields = document.getElementById('finalChangeFields');
+            
+            if (paymentMethod === 'money') {
+                changeFields.classList.add('show');
+                // Preencher com valor do pedido atual
+                if (ordersManager && ordersManager.currentOrderForPayment) {
+                    const order = ordersManager.orders.find(o => o.id === ordersManager.currentOrderForPayment);
+                    if (order) {
+                        const total = parseFloat(order.total || order.total_amount || 0);
+                        document.getElementById('finalChangeForAmount').value = total.toFixed(2);
+                        calculateFinalChange();
+                    }
+                }
+            } else {
+                changeFields.classList.remove('show');
+                // Limpar campos de troco
+                document.getElementById('finalChangeForAmount').value = '';
+                document.getElementById('finalChangeAmount').value = '';
+                document.getElementById('finalChangeCalculation').style.display = 'none';
+            }
+        }
+
+        function calculateFinalChange() {
+            let orderTotal = 0;
+            
+            if (ordersManager && ordersManager.currentOrderForPayment) {
+                const order = ordersManager.orders.find(o => o.id === ordersManager.currentOrderForPayment);
+                if (order) {
+                    orderTotal = parseFloat(order.total || order.total_amount || 0);
+                }
+            }
+            
+            const changeForAmount = parseFloat(document.getElementById('finalChangeForAmount').value) || 0;
+            
+            if (changeForAmount > 0 && changeForAmount >= orderTotal) {
+                const changeAmount = changeForAmount - orderTotal;
+                document.getElementById('finalChangeAmount').value = changeAmount.toFixed(2);
+                document.getElementById('finalChangeDisplay').textContent = `R$ ${changeAmount.toFixed(2)}`;
+                document.getElementById('finalChangeCalculation').style.display = 'flex';
+            } else {
+                document.getElementById('finalChangeAmount').value = '';
+                document.getElementById('finalChangeCalculation').style.display = 'none';
+            }
+        }
+
+        // ===== FUNÇÕES PARA CÁLCULO DE ROTA =====
+        // IMPORTANTE: Quando includeRoundtrip = true, o Mapbox retorna a distância total (ida + volta)
+        // Por isso, precisamos dividir por 2 para obter a distância de uma via para os cálculos
+        async function geocodeAddress(address) {
+            try {
+                const encodedAddress = encodeURIComponent(address);
+                const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=br&limit=1`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na geocodificação: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.features && data.features.length > 0) {
+                    const coordinates = data.features[0].center;
+                    return {
+                        longitude: coordinates[0],
+                        latitude: coordinates[1],
+                        formatted_address: data.features[0].place_name
+                    };
+                }
+                
+                throw new Error('Endereço não encontrado');
+            } catch (error) {
+                console.error('❌ Erro na geocodificação:', error);
+                throw error;
+            }
+        }
+
+        async function calculateRouteDistance(restaurantCoords, deliveryCoords, includeRoundtrip = false) {
+            try {
+                let coordinates;
+                
+                if (includeRoundtrip) {
+                    // Ida e volta: restaurante -> entrega -> restaurante
+                    coordinates = `${restaurantCoords.longitude},${restaurantCoords.latitude};${deliveryCoords.longitude},${deliveryCoords.latitude};${restaurantCoords.longitude},${restaurantCoords.latitude}`;
+                } else {
+                    // Apenas ida: restaurante -> entrega
+                    coordinates = `${restaurantCoords.longitude},${restaurantCoords.latitude};${deliveryCoords.longitude},${deliveryCoords.latitude}`;
+                }
+                
+                const url = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${coordinates}?access_token=${MAPBOX_ACCESS_TOKEN}&geometries=geojson&overview=simplified`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro no cálculo da rota: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.routes && data.routes.length > 0) {
+                    const route = data.routes[0];
+                    return {
+                        distance: route.distance / 1000, // Converter metros para km
+                        duration: route.duration / 60,   // Converter segundos para minutos
+                        geometry: route.geometry
+                    };
+                }
+                
+                throw new Error('Rota não encontrada');
+            } catch (error) {
+                console.error('❌ Erro no cálculo da rota:', error);
+                throw error;
+            }
+        }
+
+        // ===== FUNÇÃO CORRIGIDA PARA CALCULAR TAXA DE ENTREGA =====
+        function calculateDeliveryFee(distance, includeRoundtrip = false) {
+            // Usar dados do restaurante se disponível, senão usar valores padrão
+            const minimumDistanceKm = currentRestaurant?.minimum_distance_km || 3.0;
+            const minimumDeliveryFee = currentRestaurant?.minimum_delivery_fee || 8.00;
+            const deliveryFeePerKm = currentRestaurant?.delivery_fee_per_km || 0.50;
+            const deliveryReturnPerKm = currentRestaurant?.delivery_return_per_km || 0.12; // Taxa por km para retorno
+            
+            console.log('🚚 Calculando taxa de entrega:', {
+                distance,
+                includeRoundtrip,
+                minimumDistanceKm,
+                minimumDeliveryFee,
+                deliveryFeePerKm,
+                deliveryReturnPerKm
+            });
+            
+            if (includeRoundtrip) {
+                // CENÁRIO IDA E VOLTA:
+                // A distância recebida já é ida + volta, então precisamos dividir por 2 para obter a distância de uma via
+                const oneWayDistance = distance / 2;
+                
+                console.log('📏 Distância de uma via:', oneWayDistance.toFixed(6));
+                
+                // 1. Custo da viagem de ida (baseado na distância de uma via)
+                let outboundCost = minimumDeliveryFee; // Taxa fixa de R$ 8,00 para os primeiros 3km
+                if (oneWayDistance > minimumDistanceKm) {
+                    const extraDistance = oneWayDistance - minimumDistanceKm;
+                    outboundCost += extraDistance * deliveryFeePerKm; // R$ 0,50 por km adicional
+                }
+                
+                // 2. Custo da viagem de retorno (baseado na distância de uma via)
+                const returnCost = oneWayDistance * deliveryReturnPerKm; // R$ 0,12 por km da distância de uma via
+                
+                const totalFee = outboundCost + returnCost;
+                
+                console.log('💰 Breakdown da taxa (IDA E VOLTA):', {
+                    oneWayDistance: oneWayDistance.toFixed(6),
+                    outboundCost: outboundCost.toFixed(2),
+                    returnCost: returnCost.toFixed(2),
+                    totalFee: totalFee.toFixed(2)
+                });
+                
+                return {
+                    baseFee: minimumDeliveryFee,
+                    additionalFee: outboundCost - minimumDeliveryFee,
+                    returnFee: returnCost,
+                    totalFee: totalFee
+                };
+                
+            } else {
+                // CENÁRIO SÓ IDA:
+                // A distância recebida é apenas de ida
+                
+                let totalFee = minimumDeliveryFee; // Taxa fixa de R$ 8,00
+                let additionalFee = 0;
+                
+                // Calcular taxa adicional se a distância exceder o mínimo
+                if (distance > minimumDistanceKm) {
+                    const extraDistance = distance - minimumDistanceKm;
+                    additionalFee = extraDistance * deliveryFeePerKm; // R$ 0,50 por km adicional
+                    totalFee += additionalFee;
+                }
+                
+                console.log('💰 Breakdown da taxa (SÓ IDA):', {
+                    distance: distance.toFixed(6),
+                    baseFee: minimumDeliveryFee,
+                    additionalFee: additionalFee.toFixed(2),
+                    totalFee: totalFee.toFixed(2)
+                });
+                
+                return {
+                    baseFee: minimumDeliveryFee,
+                    additionalFee: additionalFee,
+                    returnFee: 0,
+                    totalFee: totalFee
+                };
+            }
+        }
+
+        async function calculateRoute() {
+            const deliveryAddress = document.getElementById('deliveryAddress').value.trim();
+            const includeRoundtrip = document.getElementById('includeRoundtrip').checked;
+            const routeInfoContainer = document.getElementById('routeInfo');
+            
+            if (!deliveryAddress) {
+                routeInfoContainer.innerHTML = `
+                    <div class="route-loading">
+                        Insira o endereço de entrega para calcular a rota
+                    </div>
+                `;
+                return;
+            }
+            
+            routeInfoContainer.innerHTML = `
+                <div class="route-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Calculando rota...
+                </div>
+            `;
+            
+            try {
+                // Coordenadas do restaurante
+                const restaurantCoords = {
+                    longitude: currentRestaurant?.longitude || -46.3319, // Santos, SP (exemplo)
+                    latitude: currentRestaurant?.latitude || -23.9618
+                };
+                
+                // Geocodificar endereço de entrega
+                const deliveryCoords = await geocodeAddress(deliveryAddress);
+                
+                // Calcular rota
+                const routeData = await calculateRouteDistance(restaurantCoords, deliveryCoords, includeRoundtrip);
+                
+                // IMPORTANTE: Se includeRoundtrip = true, routeData.distance já contém a distância total (ida + volta)
+                // A função calculateDeliveryFee irá dividir por 2 internamente para obter a distância de uma via
+                const deliveryFees = calculateDeliveryFee(routeData.distance, includeRoundtrip);
+                
+                // Atualizar taxa de entrega no formulário
+                document.getElementById('deliveryFee').value = deliveryFees.totalFee.toFixed(2);
+                
+                // Recalcular total do pedido
+                if (window.ordersManager) {
+                    ordersManager.calculateNewOrderTotal();
+                }
+                
+                // Exibir informações da rota
+                const routeMetrics = [];
+                
+                if (includeRoundtrip) {
+                    // Para ida e volta, mostrar tanto a distância total quanto a de uma via
+                    const oneWayDistance = routeData.distance / 2;
+                    routeMetrics.push(
+                        {
+                            label: 'Distância (Uma Via)',
+                            value: `${oneWayDistance.toFixed(1)} km`
+                        },
+                        {
+                            label: 'Distância Total',
+                            value: `${routeData.distance.toFixed(1)} km`
+                        }
+                    );
+                } else {
+                    // Para só ida, mostrar apenas a distância
+                    routeMetrics.push({
+                        label: 'Distância',
+                        value: `${routeData.distance.toFixed(1)} km`
+                    });
+                }
+                
+                routeMetrics.push(
+                    {
+                        label: 'Tempo Estimado',
+                        value: `${Math.round(routeData.duration)} min`
+                    },
+                    {
+                        label: 'Taxa Base',
+                        value: `R$ ${deliveryFees.baseFee.toFixed(2)}`
+                    }
+                );
+                
+                // Adicionar taxa adicional se houver
+                if (deliveryFees.additionalFee > 0) {
+                    routeMetrics.push({
+                        label: includeRoundtrip ? 'Taxa Adicional (Ida)' : 'Taxa Adicional',
+                        value: `R$ ${deliveryFees.additionalFee.toFixed(2)}`
+                    });
+                }
+                
+                // Adicionar taxa de retorno se houver
+                if (deliveryFees.returnFee > 0) {
+                    routeMetrics.push({
+                        label: 'Taxa Retorno',
+                        value: `R$ ${deliveryFees.returnFee.toFixed(2)}`
+                    });
+                }
+                
+                routeInfoContainer.innerHTML = `
+                    <div class="route-info-grid">
+                        ${routeMetrics.map(metric => `
+                            <div class="route-metric">
+                                <div class="route-metric-label">${metric.label}</div>
+                                <div class="route-metric-value">${metric.value}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Erro ao calcular rota:', error);
+                routeInfoContainer.innerHTML = `
+                    <div class="route-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Erro ao calcular rota: ${error.message}
+                    </div>
+                `;
+            }
+        }
 
         // ===== CLASSE PRINCIPAL =====
         class OrdersManager {
@@ -1258,6 +2493,15 @@
                 this.filteredOrders = [];
                 this.editingOrderId = null;
                 this.updateInterval = null;
+                this.currentSearchPhone = null;
+                this.currentOrderForDelivery = null;
+                this.deliverers = [];
+                this.currentOrderForProducts = null;
+                this.currentEditingItem = null;
+                this.products = [];
+                this.currentOrderForPayment = null;
+                this.newOrderItems = []; // Para armazenar itens do novo pedido
+                this.isNewOrderContext = false; // Flag para identificar contexto
             }
 
             async init() {
@@ -1266,6 +2510,7 @@
                 try {
                     await this.loadRestaurantInfo();
                     await this.loadOrders();
+                    await this.loadProducts(); // Carregar produtos na inicialização
                     this.setupEventListeners();
                     this.setupRealtimeUpdates();
                     this.setupAutoRefresh();
@@ -1277,9 +2522,9 @@
                 }
             }
 
+            // ===== FUNÇÃO CORRIGIDA PARA CARREGAR DADOS DO RESTAURANTE =====
             async loadRestaurantInfo() {
                 try {
-                    // Para demo, vamos usar o restaurante de exemplo
                     const restaurantId = '50b2dbcb-66bb-4969-92cf-493f03237e49';
                     
                     const { data: restaurant, error } = await supabase
@@ -1291,57 +2536,100 @@
                     if (error) throw error;
 
                     currentRestaurant = restaurant;
-                    document.getElementById('restaurantName').textContent = restaurant.name;
                     
-                    // Aplicar cor do tema
+                    const restaurantNameElement = document.getElementById('restaurantName');
+                    if (restaurantNameElement) {
+                        restaurantNameElement.textContent = restaurant.name;
+                    }
+                    
                     if (restaurant.primary_color) {
                         document.documentElement.style.setProperty('--primary-color', restaurant.primary_color);
                     }
 
-                    console.log('🏪 Restaurante carregado:', restaurant.name);
+                    console.log('🏪 Restaurante carregado:', {
+                        name: restaurant.name,
+                        minimum_distance_km: restaurant.minimum_distance_km,
+                        minimum_delivery_fee: restaurant.minimum_delivery_fee,
+                        delivery_fee_per_km: restaurant.delivery_fee_per_km,
+                        delivery_return_per_km: restaurant.delivery_return_per_km || 0.12 // Valor padrão se não existir
+                    });
                 } catch (error) {
                     console.error('❌ Erro ao carregar restaurante:', error);
+                    // Definir valores padrão se falhar
+                    currentRestaurant = {
+                        minimum_distance_km: 3.0,
+                        minimum_delivery_fee: 8.00,
+                        delivery_fee_per_km: 0.50,
+                        delivery_return_per_km: 0.12
+                    };
                 }
             }
 
+            // ===== FUNÇÃO CORRIGIDA PARA CARREGAR PEDIDOS =====
             async loadOrders() {
                 try {
-                    document.getElementById('loadingState').style.display = 'block';
+                    const loadingElement = document.getElementById('loadingState');
+                    if (loadingElement) {
+                        loadingElement.style.display = 'block';
+                    }
                     
-                    const { data: ordersData, error } = await supabase
+                    // Primeiro, buscar todos os pedidos
+                    const { data: ordersData, error: ordersError } = await supabase
                         .from('orders')
-                        .select(`
-                            *,
-                            order_items(*)
-                        `)
+                        .select('*')
                         .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
                         .order('created_at', { ascending: false });
 
-                    if (error) throw error;
+                    if (ordersError) throw ordersError;
 
-                    this.orders = ordersData.map(order => ({
+                    // Depois, buscar todos os itens dos pedidos
+                    const { data: itemsData, error: itemsError } = await supabase
+                        .from('order_items')
+                        .select('*')
+                        .in('order_id', ordersData.map(order => order.id));
+
+                    if (itemsError) throw itemsError;
+
+                    // Combinar os dados
+                    const ordersWithItems = ordersData.map(order => ({
                         ...order,
-                        order_number: String(order.id).slice(-8).toUpperCase()
+                        order_number: String(order.id).slice(-8).toUpperCase(),
+                        order_items: itemsData.filter(item => item.order_id === order.id)
                     }));
 
+                    this.orders = ordersWithItems;
                     this.filteredOrders = [...this.orders];
                     this.renderOrders();
                     
-                    document.getElementById('ordersCount').textContent = this.orders.length;
-                    document.getElementById('loadingState').style.display = 'none';
+                    const ordersCountElement = document.getElementById('ordersCount');
+                    if (ordersCountElement) {
+                        ordersCountElement.textContent = this.orders.length;
+                    }
+                    
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none';
+                    }
                     
                     console.log(`📦 ${this.orders.length} pedidos carregados`);
                 } catch (error) {
                     console.error('❌ Erro ao carregar pedidos:', error);
                     this.showNotification('Erro ao carregar pedidos', 'error');
-                    document.getElementById('loadingState').style.display = 'none';
+                    
+                    const loadingElement = document.getElementById('loadingState');
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none';
+                    }
                 }
             }
 
             renderOrders() {
                 const container = document.getElementById('ordersGrid');
+                if (!container) {
+                    console.warn('Container ordersGrid não encontrado');
+                    return;
+                }
+
                 const loadingState = document.getElementById('loadingState');
-                
                 if (loadingState) {
                     loadingState.style.display = 'none';
                 }
@@ -1394,49 +2682,203 @@
                 `;
             }
 
+            // ===== FUNÇÃO CORRIGIDA PARA SALVAR PEDIDO =====
             async saveOrder(orderData) {
                 try {
-                    // Inserir pedido - pedidos manuais já entram como "aceito"
+                    console.log('💾 Iniciando salvamento do pedido:', orderData);
+
+                    // Validação rigorosa dos dados obrigatórios
+                    if (!orderData.customer_name || orderData.customer_name.trim() === '') {
+                        throw new Error('Nome do cliente é obrigatório');
+                    }
+                    
+                    if (!orderData.customer_phone || orderData.customer_phone.trim() === '') {
+                        throw new Error('Telefone do cliente é obrigatório');
+                    }
+                    
+                    if (!orderData.delivery_address || orderData.delivery_address.trim() === '') {
+                        throw new Error('Endereço de entrega é obrigatório');
+                    }
+                    
+                    if (!orderData.payment_method || orderData.payment_method.trim() === '') {
+                        throw new Error('Forma de pagamento é obrigatória');
+                    }
+                    
+                    if (!orderData.items || orderData.items.length === 0) {
+                        throw new Error('Adicione pelo menos um item ao pedido');
+                    }
+
+                    // Validação dos valores numéricos
+                    const deliveryFee = parseFloat(orderData.delivery_fee) || 0;
+                    const subtotal = parseFloat(orderData.subtotal) || 0;
+                    const totalAmount = parseFloat(orderData.total_amount) || 0;
+
+                    if (deliveryFee < 0) {
+                        throw new Error('Taxa de entrega não pode ser negativa');
+                    }
+
+                    if (subtotal < 0) {
+                        throw new Error('Subtotal não pode ser negativo');
+                    }
+
+                    if (totalAmount <= 0) {
+                        throw new Error('Total do pedido deve ser maior que zero');
+                    }
+
+                    // Buscar ou validar cliente
+                    let customerId = null;
+                    if (orderData.customer_phone) {
+                        try {
+                            const customer = await this.searchCustomerByPhone(orderData.customer_phone);
+                            if (customer) {
+                                customerId = customer.id;
+                            }
+                        } catch (error) {
+                            console.warn('Erro ao buscar cliente existente:', error);
+                            // Continua sem customer_id se não conseguir buscar
+                        }
+                    }
+
+                    // Preparar dados do pedido para inserção
+                    const orderInsertData = {
+                        restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
+                        customer_id: customerId,
+                        customer_name: orderData.customer_name.trim(),
+                        customer_phone: orderData.customer_phone.trim(),
+                        delivery_address: orderData.delivery_address.trim(),
+                        delivery_fee: deliveryFee,
+                        subtotal: subtotal,
+                        total: totalAmount,
+                        payment_method: orderData.payment_method,
+                        notes: orderData.notes?.trim() || null,
+                        status: 'aceito' // Status inicial
+                    };
+
+                    // Adicionar dados de troco se for pagamento em dinheiro
+                    if (orderData.payment_method === 'money') {
+                        const changeForAmount = parseFloat(orderData.change_for_amount) || null;
+                        const changeAmount = parseFloat(orderData.change_amount) || null;
+                        
+                        if (changeForAmount && changeForAmount > 0) {
+                            orderInsertData.change_for_amount = changeForAmount;
+                            orderInsertData.change_amount = changeAmount;
+                        }
+                    }
+
+                    console.log('📝 Dados do pedido preparados:', orderInsertData);
+
+                    // Inserir pedido no banco
                     const { data: order, error: orderError } = await supabase
                         .from('orders')
-                        .insert([{
-                            restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
-                            customer_name: orderData.customer_name,
-                            customer_phone: orderData.customer_phone,
-                            delivery_address: orderData.delivery_address,
-                            delivery_fee: orderData.delivery_fee,
-                            subtotal: orderData.subtotal,
-                            total: orderData.total_amount,
-                            payment_method: orderData.payment_method,
-                            notes: orderData.notes,
-                            status: 'aceito' // Pedidos manuais já entram como aceito
-                        }])
+                        .insert([orderInsertData])
                         .select()
                         .single();
 
-                    if (orderError) throw orderError;
+                    if (orderError) {
+                        console.error('❌ Erro ao inserir pedido:', orderError);
+                        throw orderError;
+                    }
 
-                    // Inserir itens do pedido
-                    const orderItems = orderData.items.map(item => ({
-                        order_id: order.id,
-                        product_name: item.name,
-                        quantity: item.quantity,
-                        price: item.price,
-                        notes: item.notes
-                    }));
+                    console.log('✅ Pedido criado com ID:', order.id);
+
+                    // Preparar e inserir itens do pedido
+                    const orderItems = orderData.items.map(item => {
+                        // Validação de cada item
+                        if (!item.name || item.name.trim() === '') {
+                            throw new Error('Nome do produto é obrigatório');
+                        }
+                        
+                        const quantity = parseInt(item.quantity);
+                        const price = parseFloat(item.price);
+                        
+                        if (isNaN(quantity) || quantity <= 0) {
+                            throw new Error(`Quantidade inválida para o produto: ${item.name}`);
+                        }
+                        
+                        if (isNaN(price) || price < 0) {
+                            throw new Error(`Preço inválido para o produto: ${item.name}`);
+                        }
+
+                        return {
+                            order_id: order.id,
+                            product_id: item.productId || null, // Pode ser null para produtos personalizados
+                            product_name: item.name.trim(),
+                            quantity: quantity,
+                            price: price,
+                            notes: item.notes?.trim() || null
+                        };
+                    });
+
+                    console.log('📝 Itens do pedido preparados:', orderItems);
 
                     const { error: itemsError } = await supabase
                         .from('order_items')
                         .insert(orderItems);
 
-                    if (itemsError) throw itemsError;
+                    if (itemsError) {
+                        console.error('❌ Erro ao inserir itens:', itemsError);
+                        // Tentar deletar o pedido se os itens falharam
+                        try {
+                            await supabase.from('orders').delete().eq('id', order.id);
+                        } catch (deleteError) {
+                            console.error('❌ Erro ao limpar pedido após falha:', deleteError);
+                        }
+                        throw itemsError;
+                    }
+
+                    console.log('✅ Itens do pedido inseridos com sucesso');
+
+                    // Atualizar estatísticas do cliente se existir
+                    if (customerId) {
+                        try {
+                            const { error: updateError } = await supabase.rpc('update_customer_stats', {
+                                customer_id: customerId,
+                                order_total: totalAmount
+                            });
+                            
+                            if (updateError) {
+                                console.warn('⚠️ Erro ao atualizar estatísticas do cliente:', updateError);
+                            } else {
+                                console.log('✅ Estatísticas do cliente atualizadas');
+                            }
+                        } catch (statsError) {
+                            console.warn('⚠️ Erro ao atualizar estatísticas do cliente:', statsError);
+                        }
+                    }
 
                     this.showNotification('Pedido criado com sucesso!', 'success');
                     await this.loadOrders();
                     
+                    console.log('✅ Processo de salvamento concluído com sucesso');
+                    
                 } catch (error) {
                     console.error('❌ Erro ao salvar pedido:', error);
-                    this.showNotification('Erro ao criar pedido', 'error');
+                    
+                    // Mostrar erro específico baseado no tipo
+                    let errorMessage = 'Erro ao criar pedido';
+                    
+                    if (error.message) {
+                        if (error.message.includes('obrigatório') || error.message.includes('inválido')) {
+                            errorMessage = error.message;
+                        } else if (error.code) {
+                            // Erros específicos do Supabase/PostgreSQL
+                            switch (error.code) {
+                                case '23505': // Violação de constraint única
+                                    errorMessage = 'Já existe um pedido com estes dados';
+                                    break;
+                                case '23503': // Violação de foreign key
+                                    errorMessage = 'Erro de referência de dados. Verifique os dados do cliente';
+                                    break;
+                                case '23514': // Violação de check constraint
+                                    errorMessage = 'Dados inválidos. Verifique valores numéricos';
+                                    break;
+                                default:
+                                    errorMessage = `Erro do banco: ${error.message}`;
+                            }
+                        }
+                    }
+                    
+                    this.showNotification(errorMessage, 'error');
                 }
             }
 
@@ -1451,86 +2893,154 @@
 
                 title.textContent = `Pedido #${order.order_number}`;
 
-                // Conteúdo do modal COMPACTO
+                // Informações de troco
+                let changeInfo = '';
+                if (order.payment_method === 'money' && order.change_for_amount && order.change_amount) {
+                    changeInfo = `
+                        <div class="info-card change">
+                            <div class="info-card-label">Troco</div>
+                            <div class="info-card-value">
+                                Cliente pagou: R$ ${parseFloat(order.change_for_amount).toFixed(2)}<br>
+                                Troco: R$ ${parseFloat(order.change_amount).toFixed(2)}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // NOVO CONTEÚDO CONFORME LAYOUT DA IMAGEM
                 body.innerHTML = `
-                    <div class="order-details-content">
-                        <div class="detail-section">
-                            <h4><i class="fas fa-user"></i> Cliente</h4>
-                            <div class="info-line">
-                                <label>Nome:</label>
-                                <span>${order.customer_name}</span>
+                    <div class="invoice-container">
+                        <div class="invoice-section">
+                            <div class="section-title">
+                                <i class="fas fa-user"></i>
+                                Dados do Cliente
                             </div>
-                            <div class="info-line">
-                                <label>Telefone:</label>
-                                <span>${order.customer_phone}</span>
-                            </div>
-                            <div class="info-line">
-                                <label>Endereço:</label>
-                                <span>${order.delivery_address}</span>
+                            <div class="customer-data">
+                                <div class="customer-line">
+                                    <span class="customer-label">Nome:</span>
+                                    <span class="customer-value">${order.customer_name}</span>
+                                </div>
+                                <div class="customer-line">
+                                    <span class="customer-label">Fone:</span>
+                                    <span class="customer-value">${order.customer_phone}</span>
+                                </div>
+                                <div class="customer-line">
+                                    <span class="customer-label">Endereço:</span>
+                                    <span class="customer-value">${order.delivery_address}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="detail-section">
-                            <h4><i class="fas fa-shopping-cart"></i> Itens (${order.order_items.length})</h4>
-                            <div class="items-list">
-                                ${order.order_items.map(item => `
-                                    <div class="item-detail">
-                                        <div class="item-info">
-                                            <span class="item-name">${item.product_name}</span>
-                                            <span class="item-quantity">Qtd: ${item.quantity} × R$ ${parseFloat(item.price).toFixed(2)}</span>
-                                            ${item.notes ? `<span class="item-notes">${item.notes}</span>` : ''}
-                                        </div>
-                                        <div class="item-price">
-                                            R$ ${(item.quantity * parseFloat(item.price)).toFixed(2)}
-                                        </div>
+                        <div class="invoice-section">
+                            <div class="order-items-container">
+                                <div class="order-items-header">
+                                    <div class="order-items-title">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        ITENS DO PEDIDO
                                     </div>
-                                `).join('')}
+                                    <button class="add-item-btn" onclick="openAddProductModal('${order.id}')">
+                                        + Adicionar
+                                    </button>
+                                </div>
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ITEM</th>
+                                            <th>QTD</th>
+                                            <th>VLR. UNIT.</th>
+                                            <th>TOTAL</th>
+                                            <th>AÇÕES</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${order.order_items.map(item => `
+                                            <tr>
+                                                <td>
+                                                    <div class="item-name-cell">${item.product_name}</div>
+                                                    ${item.notes ? `<div class="item-notes-cell">${item.notes}</div>` : ''}
+                                                </td>
+                                                <td class="item-quantity-cell">${item.quantity}</td>
+                                                <td class="item-price-cell">R$ ${parseFloat(item.price).toFixed(2)}</td>
+                                                <td class="item-total-cell">R$ ${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                                                <td>
+                                                    <div class="item-actions">
+                                                        <button class="item-action-btn edit" onclick="editOrderItem('${item.id}')" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="item-action-btn delete" onclick="deleteOrderItem('${item.id}', '${order.id}')" title="Excluir">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
-                        <div class="detail-section">
-                            <h4><i class="fas fa-calculator"></i> Resumo</h4>
-                            <div class="financial-summary">
-                                <div class="financial-item">
-                                    <span>Subtotal:</span>
-                                    <span>R$ ${parseFloat(order.subtotal || 0).toFixed(2)}</span>
+                        <div class="invoice-section">
+                            <div class="financial-summary-container">
+                                <div class="financial-summary-header">
+                                    <div class="financial-summary-title">
+                                        <i class="fas fa-calculator"></i>
+                                        RESUMO FINANCEIRO
+                                    </div>
                                 </div>
-                                <div class="financial-item">
-                                    <span>Taxa de Entrega:</span>
-                                    <span>R$ ${parseFloat(order.delivery_fee || 0).toFixed(2)}</span>
-                                </div>
-                                <div class="financial-item total">
-                                    <span>Total:</span>
-                                    <span>R$ ${parseFloat(order.total || order.total_amount || 0).toFixed(2)}</span>
+                                <div class="financial-summary">
+                                    <div class="summary-line">
+                                        <span class="summary-label">Subtotal:</span>
+                                        <span class="summary-value">R$ ${parseFloat(order.subtotal || 0).toFixed(2)}</span>
+                                    </div>
+                                    <div class="summary-line">
+                                        <span class="summary-label">Taxa de Entrega:</span>
+                                        <span class="summary-value">R$ ${parseFloat(order.delivery_fee || 0).toFixed(2)}</span>
+                                    </div>
+                                    <div class="summary-line total">
+                                        <span class="summary-label">TOTAL:</span>
+                                        <span class="summary-value">R$ ${parseFloat(order.total || order.total_amount || 0).toFixed(2)}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="detail-section">
-                            <h4><i class="fas fa-info-circle"></i> Informações</h4>
-                            <div class="info-line">
-                                <label>Status:</label>
-                                <span class="order-status-badge ${order.status}">${this.getStatusLabel(order.status)}</span>
+                        <div class="invoice-section">
+                            <div class="section-title">
+                                <i class="fas fa-info-circle"></i>
+                                Informações do Pedido
                             </div>
-                            <div class="info-line">
-                                <label>Pagamento:</label>
-                                <span>${this.getPaymentMethodLabel(order.payment_method)}</span>
+                            <div class="order-info-grid">
+                                <div class="info-card status">
+                                    <div class="info-card-label">Status</div>
+                                    <div class="info-card-value">
+                                        <span class="order-status-badge ${order.status}">${this.getStatusLabel(order.status)}</span>
+                                    </div>
+                                </div>
+                                <div class="info-card payment">
+                                    <div class="info-card-label">Pagamento</div>
+                                    <div class="info-card-value">${this.getPaymentMethodLabel(order.payment_method)}</div>
+                                </div>
                             </div>
-                            <div class="info-line">
-                                <label>Criado em:</label>
-                                <span>${new Date(order.created_at).toLocaleString()}</span>
-                            </div>
+
+                            ${changeInfo}
+                            
                             ${order.notes ? `
-                                <div class="info-line">
-                                    <label>Observações:</label>
-                                    <span>${order.notes}</span>
+                                <div style="margin-top: 1rem;">
+                                    <div class="info-card">
+                                        <div class="info-card-label">Observações</div>
+                                        <div class="info-card-value">${order.notes}</div>
+                                    </div>
                                 </div>
                             ` : ''}
+                            
+                            <div class="timestamp-line">
+                                <span><i class="fas fa-clock"></i> Criado em:</span>
+                                <span>${new Date(order.created_at).toLocaleString('pt-BR')}</span>
+                            </div>
                         </div>
                     </div>
                 `;
 
-                // Ações do modal
                 actions.innerHTML = `
                     <button type="button" class="btn btn-secondary" onclick="closeOrderDetailsModal()">
                         Fechar
@@ -1573,14 +3083,14 @@
                         break;
                     case 'pronto':
                         actions.push(`
-                            <button class="btn btn-primary" onclick="updateOrderStatusFromDetails('${order.id}', 'saiu_entrega')">
+                            <button class="btn btn-primary" onclick="openDelivererSelection('${order.id}')">
                                 <i class="fas fa-motorcycle"></i> Saiu para Entrega
                             </button>
                         `);
                         break;
                     case 'saiu_entrega':
                         actions.push(`
-                            <button class="btn btn-success" onclick="updateOrderStatusFromDetails('${order.id}', 'entregue')">
+                            <button class="btn btn-success" onclick="openPaymentMethodModal('${order.id}')">
                                 <i class="fas fa-flag-checkered"></i> Marcar como Entregue
                             </button>
                         `);
@@ -1662,37 +3172,12 @@
                 return `${diffInDays}d atrás`;
             }
 
-            async updateOrderStatus(orderId, newStatus) {
-                try {
-                    const { data, error } = await supabase
-                        .from('orders')
-                        .update({ 
-                            status: newStatus,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', orderId)
-                        .select()
-                        .single();
-
-                    if (error) throw error;
-
-                    this.showNotification(`Status atualizado para: ${this.getStatusLabel(newStatus)}`, 'success');
-                    await this.loadOrders();
-                    
-                } catch (error) {
-                    console.error('❌ Erro ao atualizar status:', error);
-                    this.showNotification('Erro ao atualizar status', 'error');
-                }
-            }
-
             setupRealtimeUpdates() {
                 try {
-                    // Cancelar subscription anterior se existir
                     if (realtimeSubscription) {
                         realtimeSubscription.unsubscribe();
                     }
 
-                    // Configurar subscription para pedidos
                     realtimeSubscription = supabase
                         .channel('orders_realtime')
                         .on('postgres_changes', {
@@ -1734,83 +3219,215 @@
             }
 
             setupEventListeners() {
-                // Filtros
                 document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
                 document.getElementById('searchInput').addEventListener('input', () => this.applyFilters());
                 document.getElementById('dateFilter').addEventListener('change', () => this.applyFilters());
                 
-                // Formulário de novo pedido
                 document.getElementById('newOrderForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.handleOrderSubmit();
                 });
                 
-                // Cálculo automático do total
                 document.addEventListener('input', (e) => {
-                    if (e.target.matches('.item-quantity, .item-price, #deliveryFee')) {
-                        this.calculateOrderTotal();
+                    if (e.target.matches('#deliveryFee')) {
+                        this.calculateNewOrderTotal();
+                    }
+                    if (e.target.matches('#changeForAmount')) {
+                        calculateChange();
+                    }
+                    if (e.target.matches('#finalChangeForAmount')) {
+                        calculateFinalChange();
+                    }
+                    if (e.target.matches('#deliveryAddress')) {
+                        // Debounce o cálculo da rota
+                        clearTimeout(this.routeCalculationTimeout);
+                        this.routeCalculationTimeout = setTimeout(() => {
+                            calculateRoute();
+                        }, 1000);
                     }
                 });
-                
-                // Remover item
-                document.addEventListener('click', (e) => {
-                    if (e.target.matches('.remove-item, .remove-item *')) {
-                        e.preventDefault();
-                        const orderItem = e.target.closest('.order-item-form');
-                        if (document.querySelectorAll('.order-item-form').length > 1) {
-                            orderItem.remove();
-                            this.calculateOrderTotal();
-                        } else {
-                            this.showNotification('Deve haver pelo menos um item', 'warning');
+
+                // Setup product search in new order modal
+                const newOrderProductSearch = document.getElementById('newOrderProductSearch');
+                if (newOrderProductSearch) {
+                    newOrderProductSearch.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            this.searchAndAddProduct(e.target.value.trim());
                         }
-                    }
-                });
+                    });
+
+                    newOrderProductSearch.addEventListener('input', (e) => {
+                        this.performNewOrderProductSearch(e.target.value.trim());
+                    });
+                }
             }
 
-            handleOrderSubmit() {
-                // Coletar dados do cliente
-                const orderData = {
-                    customer_name: document.getElementById('customerName').value,
-                    customer_phone: document.getElementById('customerPhone').value,
-                    delivery_address: document.getElementById('deliveryAddress').value,
-                    delivery_fee: parseFloat(document.getElementById('deliveryFee').value) || 0,
-                    payment_method: document.getElementById('paymentMethod').value,
-                    notes: document.getElementById('orderNotes').value
-                };
+            async performNewOrderProductSearch(searchTerm) {
+                const resultsContainer = document.getElementById('newOrderSearchResults');
                 
-                // Coletar itens
-                const items = [];
-                document.querySelectorAll('.order-item-form').forEach(itemEl => {
-                    const name = itemEl.querySelector('.item-name').value;
-                    const quantity = parseInt(itemEl.querySelector('.item-quantity').value);
-                    const price = parseFloat(itemEl.querySelector('.item-price').value);
-                    const notes = itemEl.querySelector('.item-notes').value;
-                    
-                    if (name && quantity && price) {
-                        items.push({ name, quantity, price, notes });
-                    }
-                });
-                
-                if (items.length === 0) {
-                    this.showNotification('Adicione pelo menos um item', 'warning');
+                if (!searchTerm || searchTerm.length < 2) {
+                    resultsContainer.style.display = 'none';
                     return;
                 }
-                
-                orderData.items = items;
-                orderData.subtotal = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-                orderData.total_amount = orderData.subtotal + orderData.delivery_fee;
-                
-                this.saveOrder(orderData);
-                this.closeNewOrderModal();
+
+                const filteredProducts = this.products.filter(product => {
+                    const last4Digits = product.id.slice(-4);
+                    return product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           last4Digits.includes(searchTerm) ||
+                           (product.product_categories?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+                });
+
+                if (filteredProducts.length > 0) {
+                    resultsContainer.innerHTML = filteredProducts.slice(0, 5).map(product => {
+                        const last4Digits = product.id.slice(-4);
+                        return `
+                            <div class="search-result-item" onclick="addProductToNewOrder('${product.id}')">
+                                <div class="product-search-name">${last4Digits} - ${product.name}</div>
+                                <div class="product-search-price">R$ ${parseFloat(product.price).toFixed(2)}</div>
+                                ${product.product_categories ? `<div class="product-search-category">${product.product_categories.name}</div>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                    resultsContainer.style.display = 'block';
+                } else {
+                    resultsContainer.style.display = 'none';
+                }
             }
 
-            calculateOrderTotal() {
+            async searchAndAddProduct(searchTerm) {
+                if (!searchTerm) return;
+
+                const product = this.products.find(p => {
+                    const last4Digits = p.id.slice(-4);
+                    return p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           last4Digits.includes(searchTerm);
+                });
+
+                if (product) {
+                    this.addProductToNewOrder(product.id);
+                    document.getElementById('newOrderProductSearch').value = '';
+                    document.getElementById('newOrderSearchResults').style.display = 'none';
+                } else {
+                    this.showNotification('Produto não encontrado', 'warning');
+                }
+            }
+
+            addProductToNewOrder(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (!product) return;
+
+                // Verifica se o produto já está no pedido
+                const existingItem = this.newOrderItems.find(item => item.productId === productId);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    this.newOrderItems.push({
+                        productId: productId,
+                        name: product.name,
+                        price: parseFloat(product.price),
+                        quantity: 1,
+                        notes: ''
+                    });
+                }
+
+                this.renderNewOrderItems();
+                this.calculateNewOrderTotal();
+                
+                // Limpar busca
+                const searchInput = document.getElementById('newOrderProductSearch');
+                const searchResults = document.getElementById('newOrderSearchResults');
+                if (searchInput) searchInput.value = '';
+                if (searchResults) searchResults.style.display = 'none';
+
+                this.showNotification(`${product.name} adicionado ao pedido`, 'success');
+            }
+
+            renderNewOrderItems() {
+                const tbody = document.getElementById('newOrderItemsTableBody');
+                if (!tbody) return;
+
+                if (this.newOrderItems.length === 0) {
+                    tbody.innerHTML = `
+                        <tr class="no-items-row">
+                            <td colspan="5">Nenhum item adicionado ainda. Use a busca acima ou o botão "Adicionar Produto".</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = this.newOrderItems.map((item, index) => `
+                    <tr>
+                        <td>
+                            <div class="item-name-cell">${item.name}</div>
+                            ${item.notes ? `<div class="item-notes-cell">${item.notes}</div>` : ''}
+                        </td>
+                        <td class="item-quantity-cell">
+                            <input type="number" value="${item.quantity}" min="1" 
+                                   onchange="updateNewOrderItemQuantity(${index}, this.value)" 
+                                   style="width: 60px; text-align: center;">
+                        </td>
+                        <td class="item-price-cell">
+                            <input type="number" value="${item.price.toFixed(2)}" step="0.01" 
+                                   onchange="updateNewOrderItemPrice(${index}, this.value)"
+                                   style="width: 80px; text-align: right;">
+                        </td>
+                        <td class="item-total-cell">R$ ${(item.quantity * item.price).toFixed(2)}</td>
+                        <td>
+                            <div class="item-actions">
+                                <button type="button" class="item-action-btn edit" onclick="editNewOrderItemNotes(${index})" title="Observações">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="item-action-btn delete" onclick="removeNewOrderItem(${index})" title="Remover">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            updateNewOrderItemQuantity(index, quantity) {
+                const qty = parseInt(quantity);
+                if (qty > 0 && this.newOrderItems[index]) {
+                    this.newOrderItems[index].quantity = qty;
+                    this.renderNewOrderItems();
+                    this.calculateNewOrderTotal();
+                }
+            }
+
+            updateNewOrderItemPrice(index, price) {
+                const priceValue = parseFloat(price);
+                if (priceValue >= 0 && this.newOrderItems[index]) {
+                    this.newOrderItems[index].price = priceValue;
+                    this.renderNewOrderItems();
+                    this.calculateNewOrderTotal();
+                }
+            }
+
+            editNewOrderItemNotes(index) {
+                if (!this.newOrderItems[index]) return;
+                
+                const newNotes = prompt('Observações do item:', this.newOrderItems[index].notes || '');
+                if (newNotes !== null) {
+                    this.newOrderItems[index].notes = newNotes;
+                    this.renderNewOrderItems();
+                }
+            }
+
+            removeNewOrderItem(index) {
+                if (this.newOrderItems[index] && confirm('Remover este item do pedido?')) {
+                    this.newOrderItems.splice(index, 1);
+                    this.renderNewOrderItems();
+                    this.calculateNewOrderTotal();
+                }
+            }
+
+            calculateNewOrderTotal() {
                 let subtotal = 0;
                 
-                document.querySelectorAll('.order-item-form').forEach(itemEl => {
-                    const quantity = parseInt(itemEl.querySelector('.item-quantity').value) || 0;
-                    const price = parseFloat(itemEl.querySelector('.item-price').value) || 0;
-                    subtotal += quantity * price;
+                this.newOrderItems.forEach(item => {
+                    subtotal += item.quantity * item.price;
                 });
                 
                 const deliveryFee = parseFloat(document.getElementById('deliveryFee').value) || 0;
@@ -1818,59 +3435,98 @@
                 
                 document.getElementById('subtotal').value = subtotal.toFixed(2);
                 document.getElementById('orderTotal').value = total.toFixed(2);
+
+                // Recalcular troco se necessário
+                if (document.getElementById('paymentMethod').value === 'money') {
+                    calculateChange();
+                }
             }
 
-            addOrderItem() {
-                const container = document.getElementById('orderItems');
-                const itemHtml = `
-                    <div class="order-item-form">
-                        <div class="item-grid">
-                            <div>
-                                <label class="form-label">Produto</label>
-                                <input type="text" class="form-input item-name" placeholder="Nome do produto" required>
-                            </div>
-                            <div>
-                                <label class="form-label">Qtd</label>
-                                <input type="number" class="form-input item-quantity" min="1" value="1" required>
-                            </div>
-                            <div>
-                                <label class="form-label">Preço Unit.</label>
-                                <input type="number" class="form-input item-price" step="0.01" placeholder="0.00" required>
-                            </div>
-                            <div class="item-actions">
-                                <button type="button" class="btn btn-danger btn-sm remove-item">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Observações</label>
-                            <input type="text" class="form-input item-notes" placeholder="Observações do item">
-                        </div>
-                    </div>
-                `;
+            handleOrderSubmit() {
+                // Validar dados obrigatórios antes de preparar o objeto
+                const customerName = document.getElementById('customerName').value.trim();
+                const customerPhone = document.getElementById('customerPhone').value.trim();
+                const deliveryAddress = document.getElementById('deliveryAddress').value.trim();
+                const paymentMethod = document.getElementById('paymentMethod').value;
+
+                if (!customerName) {
+                    this.showNotification('Nome do cliente é obrigatório', 'error');
+                    document.getElementById('customerName').focus();
+                    return;
+                }
+
+                if (!customerPhone) {
+                    this.showNotification('Telefone do cliente é obrigatório', 'error');
+                    document.getElementById('customerPhone').focus();
+                    return;
+                }
+
+                if (!deliveryAddress) {
+                    this.showNotification('Endereço de entrega é obrigatório', 'error');
+                    document.getElementById('deliveryAddress').focus();
+                    return;
+                }
+
+                if (!paymentMethod) {
+                    this.showNotification('Forma de pagamento é obrigatória', 'error');
+                    document.getElementById('paymentMethod').focus();
+                    return;
+                }
+
+                if (this.newOrderItems.length === 0) {
+                    this.showNotification('Adicione pelo menos um item ao pedido', 'warning');
+                    return;
+                }
+
+                const orderData = {
+                    customer_name: customerName,
+                    customer_phone: customerPhone,
+                    delivery_address: deliveryAddress,
+                    delivery_fee: parseFloat(document.getElementById('deliveryFee').value) || 0,
+                    payment_method: paymentMethod,
+                    notes: document.getElementById('orderNotes').value.trim() || null
+                };
+
+                // Adicionar dados de troco se for pagamento em dinheiro
+                if (orderData.payment_method === 'money') {
+                    const changeForAmount = parseFloat(document.getElementById('changeForAmount').value) || 0;
+                    const changeAmount = parseFloat(document.getElementById('changeAmount').value) || 0;
+                    
+                    if (changeForAmount > 0) {
+                        orderData.change_for_amount = changeForAmount;
+                        orderData.change_amount = changeAmount;
+                    }
+                }
                 
-                container.insertAdjacentHTML('beforeend', itemHtml);
-                this.calculateOrderTotal();
+                // Calcular totais
+                orderData.items = [...this.newOrderItems]; // Clonar array
+                orderData.subtotal = this.newOrderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+                orderData.total_amount = orderData.subtotal + orderData.delivery_fee;
+                
+                console.log('📋 Dados do pedido para salvamento:', orderData);
+                
+                this.saveOrder(orderData);
+                this.closeNewOrderModal();
             }
 
             applyFilters() {
-                const status = document.getElementById('statusFilter').value;
-                const search = document.getElementById('searchInput').value.toLowerCase();
-                const date = document.getElementById('dateFilter').value;
+                const statusElement = document.getElementById('statusFilter');
+                const searchElement = document.getElementById('searchInput');
+                const dateElement = document.getElementById('dateFilter');
+                
+                const status = statusElement ? statusElement.value : '';
+                const search = searchElement ? searchElement.value.toLowerCase() : '';
+                const date = dateElement ? dateElement.value : '';
                 
                 this.filteredOrders = this.orders.filter(order => {
-                    // Filtro de status
                     if (status && order.status !== status) return false;
                     
-                    // Filtro de busca
                     if (search) {
                         const searchInName = order.customer_name.toLowerCase().includes(search);
                         const searchInNumber = order.order_number.toLowerCase().includes(search);
                         if (!searchInName && !searchInNumber) return false;
                     }
                     
-                    // Filtro de data
                     if (date) {
                         const orderDate = order.created_at.split('T')[0];
                         if (orderDate !== date) return false;
@@ -1880,64 +3536,1305 @@
                 });
                 
                 this.renderOrders();
-                document.getElementById('ordersCount').textContent = this.filteredOrders.length;
+                
+                const ordersCountElement = document.getElementById('ordersCount');
+                if (ordersCountElement) {
+                    ordersCountElement.textContent = this.filteredOrders.length;
+                }
             }
 
             clearFilters() {
-                document.getElementById('statusFilter').value = '';
-                document.getElementById('searchInput').value = '';
-                document.getElementById('dateFilter').value = '';
+                const statusElement = document.getElementById('statusFilter');
+                const searchElement = document.getElementById('searchInput');
+                const dateElement = document.getElementById('dateFilter');
+                
+                if (statusElement) statusElement.value = '';
+                if (searchElement) searchElement.value = '';
+                if (dateElement) dateElement.value = '';
+                
                 this.filteredOrders = [...this.orders];
                 this.renderOrders();
-                document.getElementById('ordersCount').textContent = this.filteredOrders.length;
+                
+                const ordersCountElement = document.getElementById('ordersCount');
+                if (ordersCountElement) {
+                    ordersCountElement.textContent = this.filteredOrders.length;
+                }
             }
 
             setupAutoRefresh() {
                 this.updateInterval = setInterval(() => {
                     this.loadOrders();
-                }, 60000); // Atualizar a cada 1 minuto
+                }, 60000);
             }
 
             closeNewOrderModal() {
                 document.getElementById('newOrderModal').classList.remove('show');
                 document.getElementById('newOrderForm').reset();
                 
-                // Reset order items to single item
-                const container = document.getElementById('orderItems');
-                const items = container.querySelectorAll('.order-item-form');
-                for (let i = 1; i < items.length; i++) {
-                    items[i].remove();
+                // Limpar itens do novo pedido
+                this.newOrderItems = [];
+                this.renderNewOrderItems();
+                
+                // Limpar campos de troco
+                document.getElementById('changeFields').classList.remove('show');
+                document.getElementById('changeForAmount').value = '';
+                document.getElementById('changeAmount').value = '';
+                document.getElementById('changeCalculation').style.display = 'none';
+                
+                // Limpar informações da rota
+                const routeInfoContainer = document.getElementById('routeInfo');
+                if (routeInfoContainer) {
+                    routeInfoContainer.innerHTML = `
+                        <div class="route-loading">
+                            Insira o endereço de entrega para calcular a rota
+                        </div>
+                    `;
                 }
                 
-                this.calculateOrderTotal();
+                this.clearCustomerData();
+                this.calculateNewOrderTotal();
             }
 
+            // ===== FUNÇÕES PARA CLIENTES =====
+            async searchCustomerByPhone(phone) {
+                try {
+                    const cleanPhoneToSearch = phone.replace(/\D/g, '');
+                    
+                    if (cleanPhoneToSearch.length < 10) {
+                        this.showNotification('Digite um telefone válido com DDD', 'warning');
+                        return null;
+                    }
+
+                    const { data: allCustomers, error } = await supabase
+                        .from('customers')
+                        .select('id, name, phone, address')
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49');
+
+                    if (error) {
+                        console.error('Erro ao buscar lista de clientes:', error);
+                        throw error;
+                    }
+
+                    if (!allCustomers) {
+                        return null;
+                    }
+                    
+                    const foundCustomer = allCustomers.find(customer => {
+                        if (!customer.phone) return false;
+                        const dbCleanPhone = customer.phone.replace(/\D/g, '');
+                        return dbCleanPhone === cleanPhoneToSearch;
+                    });
+
+                    return foundCustomer || null;
+                    
+                } catch (error) {
+                    console.error('❌ Erro na busca de cliente:', error);
+                    this.showNotification('Ocorreu um erro ao buscar o cliente.', 'error');
+                    return null;
+                }
+            }
+
+            async saveNewCustomer(customerData) {
+                try {
+                    const { data: customer, error } = await supabase
+                        .from('customers')
+                        .insert([{
+                            restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
+                            name: customerData.name,
+                            phone: customerData.phone,
+                            email: customerData.email,
+                            address: customerData.address,
+                            city: customerData.city,
+                            zip_code: customerData.zip_code,
+                            birth_date: customerData.birth_date || null,
+                            preferences: {},
+                            total_orders: 0,
+                            total_spent: 0.00
+                        }])
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+
+                    this.showNotification('Cliente cadastrado com sucesso!', 'success');
+                    return customer;
+                } catch (error) {
+                    console.error('❌ Erro ao salvar cliente:', error);
+                    this.showNotification('Erro ao cadastrar cliente', 'error');
+                    return null;
+                }
+            }
+
+            fillCustomerData(customer) {
+                const nameElement = document.getElementById('customerName');
+                const phoneElement = document.getElementById('customerPhone');
+                const addressElement = document.getElementById('deliveryAddress');
+                const searchElement = document.getElementById('searchPhone');
+                
+                if (nameElement) nameElement.value = customer.name;
+                if (phoneElement) phoneElement.value = customer.phone;
+                if (addressElement) addressElement.value = customer.address || '';
+                if (searchElement) searchElement.value = '';
+
+                // Recalcular rota quando o endereço for preenchido
+                if (customer.address) {
+                    setTimeout(() => calculateRoute(), 500);
+                }
+            }
+
+            clearCustomerData() {
+                const nameElement = document.getElementById('customerName');
+                const phoneElement = document.getElementById('customerPhone');
+                const addressElement = document.getElementById('deliveryAddress');
+                const searchElement = document.getElementById('searchPhone');
+                
+                if (nameElement) nameElement.value = '';
+                if (phoneElement) phoneElement.value = '';
+                if (addressElement) addressElement.value = '';
+                if (searchElement) searchElement.value = '';
+            }
+
+            // ===== FUNÇÕES PARA ENTREGADORES =====
+            async loadDeliverers() {
+                try {
+                    const { data: motoboys, error } = await supabase
+                        .from('cadastro_motoboy')
+                        .select('*')
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
+                        .order('nome');
+
+                    if (error) throw error;
+
+                    this.deliverers = motoboys;
+                    return motoboys;
+                } catch (error) {
+                    console.error('❌ Erro ao carregar entregadores:', error);
+                    this.showNotification('Erro ao carregar entregadores', 'error');
+                    return [];
+                }
+            }
+
+            async openDelivererSelectionModal(orderId) {
+                this.currentOrderForDelivery = orderId;
+                const modal = document.getElementById('delivererSelectionModal');
+                const select = document.getElementById('delivererSelect');
+                
+                if (!modal || !select) {
+                    console.warn('Modal de seleção de entregador não encontrado');
+                    return;
+                }
+
+                const motoboys = await this.loadDeliverers();
+                
+                if (motoboys.length === 0) {
+                    select.innerHTML = '<option value="">Nenhum motoboy cadastrado</option>';
+                } else {
+                    select.innerHTML = `
+                        <option value="">Selecione o entregador...</option>
+                        ${motoboys.map(motoboy => `
+                            <option value="${motoboy.id}">
+                                ${motoboy.nome}
+                            </option>
+                        `).join('')}
+                    `;
+                }
+
+                modal.classList.add('show');
+            }
+
+            async confirmDelivererSelection() {
+                const select = document.getElementById('delivererSelect');
+                const motoboyId = select ? select.value : null;
+                
+                if (!motoboyId) {
+                    this.showNotification('Selecione um entregador', 'warning');
+                    return;
+                }
+
+                if (!this.currentOrderForDelivery) {
+                    this.showNotification('Erro: pedido não identificado', 'error');
+                    return;
+                }
+
+                try {
+                    const { data: motoboy, error: motoboyError } = await supabase
+                        .from('cadastro_motoboy')
+                        .select('*')
+                        .eq('id', motoboyId)
+                        .single();
+
+                    if (motoboyError) throw motoboyError;
+
+                    let delivererId = null;
+                    
+                    const { data: existingDeliverer, error: checkError } = await supabase
+                        .from('deliverers')
+                        .select('id')
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
+                        .eq('cpf', motoboy.cpf)
+                        .single();
+
+                    if (checkError && checkError.code !== 'PGRST116') throw checkError;
+
+                    if (existingDeliverer) {
+                        delivererId = existingDeliverer.id;
+                    } else {
+                        const { data: newDeliverer, error: delivererError } = await supabase
+                            .from('deliverers')
+                            .insert([{
+                                restaurant_id: currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49',
+                                name: motoboy.nome,
+                                cpf: motoboy.cpf,
+                                phone: '(13) 99999-9999',
+                                motorcycle_plate: 'ABC-1234',
+                                motorcycle_model: 'Honda CG',
+                                type: 'third-party',
+                                status: 'busy',
+                                rating: 5.00,
+                                total_deliveries: 0
+                            }])
+                            .select('id')
+                            .single();
+
+                        if (delivererError) throw delivererError;
+                        delivererId = newDeliverer.id;
+                    }
+
+                    const { data, error } = await supabase
+                        .from('orders')
+                        .update({ 
+                            status: 'saiu_entrega',
+                            deliverer_id: delivererId,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', this.currentOrderForDelivery)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+
+                    this.showNotification(`Pedido saiu para entrega com ${motoboy.nome}`, 'success');
+                    await this.loadOrders();
+                    this.closeDelivererSelectionModal();
+                    this.closeOrderDetailsModal();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao confirmar entregador:', error);
+                    this.showNotification('Erro ao confirmar entregador', 'error');
+                }
+            }
+
+            closeDelivererSelectionModal() {
+                const modal = document.getElementById('delivererSelectionModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+                this.currentOrderForDelivery = null;
+            }
+
+            // ===== FUNÇÕES PARA PAGAMENTO E FINALIZAÇÃO =====
+            async openPaymentMethodModal(orderId) {
+                this.currentOrderForPayment = orderId;
+                const modal = document.getElementById('paymentMethodModal');
+                const paymentSelect = document.getElementById('finalPaymentMethod');
+                
+                if (!modal || !paymentSelect) {
+                    console.warn('Modal de forma de pagamento não encontrado');
+                    return;
+                }
+
+                const order = this.orders.find(o => o.id === orderId);
+                if (order && order.payment_method) {
+                    paymentSelect.value = order.payment_method;
+                    toggleFinalChangeFields();
+
+                    // Se for dinheiro e tiver dados de troco, preencher
+                    if (order.payment_method === 'money' && order.change_for_amount) {
+                        document.getElementById('finalChangeForAmount').value = parseFloat(order.change_for_amount).toFixed(2);
+                        calculateFinalChange();
+                    }
+                } else {
+                    paymentSelect.value = '';
+                }
+
+                modal.classList.add('show');
+            }
+
+            async confirmPaymentAndFinish() {
+                const paymentSelect = document.getElementById('finalPaymentMethod');
+                const paymentMethod = paymentSelect ? paymentSelect.value : null;
+                
+                if (!paymentMethod) {
+                    this.showNotification('Selecione a forma de pagamento', 'warning');
+                    return;
+                }
+
+                if (!this.currentOrderForPayment) {
+                    this.showNotification('Erro: pedido não identificado', 'error');
+                    return;
+                }
+
+                try {
+                    const currentOrder = this.orders.find(o => o.id === this.currentOrderForPayment);
+                    
+                    let updateData = { 
+                        status: 'entregue',
+                        payment_method: paymentMethod,
+                        delivered_at: new Date().toISOString(),
+                        payment_status: 'paid',
+                        updated_at: new Date().toISOString()
+                    };
+
+                    // Adicionar dados de troco se for pagamento em dinheiro
+                    if (paymentMethod === 'money') {
+                        const changeForAmount = parseFloat(document.getElementById('finalChangeForAmount').value) || 0;
+                        const changeAmount = parseFloat(document.getElementById('finalChangeAmount').value) || 0;
+                        
+                        if (changeForAmount > 0) {
+                            updateData.change_for_amount = changeForAmount;
+                            updateData.change_amount = changeAmount;
+                        }
+                    }
+
+                    const { data, error } = await supabase
+                        .from('orders')
+                        .update(updateData)
+                        .eq('id', this.currentOrderForPayment)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+
+                    if (currentOrder && currentOrder.deliverer_id) {
+                        try {
+                            await supabase
+                                .from('deliverers')
+                                .update({ 
+                                    status: 'active',
+                                    last_seen: new Date().toISOString()
+                                })
+                                .eq('id', currentOrder.deliverer_id);
+                            
+                            await supabase.rpc('increment_deliverer_total', {
+                                deliverer_id: currentOrder.deliverer_id
+                            });
+                            
+                            console.log(`🏍️ Entregador liberado para novo pedido`);
+                        } catch (delivererError) {
+                            console.warn('Erro ao liberar entregador:', delivererError);
+                        }
+                    }
+
+                    if (data.customer_id) {
+                        try {
+                            await supabase.rpc('update_customer_stats', {
+                                customer_id: data.customer_id,
+                                order_total: parseFloat(data.total || data.total_amount || 0)
+                            });
+                        } catch (statsError) {
+                            console.warn('Erro ao atualizar estatísticas do cliente:', statsError);
+                        }
+                    }
+
+                    this.showNotification(`Entrega finalizada! Pagamento: ${this.getPaymentMethodLabel(paymentMethod)}`, 'success');
+                    
+                    await this.loadOrders();
+                    
+                    this.closePaymentMethodModal();
+                    this.closeOrderDetailsModal();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao finalizar entrega:', error);
+                    this.showNotification('Erro ao finalizar entrega. Tente novamente.', 'error');
+                }
+            }
+
+            closePaymentMethodModal() {
+                const modal = document.getElementById('paymentMethodModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+                
+                const paymentSelect = document.getElementById('finalPaymentMethod');
+                if (paymentSelect) {
+                    paymentSelect.value = '';
+                }
+
+                // Limpar campos de troco
+                document.getElementById('finalChangeFields').classList.remove('show');
+                document.getElementById('finalChangeForAmount').value = '';
+                document.getElementById('finalChangeAmount').value = '';
+                document.getElementById('finalChangeCalculation').style.display = 'none';
+                
+                this.currentOrderForPayment = null;
+            }
+
+            // ===== FUNÇÕES PARA PRODUTOS E ITENS =====
+            async loadProducts() {
+                try {
+                    // Carregar produtos sem usar join direto
+                    const { data: products, error: productsError } = await supabase
+                        .from('products')
+                        .select('*')
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
+                        .eq('active', true)
+                        .order('name');
+
+                    if (productsError) throw productsError;
+
+                    // Carregar categorias separadamente
+                    const { data: categories, error: categoriesError } = await supabase
+                        .from('product_categories')
+                        .select('*')
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
+                        .eq('active', true);
+
+                    if (categoriesError) throw categoriesError;
+
+                    // Combinar dados
+                    const productsWithCategories = products.map(product => ({
+                        ...product,
+                        product_categories: categories.find(cat => cat.id === product.category_id) || null
+                    }));
+
+                    this.products = productsWithCategories;
+                    return productsWithCategories;
+                } catch (error) {
+                    console.error('❌ Erro ao carregar produtos:', error);
+                    this.showNotification('Erro ao carregar produtos', 'error');
+                    return [];
+                }
+            }
+
+            async loadCategories() {
+                try {
+                    const { data: categories, error } = await supabase
+                        .from('product_categories')
+                        .select('*')
+                        .eq('restaurant_id', currentRestaurant?.id || '50b2dbcb-66bb-4969-92cf-493f03237e49')
+                        .eq('active', true)
+                        .order('display_order', { ascending: true });
+
+                    if (error) throw error;
+
+                    return categories;
+                } catch (error) {
+                    console.error('❌ Erro ao carregar categorias:', error);
+                    return [];
+                }
+            }
+
+            async openAddProductModal(orderId) {
+                this.currentOrderForProducts = orderId;
+                this.isNewOrderContext = false; // Modal para pedido existente
+                const modal = document.getElementById('addProductModal');
+                const productsSelect = document.getElementById('productsSelect');
+                const categoriesSelect = document.getElementById('categoriesSelect');
+                const searchInput = document.getElementById('productSearchInput');
+                
+                if (!modal || !productsSelect) return;
+
+                const products = await this.loadProducts();
+                const categories = await this.loadCategories();
+                
+                this.renderCategories(categories);
+                this.renderProducts(products);
+
+                if (searchInput && !searchInput.hasAttribute('data-listener-added')) {
+                    searchInput.addEventListener('input', () => {
+                        const searchTerm = searchInput.value.toLowerCase().trim();
+                        this.performProductSearch(searchTerm);
+                    });
+                    searchInput.setAttribute('data-listener-added', 'true');
+                }
+
+                if (categoriesSelect && !categoriesSelect.hasAttribute('data-listener-added')) {
+                    categoriesSelect.addEventListener('change', () => {
+                        this.filterProductsByCategory(categoriesSelect.value);
+                    });
+                    categoriesSelect.setAttribute('data-listener-added', 'true');
+                }
+
+                if (productsSelect && !productsSelect.hasAttribute('data-listener-added')) {
+                    productsSelect.addEventListener('change', () => {
+                        if (productsSelect.value) {
+                            this.selectProduct(productsSelect.value);
+                        }
+                    });
+                    
+                    productsSelect.addEventListener('dblclick', () => {
+                        if (productsSelect.value) {
+                            this.selectProduct(productsSelect.value);
+                        }
+                    });
+                    
+                    productsSelect.setAttribute('data-listener-added', 'true');
+                }
+
+                modal.classList.add('show');
+            }
+
+            async openAddProductToNewOrderModal() {
+                this.isNewOrderContext = true; // Modal para novo pedido
+                await this.openAddProductModal('new-order');
+            }
+
+            renderCategories(categories) {
+                const categoriesSelect = document.getElementById('categoriesSelect');
+                if (!categoriesSelect) return;
+
+                categoriesSelect.innerHTML = `
+                    <option value="">Todas as categorias</option>
+                    ${categories.map(category => `
+                        <option value="${category.id}">${category.name}</option>
+                    `).join('')}
+                `;
+            }
+
+            renderProducts(products) {
+                const productsSelect = document.getElementById('productsSelect');
+                if (!productsSelect) return;
+
+                if (products.length === 0) {
+                    productsSelect.innerHTML = '<option value="">Nenhum produto encontrado</option>';
+                    return;
+                }
+
+                productsSelect.innerHTML = `
+                    <option value="">Selecione um produto...</option>
+                    ${products.map(product => {
+                        const last4Digits = product.id.slice(-4);
+                        return `<option value="${product.id}">
+                            ${last4Digits} - ${product.name} - R$ ${parseFloat(product.price).toFixed(2)}
+                        </option>`;
+                    }).join('')}
+                `;
+            }
+
+            filterProductsByCategory(categoryId) {
+                let filteredProducts = this.products;
+                
+                if (categoryId) {
+                    filteredProducts = this.products.filter(product => 
+                        product.product_categories && product.product_categories.id === categoryId
+                    );
+                }
+                
+                this.renderProducts(filteredProducts);
+            }
+
+            selectProduct(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (!product) return;
+
+                const section = document.getElementById('selectedProductSection');
+                const nameInput = document.getElementById('selectedProductName');
+                const priceInput = document.getElementById('selectedProductPrice');
+                const quantityInput = document.getElementById('selectedProductQuantity');
+                const addBtn = document.getElementById('addProductBtn');
+
+                if (nameInput) nameInput.value = product.name;
+                if (priceInput) priceInput.value = parseFloat(product.price).toFixed(2);
+                if (quantityInput) quantityInput.value = 1;
+                if (section) section.style.display = 'block';
+                if (addBtn) addBtn.disabled = false;
+
+                this.selectedProduct = product;
+            }
+
+            async addProductToOrder() {
+                const quantityInput = document.getElementById('selectedProductQuantity');
+                const priceInput = document.getElementById('selectedProductPrice');
+                const notesInput = document.getElementById('selectedProductNotes');
+
+                if (!this.selectedProduct || !quantityInput || !priceInput) {
+                    this.showNotification('Selecione um produto', 'warning');
+                    return;
+                }
+
+                const quantity = parseInt(quantityInput.value);
+                const price = parseFloat(priceInput.value);
+                const notes = notesInput ? notesInput.value : '';
+
+                if (quantity <= 0 || price <= 0) {
+                    this.showNotification('Quantidade e preço devem ser maiores que zero', 'warning');
+                    return;
+                }
+
+                // Verificar se é para novo pedido ou pedido existente
+                if (this.isNewOrderContext || this.currentOrderForProducts === 'new-order') {
+                    // Adicionar ao array temporário do novo pedido
+                    const existingItem = this.newOrderItems.find(item => item.productId === this.selectedProduct.id);
+                    if (existingItem) {
+                        existingItem.quantity += quantity;
+                        if (notes) existingItem.notes = notes;
+                    } else {
+                        this.newOrderItems.push({
+                            productId: this.selectedProduct.id,
+                            name: this.selectedProduct.name,
+                            price: price,
+                            quantity: quantity,
+                            notes: notes
+                        });
+                    }
+
+                    this.renderNewOrderItems();
+                    this.calculateNewOrderTotal();
+                    this.showNotification('Produto adicionado ao pedido', 'success');
+                    this.closeAddProductModal();
+                    return;
+                }
+
+                // Para pedidos existentes
+                if (!this.currentOrderForProducts) {
+                    this.showNotification('Erro: pedido não identificado', 'error');
+                    return;
+                }
+
+                try {
+                    const { data: newItem, error } = await supabase
+                        .from('order_items')
+                        .insert([{
+                            order_id: this.currentOrderForProducts,
+                            product_id: this.selectedProduct.id,
+                            product_name: this.selectedProduct.name,
+                            quantity: quantity,
+                            price: price,
+                            notes: notes
+                        }])
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+
+                    await this.recalculateOrderTotals(this.currentOrderForProducts);
+
+                    this.showNotification('Produto adicionado com sucesso!', 'success');
+                    
+                    const orderIdToUpdate = this.currentOrderForProducts;
+                    
+                    this.closeAddProductModal();
+                    
+                    await this.refreshOrderAndShowDetails(orderIdToUpdate);
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao adicionar produto:', error);
+                    this.showNotification('Erro ao adicionar produto', 'error');
+                }
+            }
+
+            async refreshOrderAndShowDetails(orderId) {
+                try {
+                    // Recarregar ordem específica com itens
+                    const { data: orderData, error: orderError } = await supabase
+                        .from('orders')
+                        .select('*')
+                        .eq('id', orderId)
+                        .single();
+
+                    if (orderError) throw orderError;
+
+                    const { data: itemsData, error: itemsError } = await supabase
+                        .from('order_items')
+                        .select('*')
+                        .eq('order_id', orderId);
+
+                    if (itemsError) throw itemsError;
+
+                    const orderWithItems = {
+                        ...orderData,
+                        order_number: String(orderData.id).slice(-8).toUpperCase(),
+                        order_items: itemsData
+                    };
+
+                    const orderIndex = this.orders.findIndex(o => o.id === orderId);
+                    if (orderIndex !== -1) {
+                        this.orders[orderIndex] = orderWithItems;
+                        
+                        const filteredIndex = this.filteredOrders.findIndex(o => o.id === orderId);
+                        if (filteredIndex !== -1) {
+                            this.filteredOrders[filteredIndex] = orderWithItems;
+                        }
+                    }
+
+                    this.openOrderDetails(orderId);
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao atualizar pedido:', error);
+                    await this.loadOrders();
+                    this.openOrderDetails(orderId);
+                }
+            }
+
+            async editOrderItem(itemId) {
+                try {
+                    const { data: item, error } = await supabase
+                        .from('order_items')
+                        .select('*')
+                        .eq('id', itemId)
+                        .single();
+
+                    if (error) throw error;
+
+                    this.currentEditingItem = item;
+
+                    const nameInput = document.getElementById('editItemName');
+                    const quantityInput = document.getElementById('editItemQuantity');
+                    const priceInput = document.getElementById('editItemPrice');
+                    const notesInput = document.getElementById('editItemNotes');
+
+                    if (nameInput) nameInput.value = item.product_name;
+                    if (quantityInput) quantityInput.value = item.quantity;
+                    if (priceInput) priceInput.value = parseFloat(item.price).toFixed(2);
+                    if (notesInput) notesInput.value = item.notes || '';
+
+                    const modal = document.getElementById('editItemModal');
+                    if (modal) modal.classList.add('show');
+
+                } catch (error) {
+                    console.error('❌ Erro ao carregar item:', error);
+                    this.showNotification('Erro ao carregar item', 'error');
+                }
+            }
+
+            async updateOrderItem() {
+                if (!this.currentEditingItem) return;
+
+                const quantityInput = document.getElementById('editItemQuantity');
+                const priceInput = document.getElementById('editItemPrice');
+                const notesInput = document.getElementById('editItemNotes');
+
+                if (!quantityInput || !priceInput) return;
+
+                const quantity = parseInt(quantityInput.value);
+                const price = parseFloat(priceInput.value);
+                const notes = notesInput ? notesInput.value : '';
+
+                if (quantity <= 0 || price <= 0) {
+                    this.showNotification('Quantidade e preço devem ser maiores que zero', 'warning');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('order_items')
+                        .update({
+                            quantity: quantity,
+                            price: price,
+                            notes: notes
+                        })
+                        .eq('id', this.currentEditingItem.id);
+
+                    if (error) throw error;
+
+                    await this.recalculateOrderTotals(this.currentEditingItem.order_id);
+
+                    this.showNotification('Item atualizado com sucesso!', 'success');
+                    
+                    const orderIdToUpdate = this.currentEditingItem.order_id;
+                    
+                    this.closeEditItemModal();
+                    
+                    await this.refreshOrderAndShowDetails(orderIdToUpdate);
+
+                } catch (error) {
+                    console.error('❌ Erro ao atualizar item:', error);
+                    this.showNotification('Erro ao atualizar item', 'error');
+                }
+            }
+
+            async deleteOrderItem(itemId, orderId) {
+                if (!confirm('Tem certeza que deseja excluir este item?')) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('order_items')
+                        .delete()
+                        .eq('id', itemId);
+
+                    if (error) throw error;
+
+                    await this.recalculateOrderTotals(orderId);
+
+                    this.showNotification('Item removido com sucesso!', 'success');
+                    
+                    await this.refreshOrderAndShowDetails(orderId);
+
+                } catch (error) {
+                    console.error('❌ Erro ao excluir item:', error);
+                    this.showNotification('Erro ao excluir item', 'error');
+                }
+            }
+
+            async recalculateOrderTotals(orderId) {
+                try {
+                    const { data: items, error: itemsError } = await supabase
+                        .from('order_items')
+                        .select('quantity, price')
+                        .eq('order_id', orderId);
+
+                    if (itemsError) throw itemsError;
+
+                    const subtotal = items.reduce((sum, item) => sum + (item.quantity * parseFloat(item.price)), 0);
+
+                    const { data: order, error: orderError } = await supabase
+                        .from('orders')
+                        .select('delivery_fee')
+                        .eq('id', orderId)
+                        .single();
+
+                    if (orderError) throw orderError;
+
+                    const deliveryFee = parseFloat(order.delivery_fee) || 0;
+                    const total = subtotal + deliveryFee;
+
+                    const { error: updateError } = await supabase
+                        .from('orders')
+                        .update({
+                            subtotal: subtotal,
+                            total: total,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', orderId);
+
+                    if (updateError) throw updateError;
+
+                } catch (error) {
+                    console.error('❌ Erro ao recalcular totais:', error);
+                }
+            }
+
+            closeAddProductModal() {
+                const modal = document.getElementById('addProductModal');
+                if (modal) modal.classList.remove('show');
+
+                const section = document.getElementById('selectedProductSection');
+                if (section) section.style.display = 'none';
+
+                const searchInput = document.getElementById('productSearchInput');
+                if (searchInput) searchInput.value = '';
+
+                const searchResultContainer = document.getElementById('searchResultContainer');
+                if (searchResultContainer) searchResultContainer.style.display = 'none';
+
+                const productsSelect = document.getElementById('productsSelect');
+                if (productsSelect) productsSelect.value = '';
+
+                const addBtn = document.getElementById('addProductBtn');
+                if (addBtn) addBtn.disabled = true;
+
+                this.currentOrderForProducts = null;
+                this.selectedProduct = null;
+                this.isNewOrderContext = false;
+            }
+
+            selectProductFromSearch(productId) {
+                this.selectProduct(productId);
+                
+                const searchInput = document.getElementById('productSearchInput');
+                if (searchInput) searchInput.value = '';
+                
+                const searchResultContainer = document.getElementById('searchResultContainer');
+                if (searchResultContainer) searchResultContainer.style.display = 'none';
+                
+                const productsSelect = document.getElementById('productsSelect');
+                if (productsSelect) productsSelect.value = productId;
+            }
+
+            closeEditItemModal() {
+                const modal = document.getElementById('editItemModal');
+                if (modal) modal.classList.remove('show');
+                
+                const nameInput = document.getElementById('editItemName');
+                const quantityInput = document.getElementById('editItemQuantity');
+                const priceInput = document.getElementById('editItemPrice');
+                const notesInput = document.getElementById('editItemNotes');
+                
+                if (nameInput) nameInput.value = '';
+                if (quantityInput) quantityInput.value = '';
+                if (priceInput) priceInput.value = '';
+                if (notesInput) notesInput.value = '';
+                
+                this.currentEditingItem = null;
+            }
+
+            // ===== FUNÇÃO PARA STATUS =====
+            async updateOrderStatus(orderId, newStatus) {
+                try {
+                    const { data, error } = await supabase
+                        .from('orders')
+                        .update({ 
+                            status: newStatus,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', orderId)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+
+                    this.showNotification(`Status atualizado para: ${this.getStatusLabel(newStatus)}`, 'success');
+                    await this.loadOrders();
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao atualizar status:', error);
+                    this.showNotification('Erro ao atualizar status', 'error');
+                }
+            }
+
+            // ===== FUNÇÃO PARA NOTIFICAÇÕES =====
             showNotification(message, type = 'info') {
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
-                notification.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                        <span>${message}</span>
-                    </div>
-                `;
-                
+                notification.textContent = message;
+
                 document.body.appendChild(notification);
-                
-                setTimeout(() => notification.classList.add('show'), 100);
+
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+
                 setTimeout(() => {
                     notification.classList.remove('show');
                     setTimeout(() => {
-                        if (document.body.contains(notification)) {
-                            document.body.removeChild(notification);
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
                         }
-                    }, 300);
+                    }, 400);
                 }, 3000);
             }
         }
 
+        // ===== FUNÇÕES VIACEP =====
+        function limpa_formulário_cep() {
+            const ruaElement = document.getElementById('rua');
+            const bairroElement = document.getElementById('bairro');
+            const cidadeElement = document.getElementById('cidade');
+            const ufElement = document.getElementById('uf');
+            const ibgeElement = document.getElementById('ibge');
+            
+            if (ruaElement) ruaElement.value = "";
+            if (bairroElement) bairroElement.value = "";
+            if (cidadeElement) cidadeElement.value = "";
+            if (ufElement) ufElement.value = "";
+            if (ibgeElement) ibgeElement.value = "";
+        }
+
+        function meu_callback(conteudo) {
+            if (!("erro" in conteudo)) {
+                const ruaElement = document.getElementById('rua');
+                const bairroElement = document.getElementById('bairro');
+                const cidadeElement = document.getElementById('cidade');
+                const ufElement = document.getElementById('uf');
+                const ibgeElement = document.getElementById('ibge');
+                
+                if (ruaElement) ruaElement.value = conteudo.logradouro;
+                if (bairroElement) bairroElement.value = conteudo.bairro;
+                if (cidadeElement) cidadeElement.value = conteudo.localidade;
+                if (ufElement) ufElement.value = conteudo.uf;
+                if (ibgeElement) ibgeElement.value = conteudo.ibge;
+            } else {
+                limpa_formulário_cep();
+                alert("CEP não encontrado.");
+            }
+        }
+
+        function pesquisacep(valor) {
+            var cep = valor.replace(/\D/g, '');
+            
+            if (cep != "") {
+                var validacep = /^[0-9]{8}$/;
+                
+                if(validacep.test(cep)) {
+                    const ruaElement = document.getElementById('rua');
+                    const bairroElement = document.getElementById('bairro');
+                    const cidadeElement = document.getElementById('cidade');
+                    const ufElement = document.getElementById('uf');
+                    const ibgeElement = document.getElementById('ibge');
+                    
+                    if (ruaElement) ruaElement.value = "...";
+                    if (bairroElement) bairroElement.value = "...";
+                    if (cidadeElement) cidadeElement.value = "...";
+                    if (ufElement) ufElement.value = "...";
+                    if (ibgeElement) ibgeElement.value = "...";
+
+                    var script = document.createElement('script');
+                    script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+                    document.body.appendChild(script);
+                } else {
+                    limpa_formulário_cep();
+                    alert("Formato de CEP inválido.");
+                }
+            } else {
+                limpa_formulário_cep();
+            }
+        }
+
+        function formatCEP(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            input.value = value;
+        }
+
         // ===== INSTÂNCIA GLOBAL =====
         let ordersManager;
+
+        // ===== FUNÇÕES GLOBAIS PARA NOVO PEDIDO =====
+        function updateNewOrderItemQuantity(index, quantity) {
+            if (ordersManager) {
+                ordersManager.updateNewOrderItemQuantity(index, quantity);
+            }
+        }
+
+        function updateNewOrderItemPrice(index, price) {
+            if (ordersManager) {
+                ordersManager.updateNewOrderItemPrice(index, price);
+            }
+        }
+
+        function editNewOrderItemNotes(index) {
+            if (ordersManager) {
+                ordersManager.editNewOrderItemNotes(index);
+            }
+        }
+
+        function removeNewOrderItem(index) {
+            if (ordersManager) {
+                ordersManager.removeNewOrderItem(index);
+            }
+        }
+
+        function addProductToNewOrder(productId) {
+            if (ordersManager) {
+                ordersManager.addProductToNewOrder(productId);
+            }
+        }
+
+        function openAddProductToNewOrderModal() {
+            if (ordersManager) {
+                ordersManager.openAddProductToNewOrderModal();
+            }
+        }
+
+        // ===== FUNÇÕES GLOBAIS PARA CLIENTES =====
+        async function searchCustomerByPhone() {
+            const phoneElement = document.getElementById('searchPhone');
+            if (!phoneElement) {
+                console.warn('Elemento searchPhone não encontrado');
+                return;
+            }
+
+            const phone = phoneElement.value.trim();
+            if (!phone) {
+                ordersManager.showNotification('Digite um telefone para buscar', 'warning');
+                return;
+            }
+            
+            const customer = await ordersManager.searchCustomerByPhone(phone);
+            
+            if (customer) {
+                ordersManager.fillCustomerData(customer);
+                ordersManager.showNotification(`Cliente encontrado: ${customer.name}`, 'success');
+                phoneElement.value = '';
+            } else {
+                ordersManager.currentSearchPhone = phone;
+                const newPhoneElement = document.getElementById('newCustomerPhone');
+                if (newPhoneElement) {
+                    newPhoneElement.value = phone;
+                }
+                
+                const modal = document.getElementById('customerRegistrationModal');
+                if (modal) {
+                    modal.classList.add('show');
+                }
+                
+                ordersManager.showNotification('Cliente não encontrado. Preencha os dados para cadastrar.', 'info');
+            }
+        }
+
+        function closeCustomerRegistrationModal() {
+            const modal = document.getElementById('customerRegistrationModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+            
+            const form = document.getElementById('customerRegistrationForm');
+            if (form) {
+                form.reset();
+            }
+            
+            limpa_formulário_cep();
+            if (ordersManager) {
+                ordersManager.currentSearchPhone = null;
+            }
+        }
+
+        async function handleCustomerRegistration(event) {
+            event.preventDefault();
+            
+            const nameElement = document.getElementById('newCustomerName');
+            const phoneElement = document.getElementById('newCustomerPhone');
+            
+            if (!nameElement || !phoneElement) {
+                console.warn('Elementos do formulário de cliente não encontrados');
+                return;
+            }
+
+            const name = nameElement.value.trim();
+            const phone = phoneElement.value.trim();
+            
+            if (!name || !phone) {
+                ordersManager.showNotification('Nome e telefone são obrigatórios', 'warning');
+                return;
+            }
+
+            const customerData = {
+                name: name,
+                phone: phone,
+                email: '',
+                birth_date: '',
+                zip_code: '',
+                city: ''
+            };
+
+            const emailElement = document.getElementById('newCustomerEmail');
+            const birthElement = document.getElementById('newCustomerBirthDate');
+            const cepElement = document.getElementById('newCustomerCep');
+            const cidadeElement = document.getElementById('cidade');
+            
+            if (emailElement) customerData.email = emailElement.value.trim();
+            if (birthElement) customerData.birth_date = birthElement.value;
+            if (cepElement) customerData.zip_code = cepElement.value.replace(/\D/g, '');
+            if (cidadeElement) customerData.city = cidadeElement.value.trim();
+
+            const ruaElement = document.getElementById('rua');
+            const numeroElement = document.getElementById('newCustomerNumber');
+            const complementoElement = document.getElementById('newCustomerComplement');
+            const bairroElement = document.getElementById('bairro');
+            
+            let address = '';
+            if (ruaElement && ruaElement.value.trim()) {
+                address = ruaElement.value.trim();
+                if (numeroElement && numeroElement.value.trim()) address += ', ' + numeroElement.value.trim();
+                if (complementoElement && complementoElement.value.trim()) address += ' - ' + complementoElement.value.trim();
+                if (bairroElement && bairroElement.value.trim()) address += ' - ' + bairroElement.value.trim();
+            }
+            
+            customerData.address = address;
+
+            const savedCustomer = await ordersManager.saveNewCustomer(customerData);
+            
+            if (savedCustomer) {
+                ordersManager.fillCustomerData(savedCustomer);
+                closeCustomerRegistrationModal();
+            }
+        }
+
+        // ===== FUNÇÕES GLOBAIS PARA PRODUTOS E ITENS =====
+        async function openAddProductModal(orderId) {
+            if (ordersManager) {
+                await ordersManager.openAddProductModal(orderId);
+            }
+        }
+
+        function closeAddProductModal() {
+            if (ordersManager) {
+                ordersManager.closeAddProductModal();
+            }
+        }
+
+        function selectProduct(productId) {
+            if (ordersManager) {
+                ordersManager.selectProduct(productId);
+            }
+        }
+
+        function selectProductFromSearch(productId) {
+            if (ordersManager) {
+                ordersManager.selectProductFromSearch(productId);
+            }
+        }
+
+        function selectAndScrollFromSearch(productId) {
+            if (ordersManager) {
+                ordersManager.selectProductFromSearch(productId);
+            }
+        }
+
+        async function addProductToOrder() {
+            if (ordersManager) {
+                await ordersManager.addProductToOrder();
+            }
+        }
+
+        async function editOrderItem(itemId) {
+            if (ordersManager) {
+                await ordersManager.editOrderItem(itemId);
+            }
+        }
+
+        function closeEditItemModal() {
+            if (ordersManager) {
+                ordersManager.closeEditItemModal();
+            }
+        }
+
+        async function updateOrderItem() {
+            if (ordersManager) {
+                await ordersManager.updateOrderItem();
+            }
+        }
+
+        async function deleteOrderItem(itemId, orderId) {
+            if (ordersManager) {
+                await ordersManager.deleteOrderItem(itemId, orderId);
+            }
+        }
+
+        // ===== FUNÇÕES GLOBAIS PARA PAGAMENTO =====
+        async function openPaymentMethodModal(orderId) {
+            if (ordersManager) {
+                await ordersManager.openPaymentMethodModal(orderId);
+            }
+        }
+
+        function closePaymentMethodModal() {
+            if (ordersManager) {
+                ordersManager.closePaymentMethodModal();
+            }
+        }
+
+        async function confirmPaymentAndFinish() {
+            if (ordersManager) {
+                await ordersManager.confirmPaymentAndFinish();
+            }
+        }
+
+        // ===== FUNÇÕES GLOBAIS PARA ENTREGADORES =====
+        async function openDelivererSelection(orderId) {
+            if (ordersManager) {
+                await ordersManager.openDelivererSelectionModal(orderId);
+            }
+        }
+
+        function closeDelivererSelectionModal() {
+            if (ordersManager) {
+                ordersManager.closeDelivererSelectionModal();
+            }
+        }
+
+        async function confirmDelivererSelection() {
+            if (ordersManager) {
+                await ordersManager.confirmDelivererSelection();
+            }
+        }
 
         // ===== FUNÇÕES GLOBAIS =====
         function openNewOrderModal() {
@@ -1947,12 +4844,6 @@
         function closeNewOrderModal() {
             if (ordersManager) {
                 ordersManager.closeNewOrderModal();
-            }
-        }
-
-        function addOrderItem() {
-            if (ordersManager) {
-                ordersManager.addOrderItem();
             }
         }
 
@@ -1983,7 +4874,6 @@
         async function updateOrderStatusFromDetails(orderId, newStatus) {
             if (ordersManager) {
                 await ordersManager.updateOrderStatus(orderId, newStatus);
-                // Fechar modal após atualizar
                 ordersManager.closeOrderDetailsModal();
             }
         }
@@ -2013,9 +4903,16 @@
             ordersManager = new OrdersManager();
             await ordersManager.init();
             
-            // Configurar data de hoje como padrão
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateFilter').value = today;
+            const customerForm = document.getElementById('customerRegistrationForm');
+            if (customerForm) {
+                customerForm.addEventListener('submit', handleCustomerRegistration);
+            }
+            
+            const dateFilterElement = document.getElementById('dateFilter');
+            if (dateFilterElement) {
+                const today = new Date().toISOString().split('T')[0];
+                dateFilterElement.value = today;
+            }
         });
 
         // ===== CLEANUP =====
@@ -2032,6 +4929,16 @@
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 e.target.classList.remove('show');
+                
+                if (e.target.id === 'addProductModal' && ordersManager) {
+                    ordersManager.closeAddProductModal();
+                } else if (e.target.id === 'editItemModal' && ordersManager) {
+                    ordersManager.closeEditItemModal();
+                } else if (e.target.id === 'paymentMethodModal' && ordersManager) {
+                    ordersManager.closePaymentMethodModal();
+                } else if (e.target.id === 'newOrderModal' && ordersManager) {
+                    ordersManager.closeNewOrderModal();
+                }
             }
         });
     </script>
